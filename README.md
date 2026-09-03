@@ -433,6 +433,12 @@ Academic and engineering collaboration is welcome, including areas such as:
 - university teaching, technical courses, workshops and laboratory training;
 - company / laboratory integration and custom engineering discussions.
 
+### Author
+
+- **Name:** Guoyu Yu
+- **Status:** PhD Candidate in Biomedical Engineering / Medicine
+- **Affiliation:** School of Medical Frontier Interdisciplinary Studies, Zhengzhou University (Academy of Medical Sciences, Zhengzhou University)
+
 For public technical questions that may help other developers, GitHub Issues are preferred. For direct collaboration or professional inquiries, email is welcome:
 
 - **Gmail:** yuguoyu520@gmail.com
