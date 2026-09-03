@@ -1,0 +1,24 @@
+name: pico-reference
+
+on:
+  push:
+    branches: [ main, production-sdk-v1, repo-architecture-v1 ]
+  pull_request:
+
+jobs:
+  rp2040-pico-sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ARM GCC and Ninja
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi ninja-build
+      - name: Fetch pinned Pico SDK 2.3.0
+        run: |
+          git clone --depth 1 --branch 2.3.0 https://github.com/raspberrypi/pico-sdk.git /tmp/pico-sdk
+          git -C /tmp/pico-sdk submodule update --init --depth 1
+      - name: Configure RP2040 project
+        run: cmake -S firmware/mcu/raspberry_pi/rp2040_pico -B /tmp/rp2040-build -DPICO_SDK_PATH=/tmp/pico-sdk -DPICO_BOARD=pico -G Ninja
+      - name: Build RP2040 project
+        run: cmake --build /tmp/rp2040-build -j 2

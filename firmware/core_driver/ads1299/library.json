@@ -1,0 +1,6 @@
+{
+  "name": "ADS1299-Core-Driver",
+  "version": "0.1.0",
+  "description": "Portable ADS1299 driver used by ADS1299-Core-SDK reference projects",
+  "build": { "srcDir": ".", "includeDir": "." }
+}

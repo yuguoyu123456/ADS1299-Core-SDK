@@ -1,0 +1,6 @@
+{
+  "name": "ADS1299-Core-HostPacket",
+  "version": "0.1.0",
+  "description": "Binary host packet encoder for ADS1299-Core-SDK",
+  "build": { "srcDir": ".", "includeDir": "." }
+}
