@@ -1,8 +1,17 @@
 # STM32F407VET6 / Black F407VE — complete reference project
 
-Status: **Source-complete; CI build pending on this branch. Hardware validation pending.**
+Status: **Source-complete; CI build tracked. Hardware validation pending.**
 
-This is the first gold-reference MCU project. It uses PlatformIO's STM32Cube framework so a clean clone can resolve the ST HAL automatically instead of requiring a manually-generated CubeMX directory.
+This is the STM32 gold-reference project. It uses PlatformIO's STM32Cube framework so a clean clone can resolve the ST HAL automatically instead of requiring a manually generated CubeMX project.
+
+## Project contents
+
+- `src/main.c` — board initialization, ADS1299 bring-up and continuous acquisition.
+- `include/` — board pin definitions.
+- `lib/ads1299_port/` — STM32 HAL adaptation for SPI/GPIO/RESET/START/DRDY.
+- `../../../core_driver/ads1299/` — shared controller-independent ADS1299 driver.
+- `../../../common/data_packet/` — shared binary packet encoder.
+- `platformio.ini` — complete build configuration.
 
 ## Wiring
 
@@ -21,27 +30,35 @@ UART2 PA2/PA3 is configured at 921600 baud for host output.
 
 ## Build
 
+From the repository root:
+
 ```bash
-cd projects/stm32f407_black
+pio run -d firmware/mcu/st/stm32f407_black
+```
+
+Or:
+
+```bash
+cd firmware/mcu/st/stm32f407_black
 pio run
 ```
 
-Flash with your configured PlatformIO upload method, or copy the generated firmware using ST-LINK/OpenOCD as appropriate for the board.
+Flash with your configured PlatformIO upload method, or use ST-LINK/OpenOCD as appropriate for the board.
 
 ## Boot behavior
 
-1. initialize clocks/GPIO/SPI/UART;
+1. initialize clocks, GPIO, SPI and UART;
 2. hardware-reset ADS1299;
-3. send SDATAC;
+3. send `SDATAC`;
 4. read and print the ID register;
 5. set 250 SPS;
 6. route all 8 channels to the ADS1299 internal test signal at gain 24;
-7. enter RDATAC and START;
+7. enter `RDATAC` and START;
 8. each DRDY edge reads one 27-byte ADS1299 frame;
-9. emit the repository's 49-byte host packet with sequence, timestamp, raw status, 8 signed int32 samples and CRC16.
+9. emit the repository's 49-byte packet with sequence, timestamp, raw status, 8 signed int32 samples and CRC16.
 
-The project intentionally boots into **internal test signal**, not human EEG. This is the safer and more reproducible first validation state.
+The project intentionally boots into the **internal test signal**, not human EEG. This is the reproducible first validation state.
 
-## Expected validation order
+## Validation order
 
-`CI-build` only proves compilation. Before `Bench-tested`, capture the ID read and test waveform from a real ADS1299-Core board and attach the evidence to the hardware validation issue.
+A successful CI build proves compilation only. Before `Bench-tested`, verify the ID read and internal-test waveform on real ADS1299-Core hardware and attach the evidence to the hardware-validation issue.
