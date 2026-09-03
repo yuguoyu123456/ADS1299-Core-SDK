@@ -1,96 +1,99 @@
-# EEG Algorithms
+# EEG Analysis
 
-This directory contains beginner-friendly, transparent EEG analysis examples that operate on multichannel sample matrices. The code is intentionally kept readable so users can understand what happens between raw ADS1299 samples and derived EEG features.
+This folder contains beginner-friendly EEG analysis workflows that operate above the ADS1299 acquisition layer. The emphasis is on readable code, explicit units and reproducible steps from raw multichannel samples to interpretable EEG features.
+
+## Where should I start?
+
+- **Python** → [`python/`](python/)
+- **MATLAB** → [`matlab/`](matlab/)
+- **R** → [`r/`](r/)
+- **BCI algorithms** → [`../bci/`](../bci/)
+
+The same scientific concepts should remain recognizable across languages even when the exact library APIs differ.
 
 ## Recommended learning order
 
 1. **Import and units** — confirm sampling rate, channel order and volts/µV scaling.
-2. **Preprocessing** — detrend, rereference, notch, band-pass.
-3. **Quality control** — inspect saturation, flat channels, large-amplitude artifacts and line noise.
-4. **Spectral analysis** — PSD, band power, alpha peak.
-5. **Epoch/event analysis** — epoching, baseline correction, ERP.
-6. **Connectivity/features** — coherence, Hjorth and other interpretable features.
-7. **Advanced BCI methods** — CSP, CCA/FBCCA, xDAWN, Riemannian features and ML.
+2. **Preprocessing** — remove DC/trend, rereference, notch and band-pass.
+3. **Quality control** — inspect saturation, flat channels, large artifacts and line noise.
+4. **Spectral analysis** — PSD, band power and alpha peak.
+5. **Epoch/event analysis** — epoching, baseline correction and ERP.
+6. **Connectivity and features** — coherence, Hjorth and other interpretable features.
+7. **BCI** — continue to SSVEP, motor imagery, P300 and online pipelines in `../bci/`.
 
-## Folder layout
+## Current language layout
 
 ```text
-algorithms/
+eeg_analysis/
 ├── python/
 │   ├── eeg_basics.py
 │   ├── demo_basic_analysis.py
+│   ├── mne_quickstart.py
 │   └── requirements.txt
 ├── matlab/
-│   └── eeg_basic_analysis.m
-├── R/
-│   └── eeg_basic_analysis.R
+│   ├── eeg_basic_analysis.m
+│   ├── p300_erp_baseline.m
+│   └── ssvep_cca_baseline.m
+├── r/
+│   ├── eeg_basic_analysis.R
+│   ├── p300_erp_baseline.R
+│   └── ssvep_cca_baseline.R
 └── ROADMAP.md
 ```
 
-## Core methods included in the first bootstrap
+## Core topics
 
 ### Preprocessing
-- mean/DC removal
-- linear detrending
-- common average reference (CAR)
-- single-reference rereferencing
-- IIR notch filtering
-- Butterworth band-pass filtering
+- mean / DC removal;
+- linear detrending;
+- common-average reference (CAR);
+- single-reference rereferencing;
+- notch filtering;
+- band-pass filtering.
 
-### Spectral
-- Welch power spectral density (PSD)
-- delta/theta/alpha/beta/gamma power
-- relative band power
-- individual alpha peak estimation
+### Frequency domain
+- FFT concepts;
+- Welch power spectral density (PSD);
+- delta / theta / alpha / beta / gamma power;
+- relative band power;
+- individual alpha peak estimation.
 
-### Time-domain
-- mean, standard deviation, RMS
-- peak-to-peak amplitude
-- Hjorth activity, mobility and complexity
+### Time domain
+- mean, standard deviation and RMS;
+- peak-to-peak amplitude;
+- Hjorth activity, mobility and complexity.
 
 ### Event-related analysis
-- fixed-window epoch extraction
-- baseline correction
-- simple artifact rejection
-- ERP averaging
+- fixed-window epoch extraction;
+- baseline correction;
+- simple artifact rejection;
+- ERP averaging;
+- introductory P300 measurements.
 
 ### Connectivity
-- magnitude-squared coherence
+- magnitude-squared coherence;
+- roadmap for phase- and network-based methods.
 
-## Advanced roadmap
+## Established ecosystems
 
-The roadmap intentionally separates methods that can be implemented locally from mature third-party ecosystems that should usually be used directly instead of copied. Planned integrations/examples include:
+This repository should interoperate with mature scientific ecosystems rather than duplicate them unnecessarily.
 
-- **Python:** MNE-Python, SciPy, NumPy, pandas, scikit-learn, pyRiemann, MOABB
-- **MATLAB:** EEGLAB, FieldTrip, BCILAB-style workflows where licensing allows
-- **R:** signal, eegUtils/eegkit-related workflows where appropriate
+- **Python:** NumPy, SciPy, pandas, MNE-Python, scikit-learn, pyRiemann, MOABB.
+- **MATLAB:** EEGLAB, FieldTrip and compatible research workflows.
+- **R:** signal-processing and EEG/statistical packages where appropriate.
 
-Advanced algorithm topics:
-
-- ICA artifact decomposition
-- ASR / robust artifact handling
-- ERD/ERS time-frequency maps
-- STFT / Morlet wavelets
-- CSP / FBCSP for motor imagery
-- CCA / FBCCA for SSVEP
-- xDAWN / P300 pipelines
-- LDA / logistic regression / SVM baselines
-- Riemannian covariance features
-- PLV / PLI / wPLI / coherence networks
-- PAC and cross-frequency coupling
-- microstate analysis
-- sleep-stage feature examples
-- quality metrics and channel-noise scoring
+Third-party libraries and datasets must keep their own licenses and citation requirements.
 
 ## Data convention
 
-Unless a file says otherwise:
+Unless an example explicitly says otherwise:
 
-- arrays are shaped as **samples × channels**
-- sample values are in **µV** for host-side examples
-- sampling frequency is passed explicitly as `fs`
-- channel labels are metadata, not hard-coded into the algorithms
+- arrays are **samples × channels**;
+- host-side EEG values are expressed in **µV**;
+- sampling frequency is passed explicitly as `fs`;
+- channel labels are metadata rather than hidden assumptions;
+- filtering and artifact thresholds are examples, not universal clinical standards.
 
-## Important note
+## Validation
 
-These examples are educational/research code. Filter choices, rejection thresholds and frequency bands must be adapted to the experiment. Do not treat default values as a clinical standard.
+Analysis examples should state what has actually been verified: synthetic-data checks, named public datasets, ADS1299-Core hardware data, or online acquisition. Educational code must not be presented as clinically validated software.
