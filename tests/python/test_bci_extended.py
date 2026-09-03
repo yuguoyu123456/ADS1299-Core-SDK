@@ -5,8 +5,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bci" / "ssvep"))
 sys.path.insert(0, str(ROOT / "bci" / "motor_imagery"))
-sys.path.insert(0, str(ROOT / "bci" / "classification"))
-sys.path.insert(0, str(ROOT / "bci" / "riemannian"))
+sys.path.insert(0, str(ROOT / "bci" / "common_methods" / "classification"))
+sys.path.insert(0, str(ROOT / "bci" / "common_methods" / "riemannian"))
 
 from fbcca_baseline import predict_fbcca
 from erd_ers import erd_ers
