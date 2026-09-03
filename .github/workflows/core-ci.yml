@@ -28,9 +28,22 @@ jobs:
           python-version: '3.11'
       - name: Install algorithm dependencies
         run: pip install -r algorithms/python/requirements.txt
+      - name: Run host packet round-trip
+        run: python tests/python/test_packet.py
       - name: Run EEG beginner demo
         run: python algorithms/python/demo_basic_analysis.py
       - name: Run SSVEP baseline demo
         run: python bci/ssvep/cca_baseline.py
       - name: Run CSP baseline demo
         run: python bci/motor_imagery/csp_baseline.py
+
+  fpga-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Compile and run frame-unpack testbench
+        run: |
+          iverilog -g2012 -o /tmp/tb_unpack fpga/rtl/ads1299_frame_unpack.v fpga/tb/tb_ads1299_frame_unpack.v
+          vvp /tmp/tb_unpack
