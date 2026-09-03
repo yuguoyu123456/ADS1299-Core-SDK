@@ -139,7 +139,7 @@ def bandpower(
     total_mask = (freqs >= total_range[0]) & (freqs <= total_range[1])
     if np.count_nonzero(total_mask) < 2:
         raise ValueError("Insufficient frequency bins in total_range")
-    total = np.trapz(psd[total_mask], freqs[total_mask], axis=0)
+    total = np.trapezoid(psd[total_mask], freqs[total_mask], axis=0)
 
     absolute: dict[str, np.ndarray] = {}
     relative: dict[str, np.ndarray] = {}
@@ -148,7 +148,7 @@ def bandpower(
         if np.count_nonzero(mask) < 2:
             power = np.full(psd.shape[1], np.nan)
         else:
-            power = np.trapz(psd[mask], freqs[mask], axis=0)
+            power = np.trapezoid(psd[mask], freqs[mask], axis=0)
         absolute[name] = power
         relative[name] = np.divide(
             power,
