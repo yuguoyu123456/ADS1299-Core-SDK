@@ -436,7 +436,8 @@ Academic and engineering collaboration is welcome, including areas such as:
 ### Doctoral Supervisor
 
 - **Professor:** Prof. Dongchuan Yu
-- **Roles:** Doctoral Supervisor · Internationally renowned interdisciplinary expert · Clinical Expert · Educator
+- **Roles:** University Professor · Doctoral Supervisor · Internationally recognized interdisciplinary scholar
+- **Experience:** Extensive experience in higher education and clinical practice
 - **Interdisciplinary expertise:** Biomedical Engineering · Medicine · Medical Devices · Chemistry · Physiology · Pathology
 
 ### Author
