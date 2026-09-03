@@ -2,7 +2,7 @@ name: reference-projects
 
 on:
   push:
-    branches: [ main, production-sdk-v1 ]
+    branches: [ main, production-sdk-v1, repo-architecture-v1 ]
   pull_request:
 
 jobs:
@@ -16,4 +16,4 @@ jobs:
       - name: Install PlatformIO
         run: pip install platformio
       - name: Build STM32F407 reference project
-        run: pio run -d projects/stm32f407_black
+        run: pio run -d firmware/mcu/st/stm32f407_black
