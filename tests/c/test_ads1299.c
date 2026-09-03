@@ -13,6 +13,11 @@ int main(void) {
     double v = ads1299_code_to_volts(8388607, 4.5, 24.0);
     assert(v > 0.18749 && v < 0.18751);
 
-    puts("ADS1299 core math tests passed");
+    /* TI CONFIG2 internal-test encoding: reserved base 0xC0 + INT_CAL 0x10. */
+    assert(ads1299_make_internal_test_config2(0, ADS1299_TEST_FREQ_FCLK_2_21) == 0xD0u);
+    assert(ads1299_make_internal_test_config2(1, ADS1299_TEST_FREQ_FCLK_2_20) == 0xD5u);
+    assert(ads1299_make_internal_test_config2(0, ADS1299_TEST_FREQ_DC) == 0xD3u);
+
+    puts("ADS1299 core math/config tests passed");
     return 0;
 }
