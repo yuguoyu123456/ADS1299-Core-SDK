@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#define ADS1299_TDECODE_DELAY_US 4u
+
 static ads1299_status_t check_dev(const ads1299_t *dev) {
     if (!dev || !dev->port.spi_transfer || !dev->port.cs_write ||
         !dev->port.delay_us) {
@@ -40,6 +42,18 @@ static ads1299_status_t xfer(ads1299_t *dev,
     const int rc = dev->port.spi_transfer(dev->port.user, tx, rx, len);
     dev->port.cs_write(dev->port.user, 1);
     return rc == 0 ? ADS1299_OK : ADS1299_EIO;
+}
+
+static int transfer_register_command_byte(ads1299_t *dev, uint8_t byte) {
+    const int rc = dev->port.spi_transfer(dev->port.user, &byte, NULL, 1u);
+    if (rc == 0) {
+        /* TI specifies a 4 tCLK command-decode interval for multi-byte
+           RREG/WREG operations. Four microseconds is deliberately
+           conservative for the nominal 2.048-MHz ADS1299 clock and avoids
+           coupling correctness to the controller SPI bitrate. */
+        dev->port.delay_us(dev->port.user, ADS1299_TDECODE_DELAY_US);
+    }
+    return rc;
 }
 
 ads1299_status_t ads1299_init(ads1299_t *dev, const ads1299_port_t *port) {
@@ -132,7 +146,8 @@ ads1299_status_t ads1299_read_registers(ads1299_t *dev,
     uint8_t zeros[ADS1299_REGISTER_COUNT] = {0};
 
     dev->port.cs_write(dev->port.user, 0);
-    if (dev->port.spi_transfer(dev->port.user, hdr, NULL, sizeof(hdr)) != 0) {
+    if (transfer_register_command_byte(dev, hdr[0]) != 0 ||
+        transfer_register_command_byte(dev, hdr[1]) != 0) {
         dev->port.cs_write(dev->port.user, 1);
         return ADS1299_EIO;
     }
@@ -173,7 +188,8 @@ ads1299_status_t ads1299_write_registers(ads1299_t *dev,
     };
 
     dev->port.cs_write(dev->port.user, 0);
-    if (dev->port.spi_transfer(dev->port.user, hdr, NULL, sizeof(hdr)) != 0 ||
+    if (transfer_register_command_byte(dev, hdr[0]) != 0 ||
+        transfer_register_command_byte(dev, hdr[1]) != 0 ||
         dev->port.spi_transfer(dev->port.user, values, NULL, count) != 0) {
         dev->port.cs_write(dev->port.user, 1);
         return ADS1299_EIO;
