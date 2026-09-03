@@ -1,0 +1,73 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# MATLAB
+*.asv
+slprj/
+codegen/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# STM32 / Keil / IAR / GCC build outputs
+Debug/
+Release/
+Objects/
+Listings/
+*.o
+*.obj
+*.elf
+*.axf
+*.hex
+*.bin
+*.map
+*.lst
+*.d
+*.dep
+*.bak
+*.uvguix.*
+*.eww
+*.ewp
+*.ewd
+
+# ESP-IDF / CMake
+sdkconfig.old
+build/
+CMakeFiles/
+
+# PlatformIO
+.pio/
+
+# FPGA generated outputs
+*.bit
+*.sof
+*.pof
+*.jic
+*.rpt
+*.log
+*.jou
+*.wdb
+*.vcd
+*.fst
+.sim/
+.runs/
+.cache/
+.gen/
+.hw/
