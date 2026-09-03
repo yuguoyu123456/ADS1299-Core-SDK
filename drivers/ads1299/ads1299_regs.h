@@ -3,7 +3,18 @@
 
 #include <stdint.h>
 
-/* Commands */
+/*
+ * ADS1299 register and command definitions.
+ *
+ * Primary specification: Texas Instruments ADS1299-x datasheet, SBAS499C.
+ * Keep reserved-bit requirements explicit. Public application code should
+ * prefer the typed helpers in ads1299.h instead of constructing register bytes
+ * by hand.
+ */
+
+/* -------------------------------------------------------------------------- */
+/* SPI commands                                                                */
+/* -------------------------------------------------------------------------- */
 #define ADS1299_CMD_WAKEUP   0x02u
 #define ADS1299_CMD_STANDBY  0x04u
 #define ADS1299_CMD_RESET    0x06u
@@ -15,7 +26,9 @@
 #define ADS1299_CMD_RREG     0x20u
 #define ADS1299_CMD_WREG     0x40u
 
-/* Register map */
+/* -------------------------------------------------------------------------- */
+/* Register map                                                                */
+/* -------------------------------------------------------------------------- */
 #define ADS1299_REG_ID           0x00u
 #define ADS1299_REG_CONFIG1      0x01u
 #define ADS1299_REG_CONFIG2      0x02u
@@ -40,19 +53,38 @@
 #define ADS1299_REG_MISC1        0x15u
 #define ADS1299_REG_MISC2        0x16u
 #define ADS1299_REG_CONFIG4      0x17u
+#define ADS1299_REG_LAST         ADS1299_REG_CONFIG4
+#define ADS1299_REGISTER_COUNT   24u
 
-#define ADS1299_CHANNEL_COUNT      8u
-#define ADS1299_STATUS_BYTES       3u
-#define ADS1299_BYTES_PER_CHANNEL  3u
-#define ADS1299_FRAME_BYTES        27u
+#define ADS1299_CHANNEL_COUNT       8u
+#define ADS1299_STATUS_BYTES        3u
+#define ADS1299_BYTES_PER_CHANNEL   3u
+#define ADS1299_FRAME_BYTES         27u
+#define ADS1299_ADC_FULL_SCALE_CODE 8388607L
+#define ADS1299_ADC_MIN_CODE        (-8388607L - 1L)
 
-/* CONFIG1: reserved bits must retain datasheet-defined values. */
+/* -------------------------------------------------------------------------- */
+/* ID register                                                                 */
+/* -------------------------------------------------------------------------- */
+#define ADS1299_ID_REV_MASK         0xE0u
+#define ADS1299_ID_REV_SHIFT        5u
+#define ADS1299_ID_RESERVED_ONE     0x10u
+#define ADS1299_ID_DEVICE_MASK      0x0Cu
+#define ADS1299_ID_DEVICE_SHIFT     2u
+#define ADS1299_ID_DEVICE_ADS1299   0x03u
+#define ADS1299_ID_CHANNEL_MASK     0x03u
+#define ADS1299_ID_CHANNEL_4        0x00u
+#define ADS1299_ID_CHANNEL_6        0x01u
+#define ADS1299_ID_CHANNEL_8        0x02u
+
+/* -------------------------------------------------------------------------- */
+/* CONFIG1: clock, daisy/multiple-readback and data rate                       */
+/* -------------------------------------------------------------------------- */
 #define ADS1299_CONFIG1_RESERVED_BASE 0x90u
-#define ADS1299_CONFIG1_DAISY_EN      0x40u /* 0=daisy-chain, 1=multiple readback */
+#define ADS1299_CONFIG1_DAISY_EN      0x40u /* 0=daisy-chain; 1=multiple readback */
 #define ADS1299_CONFIG1_CLK_EN        0x20u
 #define ADS1299_CONFIG1_DR_MASK       0x07u
 
-/* CONFIG1 DR[2:0] values */
 #define ADS1299_DR_16KSPS 0x00u
 #define ADS1299_DR_8KSPS  0x01u
 #define ADS1299_DR_4KSPS  0x02u
@@ -60,8 +92,11 @@
 #define ADS1299_DR_1KSPS  0x04u
 #define ADS1299_DR_500SPS 0x05u
 #define ADS1299_DR_250SPS 0x06u
+#define ADS1299_DR_RESERVED 0x07u
 
-/* CONFIG2: test/calibration signal generation. */
+/* -------------------------------------------------------------------------- */
+/* CONFIG2: calibration/test source                                            */
+/* -------------------------------------------------------------------------- */
 #define ADS1299_CONFIG2_RESERVED_BASE 0xC0u
 #define ADS1299_CONFIG2_INT_CAL       0x10u
 #define ADS1299_CONFIG2_CAL_AMP       0x04u
@@ -70,12 +105,57 @@
 #define ADS1299_TEST_FREQ_FCLK_2_20   0x01u
 #define ADS1299_TEST_FREQ_RESERVED    0x02u
 #define ADS1299_TEST_FREQ_DC          0x03u
-
-/* Readable aliases used by application code. */
 #define ADS1299_TEST_FREQ_FCLK_DIV_2_21 ADS1299_TEST_FREQ_FCLK_2_21
 #define ADS1299_TEST_FREQ_FCLK_DIV_2_20 ADS1299_TEST_FREQ_FCLK_2_20
 
-/* CHnSET */
+/* -------------------------------------------------------------------------- */
+/* CONFIG3: reference and BIAS amplifier                                       */
+/* -------------------------------------------------------------------------- */
+#define ADS1299_CONFIG3_RESERVED_BASE    0x60u
+#define ADS1299_CONFIG3_PD_REFBUF        0x80u /* 1 enables internal reference buffer */
+#define ADS1299_CONFIG3_BIAS_MEAS        0x10u
+#define ADS1299_CONFIG3_BIASREF_INT      0x08u
+#define ADS1299_CONFIG3_PD_BIAS          0x04u /* 1 enables BIAS buffer */
+#define ADS1299_CONFIG3_BIAS_LOFF_SENS   0x02u
+#define ADS1299_CONFIG3_BIAS_STAT        0x01u /* read-only */
+#define ADS1299_CONFIG3_WRITABLE_MASK    0xFEu
+
+/* Human-readable aliases. TI field names retain historical PD_* naming even
+ * where writing 1 actually enables the block. */
+#define ADS1299_CONFIG3_REFBUF_ENABLE    ADS1299_CONFIG3_PD_REFBUF
+#define ADS1299_CONFIG3_BIASBUF_ENABLE   ADS1299_CONFIG3_PD_BIAS
+
+/* -------------------------------------------------------------------------- */
+/* LOFF: electrode lead-off generator/comparator                              */
+/* -------------------------------------------------------------------------- */
+#define ADS1299_LOFF_COMP_TH_MASK       0xE0u
+#define ADS1299_LOFF_COMP_TH_SHIFT      5u
+#define ADS1299_LOFF_CURRENT_MASK       0x0Cu
+#define ADS1299_LOFF_CURRENT_SHIFT      2u
+#define ADS1299_LOFF_FREQ_MASK          0x03u
+
+#define ADS1299_LOFF_COMP_95_5          0x00u
+#define ADS1299_LOFF_COMP_92_5_7_5      0x01u
+#define ADS1299_LOFF_COMP_90_10         0x02u
+#define ADS1299_LOFF_COMP_87_5_12_5     0x03u
+#define ADS1299_LOFF_COMP_85_15         0x04u
+#define ADS1299_LOFF_COMP_80_20         0x05u
+#define ADS1299_LOFF_COMP_75_25         0x06u
+#define ADS1299_LOFF_COMP_70_30         0x07u
+
+#define ADS1299_LOFF_CURRENT_6NA         0x00u
+#define ADS1299_LOFF_CURRENT_24NA        0x01u
+#define ADS1299_LOFF_CURRENT_6UA         0x02u
+#define ADS1299_LOFF_CURRENT_24UA        0x03u
+
+#define ADS1299_LOFF_FREQ_DC             0x00u
+#define ADS1299_LOFF_FREQ_7_8HZ          0x01u
+#define ADS1299_LOFF_FREQ_31_2HZ         0x02u
+#define ADS1299_LOFF_FREQ_FDR_DIV_450    0x03u
+
+/* -------------------------------------------------------------------------- */
+/* CHnSET: per-channel power, PGA gain, SRB2 and input mux                    */
+/* -------------------------------------------------------------------------- */
 #define ADS1299_CH_POWER_DOWN   0x80u
 #define ADS1299_CH_GAIN_MASK    0x70u
 #define ADS1299_CH_SRB2         0x08u
@@ -98,4 +178,32 @@
 #define ADS1299_MUX_BIAS_DRP    0x06u
 #define ADS1299_MUX_BIAS_DRN    0x07u
 
-#endif
+/* BIAS_SENSP/N, LOFF_SENSP/N, LOFF_FLIP and LOFF_STATP/N are one bit per
+ * channel, CH1 in bit0 through CH8 in bit7. */
+#define ADS1299_CHANNEL_MASK(ch1_to_8) ((uint8_t)(1u << ((ch1_to_8) - 1u)))
+#define ADS1299_ALL_CHANNELS_MASK      0xFFu
+
+/* -------------------------------------------------------------------------- */
+/* GPIO register: upper nibble data, lower nibble direction                   */
+/* -------------------------------------------------------------------------- */
+#define ADS1299_GPIO_DATA_MASK        0xF0u
+#define ADS1299_GPIO_DATA_SHIFT       4u
+#define ADS1299_GPIO_DIRECTION_MASK   0x0Fu
+#define ADS1299_GPIO_INPUT            1u
+#define ADS1299_GPIO_OUTPUT           0u
+
+/* -------------------------------------------------------------------------- */
+/* MISC1: shared reference SRB1                                               */
+/* -------------------------------------------------------------------------- */
+#define ADS1299_MISC1_SRB1            0x20u
+#define ADS1299_MISC1_WRITABLE_MASK   0x20u
+
+/* -------------------------------------------------------------------------- */
+/* CONFIG4: conversion mode and lead-off comparator power                     */
+/* -------------------------------------------------------------------------- */
+#define ADS1299_CONFIG4_SINGLE_SHOT      0x08u
+#define ADS1299_CONFIG4_PD_LOFF_COMP     0x02u /* datasheet: 1 enables comparators */
+#define ADS1299_CONFIG4_LOFF_COMP_ENABLE ADS1299_CONFIG4_PD_LOFF_COMP
+#define ADS1299_CONFIG4_WRITABLE_MASK    0x0Au
+
+#endif /* ADS1299_REGS_H */
