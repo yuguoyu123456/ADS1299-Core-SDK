@@ -4,12 +4,12 @@ The project uses one common ADS1299 driver plus thin platform ports. A platform 
 
 | Platform family | Status | Representative target | Notes |
 |---|---|---|---|
-| ST STM32 | Planned | F103/F407/G4/H7 | HAL first, LL later |
-| GigaDevice GD32 | Planned | GD32F4 / GD32E5 | SPL/HAL-style port |
-| WCH CH32 | Planned | CH32V203 / CH32V307 | RISC-V priority |
-| Espressif ESP32 | Planned | ESP32-S3 | ESP-IDF |
+| ST STM32 | Source-added | F103/F407/G4/H7 | generic Cube HAL adapter; complete board project pending |
+| GigaDevice GD32 | Source-added | GD32F4 / GD32E5 | GD32F4xx SPL-style adapter; vendor build pending |
+| WCH CH32 | Source-added | CH32V203 / CH32V307 | CH32V30x adapter; vendor build pending |
+| Espressif ESP32 | Source-added | ESP32-S3 | ESP-IDF adapter; vendor build pending |
 | Nordic nRF | Planned | nRF52840 / nRF5340 | nrfx / Zephyr path |
-| Raspberry Pi MCU | Planned | RP2040 / RP2350 | Pico SDK |
+| Raspberry Pi MCU | Source-added | RP2040 / RP2350 | Pico SDK adapter; vendor build pending |
 | NXP | Planned | MCX / i.MX RT | MCUXpresso |
 | Microchip 32-bit | Planned | SAM / PIC32 | MPLAB ecosystem |
 | Renesas | Planned | RA / RX | FSP / e2 studio |
@@ -25,16 +25,19 @@ The project uses one common ADS1299 driver plus thin platform ports. A platform 
 | STC | Planned | STC8 / STC32 | low-rate/basic examples |
 | Microchip AVR | Planned | ATmega / AVR Dx | educational/basic examples |
 
+Additional framework adapter: **Arduino — Source-added**, pending representative-board build verification.
+
 ## FPGA track
 
-- AMD/Xilinx: Planned
-- Intel/Altera: Planned
-- Lattice: Planned
+- AMD/Xilinx: common RTL frame-unpack source + simulation smoke test; vendor synthesis project Planned
+- Intel/Altera: common RTL reusable; vendor synthesis project Planned
+- Lattice: common RTL reusable; vendor synthesis project Planned
 
 ## Status vocabulary
 
-- **Planned**: roadmap only
-- **Compiles**: toolchain build verified
+- **Planned**: roadmap/folder only
+- **Source-added**: concrete adapter source exists but the official vendor toolchain build has not yet been recorded
+- **Compiles**: exact target/toolchain build verified
 - **Bench-tested**: real ADS1299 hardware verified
 - **24h-tested**: long-run capture verified
 
