@@ -1,5 +1,6 @@
 % ADS1299-Core-SDK MATLAB/Octave EEG numerical regression tests.
-% Run from repository root with eeg_analysis/matlab on the path.
+% The script resolves the library path from its own file location so it works
+% even when MATLAB/Octave RUN temporarily changes the current directory.
 
 fprintf('ADS1299 MATLAB/Octave EEG tests\n');
 
@@ -9,7 +10,10 @@ if exist('OCTAVE_VERSION','builtin')
     pkg load signal;
 end
 
-addpath(fullfile(pwd,'eeg_analysis','matlab'));
+testFile = mfilename('fullpath');
+testsDir = fileparts(testFile);
+matlabDir = fileparts(testsDir);
+addpath(matlabDir);
 
 %% ADS1299 24-bit decoding and scaling
 assert(ads1299eeg.decode24([0 0 0]) == 0);
