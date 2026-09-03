@@ -1,0 +1,11 @@
+Package: ads1299eeg
+Type: Package
+Title: ADS1299 EEG Signal Processing Toolkit
+Version: 0.1.0
+Authors@R: person("ADS1299-Core-SDK", "Contributors", role = c("aut", "cre"), email = "noreply@example.invalid")
+Description: Lightweight, auditable EEG signal-processing utilities for data acquired with ADS1299 front ends. Includes signed 24-bit conversion, input-referred scaling, rereferencing, FIR filtering, Welch spectra, EEG band powers, signal-quality metrics, event-locked epochs, ERP summaries, coherence and an end-to-end starter pipeline. The package is intended for research, education and engineering validation, not clinical diagnosis.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: false
+Depends: R (>= 4.1.0)
+Imports: stats, utils
