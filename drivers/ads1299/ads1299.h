@@ -42,9 +42,17 @@ ads1299_status_t ads1299_read_registers(ads1299_t *dev, uint8_t address, uint8_t
 ads1299_status_t ads1299_write_registers(ads1299_t *dev, uint8_t address, const uint8_t *values, size_t count);
 
 ads1299_status_t ads1299_set_data_rate(ads1299_t *dev, uint8_t dr_code);
+ads1299_status_t ads1299_set_daisy_chain_mode(ads1299_t *dev, int enable);
 ads1299_status_t ads1299_set_channel(ads1299_t *dev, uint8_t channel_1_to_8,
                                     uint8_t gain_code, uint8_t mux_code,
                                     int srb2, int power_down);
+uint8_t ads1299_make_internal_test_config2(int amplitude_x2, uint8_t freq_code);
+ads1299_status_t ads1299_configure_internal_test(ads1299_t *dev,
+                                                 uint8_t gain_code,
+                                                 int amplitude_x2,
+                                                 uint8_t freq_code);
+ads1299_status_t ads1299_configure_input_short_test(ads1299_t *dev,
+                                                    uint8_t gain_code);
 ads1299_status_t ads1299_read_frame_continuous(ads1299_t *dev, ads1299_frame_t *frame);
 ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev, ads1299_frame_t *frame);
 
