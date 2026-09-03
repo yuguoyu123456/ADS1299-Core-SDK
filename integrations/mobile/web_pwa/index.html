@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ADS1299-Core Web Viewer</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
+    body { margin: 0; padding: 20px; max-width: 1200px; margin-inline: auto; }
+    h1 { margin-bottom: 4px; }
+    .sub { opacity: .75; margin-top: 0; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+    input { min-width: 260px; padding: 8px; }
+    button { padding: 8px 14px; cursor: pointer; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0; }
+    .card { border: 1px solid rgba(127,127,127,.35); border-radius: 8px; padding: 10px; }
+    canvas { width: 100%; height: 560px; border: 1px solid rgba(127,127,127,.35); border-radius: 8px; display: block; }
+    code { font-size: .9em; }
+  </style>
+</head>
+<body>
+  <h1>ADS1299-Core Web Viewer</h1>
+  <p class="sub">Cross-platform WebSocket viewer for the ADS1299-Core integration gateway.</p>
+
+  <div class="toolbar">
+    <label for="wsUrl">Gateway:</label>
+    <input id="wsUrl" value="ws://127.0.0.1:8765" />
+    <button id="connectBtn">Connect</button>
+    <button id="clearBtn">Clear</button>
+    <span id="state">Disconnected</span>
+  </div>
+
+  <div class="stats">
+    <div class="card">Sequence<br><strong id="sequence">-</strong></div>
+    <div class="card">Timestamp (µs)<br><strong id="timestamp">-</strong></div>
+    <div class="card">Frames<br><strong id="frames">0</strong></div>
+    <div class="card">Sequence gaps<br><strong id="gaps">0</strong></div>
+    <div class="card">Status<br><strong id="status">-</strong></div>
+  </div>
+
+  <canvas id="plot" width="1200" height="560"></canvas>
+
+  <p><small>Development viewer. Raw channel values are displayed as ADC codes. Real hardware validation is tracked separately.</small></p>
+
+  <script src="app.js"></script>
+</body>
+</html>
