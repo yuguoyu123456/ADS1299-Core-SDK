@@ -1,0 +1,18 @@
+name: esp32-reference
+
+on:
+  push:
+    branches: [ main, production-sdk-v1 ]
+  pull_request:
+
+jobs:
+  esp32s3-idf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build ESP32-S3 native ESP-IDF project
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.4
+          target: esp32s3
+          path: projects/esp32s3_devkitc
