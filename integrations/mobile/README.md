@@ -2,7 +2,13 @@
 
 Target systems: **Android, iOS, iPadOS, HarmonyOS / OpenHarmony, and browser/PWA clients where appropriate**.
 
-## Planned application baseline
+## First runnable integration
+
+[`web_pwa/`](web_pwa/) is the first executable cross-platform client in this category. It consumes the ADS1299-Core WebSocket gateway and provides live 8-channel plotting, sequence tracking and status display in a browser/PWA.
+
+This gives Android, iPhone/iPad, Windows, macOS, Linux and ChromeOS-class browsers a common reference client while native applications are developed separately.
+
+## Mature application baseline
 
 Every mature mobile integration should support:
 
@@ -13,7 +19,7 @@ Every mature mobile integration should support:
 - signal-quality indicators;
 - event markers;
 - local recording and export;
-- configurable channel names and sample rate metadata;
+- configurable channel names and sample-rate metadata;
 - optional EEG/BCI processing hooks.
 
 ## Preferred transports
@@ -24,9 +30,9 @@ Every mature mobile integration should support:
 
 ## Target subprojects
 
-- `android/` — native Android reference app
-- `ios_ipados/` — Apple mobile reference app
-- `harmonyos_openharmony/` — Huawei/OpenHarmony ecosystem reference
-- `web_pwa/` — browser/PWA viewer where browser transport APIs are suitable
+- `web_pwa/` — **implemented prototype**: cross-platform WebSocket viewer
+- `android/` — planned native Android reference app
+- `ios_ipados/` — planned Apple mobile reference app
+- `harmonyos_openharmony/` — planned Huawei/OpenHarmony ecosystem reference
 
-Subprojects should only be added when there is enough implementation to be useful. Roadmap names alone are documented here rather than represented by empty folders.
+Subprojects are only added when there is enough implementation to be useful. Roadmap names alone stay documented here rather than becoming empty folders.
