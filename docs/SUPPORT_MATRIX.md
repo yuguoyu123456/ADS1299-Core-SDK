@@ -6,11 +6,12 @@ ADS1299-Core-SDK uses one common ADS1299 device driver and complete per-board MC
 
 | Platform family | Repository target | Build status | Hardware status | Notes |
 |---|---|---|---|---|
-| ST STM32 | `firmware/mcu/st/stm32f407_black/` | CI build tracked | Pre-hardware-validation | STM32Cube HAL / PlatformIO reference |
-| Espressif ESP32 | `firmware/mcu/espressif/esp32s3_devkitc/` | CI build tracked | Pre-hardware-validation | Native ESP-IDF reference |
-| Raspberry Pi MCU | `firmware/mcu/raspberry_pi/rp2040_pico/` | CI build tracked | Pre-hardware-validation | Pico SDK reference |
+| ST STM32 | `firmware/mcu/st/stm32f407_black/` | **Compiles** | Pre-hardware-validation | STM32Cube HAL / PlatformIO reference |
+| Espressif ESP32 | `firmware/mcu/espressif/esp32s3_devkitc/` | **Compiles** | Pre-hardware-validation | Native ESP-IDF reference |
+| Raspberry Pi MCU | `firmware/mcu/raspberry_pi/rp2040_pico/` | **Compiles** | Pre-hardware-validation | Pico SDK reference |
+| WCH | `firmware/mcu/wch/ch32v307_evt/` | **Compiles** | Pre-hardware-validation | CH32V30x / WCH NoneOS SDK / PlatformIO |
 
-A project graduates to **Compiles** only after the documented clean build is confirmed. It graduates to **Bench-tested** only after real ADS1299 hardware is tested.
+All four projects above have passed clean GitHub Actions builds from fresh runner environments. They do **not** become `Bench-tested` until real ADS1299 hardware is connected and the documented bring-up checklist passes.
 
 ## Global MCU roadmap
 
@@ -18,7 +19,7 @@ A project graduates to **Compiles** only after the documented clean build is con
 |---|---|---|
 | STMicroelectronics | STM32F1 / F4 / G4 / H7 | HAL first; LL/bare-metal where useful |
 | GigaDevice | GD32F4 / GD32E5 | vendor SDK reference project |
-| WCH | CH32V203 / CH32V307 | RISC-V priority |
+| WCH | CH32V203 / CH32V307 | RISC-V priority; CH32V307 reference now in complete-project track |
 | Espressif | ESP32 / ESP32-S3 | ESP-IDF |
 | Nordic Semiconductor | nRF52840 / nRF5340 | nrfx / nRF Connect SDK |
 | Raspberry Pi | RP2040 / RP2350 | Pico SDK |
