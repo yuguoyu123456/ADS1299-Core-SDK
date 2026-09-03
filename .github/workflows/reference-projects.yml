@@ -1,0 +1,19 @@
+name: reference-projects
+
+on:
+  push:
+    branches: [ main, production-sdk-v1 ]
+  pull_request:
+
+jobs:
+  stm32f407-platformio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PlatformIO
+        run: pip install platformio
+      - name: Build STM32F407 reference project
+        run: pio run -d projects/stm32f407_black
