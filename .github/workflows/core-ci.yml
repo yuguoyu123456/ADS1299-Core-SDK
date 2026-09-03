@@ -2,7 +2,7 @@ name: core-ci
 
 on:
   push:
-    branches: [ main, bootstrap-v0.1, phase-a-platforms, eeg-bci-toolkit-v0.2, core-bringup-v0.2 ]
+    branches: [ main, bootstrap-v0.1, phase-a-platforms, eeg-bci-toolkit-v0.2, core-bringup-v0.2, production-sdk-v1 ]
   pull_request:
 
 jobs:
@@ -16,6 +16,7 @@ jobs:
             -Idrivers/ads1299 \
             drivers/ads1299/ads1299.c \
             drivers/ads1299/ads1299_bringup.c \
+            drivers/ads1299/ads1299_control.c \
             tests/c/test_ads1299.c \
             -o /tmp/test_ads1299
       - name: Run C core test
