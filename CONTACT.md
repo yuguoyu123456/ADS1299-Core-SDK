@@ -6,7 +6,7 @@ ADS1299-Core-SDK is an open engineering and learning project for the ADS1299 eco
 
 **Biomedical Engineering / Medical PhD researcher**
 
-I welcome contact from students, researchers, engineers, educators, hardware developers, BCI teams, laboratories and companies working with ADS1299, EEG, electrophysiology, embedded systems or neurotechnology.
+I welcome contact from students, researchers, engineers, educators, hardware developers, BCI teams and companies working with ADS1299, EEG, electrophysiology, embedded systems or neurotechnology.
 
 ## Email
 
@@ -19,12 +19,11 @@ You are welcome to email me about:
 - MCU / FPGA platform ports
 - EEG acquisition and signal processing
 - BCI experiments and algorithms
-- medical-device R&D collaboration
-- research and paper collaboration
-- teaching, courses and workshops
-- laboratory / university projects
-- technical support and engineering consulting
-- company / product integration discussions
+- research collaboration
+- teaching and educational use
+- hardware validation reports
+- bug reports and feature requests
+- commercial integration discussions
 - documentation improvements
 
 ## Public technical questions

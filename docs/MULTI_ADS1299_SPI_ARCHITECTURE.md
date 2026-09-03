@@ -78,16 +78,22 @@ For 8 x ADS1299 / 64 channels, do not declare hardware support until all of the 
 
 - all eight device IDs read correctly;
 - every device can be independently selected and register-configured;
-- common clock and START synchronization are checked;
-- channel order is proven using deterministic internal/external test signals;
-- all eight DRDY paths are checked during bring-up when available;
+- all eight internal test sources produce deterministic channel ordering;
+- shared MISO bus shows no contention;
+- CS timing and SCLK integrity are checked at the farthest converter;
+- common START/clock synchronization is verified with oscilloscope/logic analyzer;
+- all eight DRDY signals are compared during validation when available;
 - 64-channel frame alignment is stable during long runs;
-- packet-loss and sequence-counter statistics are recorded;
-- 250/500/1000 SPS aggregate throughput is verified before higher rates;
-- SPI signal integrity is checked at the physically farthest converter.
+- packet sequence counters show no silent sample loss;
+- 250/500/1000 SPS are validated first;
+- 1 h and then 24 h continuous acquisition are completed before `24h-tested` status.
 
-## Daisy-chain mode
+## Daisy-chain policy
 
-ADS1299 daisy-chain mode remains a valid device feature and may be useful when GPIO count is extremely limited. It is retained as an advanced/compatibility topic, but it is **not the default topology used by ADS1299-Core-SDK reference designs**.
+ADS1299 daisy-chain mode remains supported as a chip capability and may receive examples for users who specifically need minimum pin count or compatibility with an existing design. It is **not** the default architecture for ADS1299-Core products or the main multi-device examples in this repository.
 
-Primary device authority: Texas Instruments ADS1299 datasheet, Multiple Device Configuration section.
+New 16/32/64-channel reference projects should therefore prioritize **shared SPI + independent CS per ADS1299** unless the project README explicitly states otherwise.
+
+## Primary reference
+
+Texas Instruments ADS1299 datasheet, section **Multiple Device Configuration / Cascaded Mode**. TI states that multiple devices can share DIN, DOUT and SCLK with one additional chip-select per device, and that this configuration is suitable for the majority of applications.
