@@ -433,6 +433,11 @@ Academic and engineering collaboration is welcome, including areas such as:
 - university teaching, technical courses, workshops and laboratory training;
 - company / laboratory integration and custom engineering discussions.
 
+### Doctoral Supervisor
+
+- **Professor:** Prof. Dongchuan Yu
+- **Roles:** Doctoral Supervisor · Professor at a leading Chinese university · Biomedical Engineering Expert · Clinical Expert · Educator
+
 ### Author
 
 - **Name:** Guoyu Yu
