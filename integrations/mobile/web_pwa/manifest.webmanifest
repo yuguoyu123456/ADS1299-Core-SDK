@@ -1,0 +1,9 @@
+{
+  "name": "ADS1299-Core Web Viewer",
+  "short_name": "ADS1299-Core",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "description": "Cross-platform ADS1299-Core EEG WebSocket viewer"
+}
