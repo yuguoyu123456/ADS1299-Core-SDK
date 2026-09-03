@@ -1,8 +1,16 @@
 # Raspberry Pi Pico / RP2040 — native Pico SDK reference project
 
-Status: **Source-complete; CI build pending on this branch. Hardware validation pending.**
+Status: **Source-complete; CI build tracked. Hardware validation pending.**
 
-The project targets the official Raspberry Pi Pico SDK. CI is pinned to Pico SDK **2.3.0** so builds are reproducible instead of silently following `master`.
+This project targets the official Raspberry Pi Pico SDK. CI is pinned to Pico SDK **2.3.0** so builds are reproducible instead of silently following the latest development branch.
+
+## Project contents
+
+- `src/main.c` — board initialization, ADS1299 bring-up and continuous acquisition.
+- `port/` — RP2040/Pico SDK adaptation for SPI/GPIO/RESET/START/DRDY.
+- `../../../core_driver/ads1299/` — shared controller-independent ADS1299 driver.
+- `../../../common/data_packet/` — shared binary packet encoder.
+- `CMakeLists.txt` — complete Pico SDK build configuration.
 
 ## Wiring
 
@@ -23,7 +31,7 @@ Host binary packets are sent through UART0 TX on **GP0** at 921600 baud. USB CDC
 
 ```bash
 export PICO_SDK_PATH=/path/to/pico-sdk
-cmake -S projects/rp2040_pico -B build/rp2040 -DPICO_BOARD=pico
+cmake -S firmware/mcu/raspberry_pi/rp2040_pico -B build/rp2040 -DPICO_BOARD=pico
 cmake --build build/rp2040 -j
 ```
 
@@ -31,8 +39,10 @@ Copy the generated UF2 to the Pico boot drive or flash with your preferred debug
 
 ## Boot profile
 
-The firmware first reads the ADS1299 ID, then configures 250 SPS / gain 24 / internal calibration test input on all eight channels. Real-electrode capture is intentionally a later validation step.
+The firmware first reads the ADS1299 ID, then configures 250 SPS / gain 24 / internal calibration-test input on all eight channels. Real-electrode capture is intentionally a later validation step.
 
 ## Runtime integrity
 
 DRDY is counted in an interrupt. If more than one DRDY edge accumulates before the main loop services it, the firmware increments a drop counter and sets packet flag bit 0. The common packet sequence number gives the host a second independent loss check.
+
+Before `Bench-tested`, verify the physical ID read, internal-test waveform and long-run frame integrity on real ADS1299 hardware.
