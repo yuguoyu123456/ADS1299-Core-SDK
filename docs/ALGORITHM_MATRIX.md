@@ -16,14 +16,16 @@ Status values: `Included`, `Planned`, `External integration`, `Dataset-tested`, 
 | ICA | External integration | External integration | Planned | artifact |
 | ASR | Planned/integration | External integration | Planned | artifact |
 | STFT / wavelets | Planned | Planned | Planned | time-frequency |
-| ERD/ERS | Planned | Planned | Planned | BCI/MI |
+| ERD/ERS | Included | Planned | Planned | BCI/MI |
 | CSP | Included | Planned | Planned | BCI/MI |
 | FBCSP | Planned | Planned | Planned | BCI/MI |
 | CCA SSVEP | Included | Included | Included | BCI/SSVEP |
-| FBCCA | Planned | Planned | Planned | BCI/SSVEP |
+| FBCCA | Included | Planned | Planned | BCI/SSVEP |
 | xDAWN | External integration | Planned | Planned | BCI/P300 |
-| LDA / SVM | Planned | Planned | Planned | ML |
-| Riemannian covariance | External integration | Planned | Planned | ML/BCI |
+| regularized LDA | Included | Planned | Planned | ML/BCI |
+| SVM | Planned | Planned | Planned | ML/BCI |
+| Log-Euclidean covariance | Included | Planned | Planned | Riemannian/BCI |
+| pyRiemann interoperability | External integration | n/a | n/a | Riemannian/BCI |
 | PLV / PLI / wPLI | Planned | Planned | Planned | connectivity |
 | PAC | Planned | Planned | Planned | coupling |
 | microstates | Planned/integration | Planned | Planned | EEG states |
