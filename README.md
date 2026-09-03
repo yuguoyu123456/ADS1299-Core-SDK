@@ -441,7 +441,7 @@ Academic and engineering collaboration is welcome, including areas such as:
 ### Author
 
 - **Name:** Guoyu Yu
-- **Status:** Current PhD Candidate (Doctoral Student) in Biomedical Engineering / Medicine
+- **Status:** PhD Candidate in Biomedical Engineering and Medicine
 - **Affiliation:** School of Medical Frontier Interdisciplinary Studies, Zhengzhou University (Academy of Medical Sciences, Zhengzhou University)
 
 For public technical questions that may help other developers, GitHub Issues are preferred. For direct collaboration or professional inquiries, email is welcome:
