@@ -1,0 +1,36 @@
+name: core-ci
+
+on:
+  push:
+    branches: [ main, bootstrap-v0.1 ]
+  pull_request:
+
+jobs:
+  c-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build C core test
+        run: |
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Idrivers/ads1299 \
+            drivers/ads1299/ads1299.c tests/c/test_ads1299.c \
+            -o /tmp/test_ads1299
+      - name: Run C core test
+        run: /tmp/test_ads1299
+
+  python-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install algorithm dependencies
+        run: pip install -r algorithms/python/requirements.txt
+      - name: Run EEG beginner demo
+        run: python algorithms/python/demo_basic_analysis.py
+      - name: Run SSVEP baseline demo
+        run: python bci/ssvep/cca_baseline.py
+      - name: Run CSP baseline demo
+        run: python bci/motor_imagery/csp_baseline.py
