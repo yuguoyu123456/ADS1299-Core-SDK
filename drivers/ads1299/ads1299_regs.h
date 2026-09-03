@@ -41,10 +41,16 @@
 #define ADS1299_REG_MISC2        0x16u
 #define ADS1299_REG_CONFIG4      0x17u
 
-#define ADS1299_CHANNEL_COUNT     8u
-#define ADS1299_STATUS_BYTES      3u
-#define ADS1299_BYTES_PER_CHANNEL 3u
-#define ADS1299_FRAME_BYTES       27u
+#define ADS1299_CHANNEL_COUNT      8u
+#define ADS1299_STATUS_BYTES       3u
+#define ADS1299_BYTES_PER_CHANNEL  3u
+#define ADS1299_FRAME_BYTES        27u
+
+/* CONFIG1: reserved bits must retain datasheet-defined values. */
+#define ADS1299_CONFIG1_RESERVED_BASE 0x90u
+#define ADS1299_CONFIG1_DAISY_EN      0x40u /* 0=daisy-chain, 1=multiple readback */
+#define ADS1299_CONFIG1_CLK_EN        0x20u
+#define ADS1299_CONFIG1_DR_MASK       0x07u
 
 /* CONFIG1 DR[2:0] values */
 #define ADS1299_DR_16KSPS 0x00u
@@ -54,6 +60,16 @@
 #define ADS1299_DR_1KSPS  0x04u
 #define ADS1299_DR_500SPS 0x05u
 #define ADS1299_DR_250SPS 0x06u
+
+/* CONFIG2: test/calibration signal generation. */
+#define ADS1299_CONFIG2_RESERVED_BASE 0xC0u
+#define ADS1299_CONFIG2_INT_CAL       0x10u
+#define ADS1299_CONFIG2_CAL_AMP       0x04u
+#define ADS1299_CONFIG2_CAL_FREQ_MASK 0x03u
+#define ADS1299_TEST_FREQ_FCLK_2_21   0x00u
+#define ADS1299_TEST_FREQ_FCLK_2_20   0x01u
+#define ADS1299_TEST_FREQ_RESERVED    0x02u
+#define ADS1299_TEST_FREQ_DC          0x03u
 
 /* CHnSET */
 #define ADS1299_CH_POWER_DOWN   0x80u
