@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install ARM GCC and Ninja
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi ninja-build
       - name: Fetch pinned Pico SDK 2.3.0
         run: |
           git clone --depth 1 --branch 2.3.0 https://github.com/raspberrypi/pico-sdk.git /tmp/pico-sdk
