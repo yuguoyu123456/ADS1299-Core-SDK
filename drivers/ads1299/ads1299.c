@@ -1,25 +1,53 @@
 #include "ads1299.h"
+
 #include <string.h>
 
 static ads1299_status_t check_dev(const ads1299_t *dev) {
-    if (!dev || !dev->port.spi_transfer || !dev->port.cs_write || !dev->port.delay_us) {
+    if (!dev || !dev->port.spi_transfer || !dev->port.cs_write ||
+        !dev->port.delay_us) {
         return ADS1299_EINVAL;
     }
     return ADS1299_OK;
 }
 
-static ads1299_status_t xfer(ads1299_t *dev, const uint8_t *tx, uint8_t *rx, size_t len) {
-    if (check_dev(dev) != ADS1299_OK || !len) return ADS1299_EINVAL;
+static int valid_register_range(uint8_t address, size_t count) {
+    if (count == 0u || address > ADS1299_REG_LAST) return 0;
+    return count <= (size_t)(ADS1299_REG_LAST - address + 1u);
+}
+
+static int valid_gain_code(uint8_t gain_code) {
+    switch (gain_code) {
+        case ADS1299_GAIN_1:
+        case ADS1299_GAIN_2:
+        case ADS1299_GAIN_4:
+        case ADS1299_GAIN_6:
+        case ADS1299_GAIN_8:
+        case ADS1299_GAIN_12:
+        case ADS1299_GAIN_24:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+static ads1299_status_t xfer(ads1299_t *dev,
+                             const uint8_t *tx,
+                             uint8_t *rx,
+                             size_t len) {
+    if (check_dev(dev) != ADS1299_OK || len == 0u) return ADS1299_EINVAL;
+
     dev->port.cs_write(dev->port.user, 0);
-    int rc = dev->port.spi_transfer(dev->port.user, tx, rx, len);
+    const int rc = dev->port.spi_transfer(dev->port.user, tx, rx, len);
     dev->port.cs_write(dev->port.user, 1);
     return rc == 0 ? ADS1299_OK : ADS1299_EIO;
 }
 
 ads1299_status_t ads1299_init(ads1299_t *dev, const ads1299_port_t *port) {
-    if (!dev || !port || !port->spi_transfer || !port->cs_write || !port->delay_us) {
+    if (!dev || !port || !port->spi_transfer || !port->cs_write ||
+        !port->delay_us) {
         return ADS1299_EINVAL;
     }
+
     memset(dev, 0, sizeof(*dev));
     dev->port = *port;
     dev->port.cs_write(dev->port.user, 1);
@@ -30,28 +58,35 @@ ads1299_status_t ads1299_init(ads1299_t *dev, const ads1299_port_t *port) {
 
 ads1299_status_t ads1299_command(ads1299_t *dev, uint8_t command) {
     uint8_t rx = 0;
-    ads1299_status_t rc = xfer(dev, &command, &rx, 1);
-    if (rc == ADS1299_OK) dev->port.delay_us(dev->port.user, 10);
+    ads1299_status_t rc = xfer(dev, &command, &rx, 1u);
+    if (rc == ADS1299_OK) {
+        /* A conservative inter-command delay keeps command sequencing portable
+           across all supported controller speeds. */
+        dev->port.delay_us(dev->port.user, 10u);
+    }
     return rc;
 }
 
 ads1299_status_t ads1299_hardware_reset(ads1299_t *dev) {
-    if (check_dev(dev) != ADS1299_OK || !dev->port.reset_write) return ADS1299_EINVAL;
+    if (check_dev(dev) != ADS1299_OK || !dev->port.reset_write) {
+        return ADS1299_EINVAL;
+    }
+
     dev->port.reset_write(dev->port.user, 1);
-    dev->port.delay_us(dev->port.user, 10);
+    dev->port.delay_us(dev->port.user, 10u);
     dev->port.reset_write(dev->port.user, 0);
-    dev->port.delay_us(dev->port.user, 10);
+    dev->port.delay_us(dev->port.user, 10u);
     dev->port.reset_write(dev->port.user, 1);
-    dev->port.delay_us(dev->port.user, 20);
-    dev->continuous_mode = 0;
+    dev->port.delay_us(dev->port.user, 20u);
+    dev->continuous_mode = 0u;
     return ADS1299_OK;
 }
 
 ads1299_status_t ads1299_reset_command(ads1299_t *dev) {
     ads1299_status_t rc = ads1299_command(dev, ADS1299_CMD_RESET);
     if (rc == ADS1299_OK) {
-        dev->port.delay_us(dev->port.user, 20);
-        dev->continuous_mode = 0;
+        dev->port.delay_us(dev->port.user, 20u);
+        dev->continuous_mode = 0u;
     }
     return rc;
 }
@@ -66,43 +101,77 @@ ads1299_status_t ads1299_stop(ads1299_t *dev) {
 
 ads1299_status_t ads1299_rdatac(ads1299_t *dev) {
     ads1299_status_t rc = ads1299_command(dev, ADS1299_CMD_RDATAC);
-    if (rc == ADS1299_OK) dev->continuous_mode = 1;
+    if (rc == ADS1299_OK) dev->continuous_mode = 1u;
     return rc;
 }
 
 ads1299_status_t ads1299_sdatac(ads1299_t *dev) {
     ads1299_status_t rc = ads1299_command(dev, ADS1299_CMD_SDATAC);
-    if (rc == ADS1299_OK) dev->continuous_mode = 0;
+    if (rc == ADS1299_OK) dev->continuous_mode = 0u;
     return rc;
 }
 
-ads1299_status_t ads1299_read_registers(ads1299_t *dev, uint8_t address, uint8_t *values, size_t count) {
-    if (check_dev(dev) != ADS1299_OK || !values || count == 0 || count > 256) return ADS1299_EINVAL;
+ads1299_status_t ads1299_read_registers(ads1299_t *dev,
+                                        uint8_t address,
+                                        uint8_t *values,
+                                        size_t count) {
+    if (check_dev(dev) != ADS1299_OK || !values ||
+        !valid_register_range(address, count)) {
+        return ADS1299_EINVAL;
+    }
+
     if (dev->continuous_mode) {
         ads1299_status_t rc = ads1299_sdatac(dev);
         if (rc != ADS1299_OK) return rc;
     }
 
-    uint8_t hdr[2] = {(uint8_t)(ADS1299_CMD_RREG | (address & 0x1Fu)), (uint8_t)(count - 1u)};
+    const uint8_t hdr[2] = {
+        (uint8_t)(ADS1299_CMD_RREG | (address & 0x1Fu)),
+        (uint8_t)(count - 1u),
+    };
+    uint8_t zeros[ADS1299_REGISTER_COUNT] = {0};
+
     dev->port.cs_write(dev->port.user, 0);
     if (dev->port.spi_transfer(dev->port.user, hdr, NULL, sizeof(hdr)) != 0) {
         dev->port.cs_write(dev->port.user, 1);
         return ADS1299_EIO;
     }
-    uint8_t zeros[256] = {0};
-    int rc = dev->port.spi_transfer(dev->port.user, zeros, values, count);
+    const int rc = dev->port.spi_transfer(dev->port.user, zeros, values, count);
     dev->port.cs_write(dev->port.user, 1);
     return rc == 0 ? ADS1299_OK : ADS1299_EIO;
 }
 
-ads1299_status_t ads1299_write_registers(ads1299_t *dev, uint8_t address, const uint8_t *values, size_t count) {
-    if (check_dev(dev) != ADS1299_OK || !values || count == 0 || count > 256) return ADS1299_EINVAL;
+ads1299_status_t ads1299_write_registers(ads1299_t *dev,
+                                         uint8_t address,
+                                         const uint8_t *values,
+                                         size_t count) {
+    if (check_dev(dev) != ADS1299_OK || !values ||
+        !valid_register_range(address, count)) {
+        return ADS1299_EINVAL;
+    }
+
+    /* ID, LOFF_STATP and LOFF_STATN are read-only. Reject direct writes rather
+       than relying on the silicon to ignore them. Multi-register writes may
+       span writable registers only. */
+    for (size_t i = 0; i < count; ++i) {
+        const uint8_t reg = (uint8_t)(address + i);
+        if (reg == ADS1299_REG_ID ||
+            reg == ADS1299_REG_LOFF_STATP ||
+            reg == ADS1299_REG_LOFF_STATN) {
+            return ADS1299_EINVAL;
+        }
+    }
+
     if (dev->continuous_mode) {
         ads1299_status_t rc = ads1299_sdatac(dev);
         if (rc != ADS1299_OK) return rc;
     }
 
-    uint8_t hdr[2] = {(uint8_t)(ADS1299_CMD_WREG | (address & 0x1Fu)), (uint8_t)(count - 1u)};
+    const uint8_t hdr[2] = {
+        (uint8_t)(ADS1299_CMD_WREG | (address & 0x1Fu)),
+        (uint8_t)(count - 1u),
+    };
+
     dev->port.cs_write(dev->port.user, 0);
     if (dev->port.spi_transfer(dev->port.user, hdr, NULL, sizeof(hdr)) != 0 ||
         dev->port.spi_transfer(dev->port.user, values, NULL, count) != 0) {
@@ -113,33 +182,53 @@ ads1299_status_t ads1299_write_registers(ads1299_t *dev, uint8_t address, const 
     return ADS1299_OK;
 }
 
-ads1299_status_t ads1299_read_register(ads1299_t *dev, uint8_t address, uint8_t *value) {
-    return ads1299_read_registers(dev, address, value, 1);
+ads1299_status_t ads1299_read_register(ads1299_t *dev,
+                                       uint8_t address,
+                                       uint8_t *value) {
+    return ads1299_read_registers(dev, address, value, 1u);
 }
 
-ads1299_status_t ads1299_write_register(ads1299_t *dev, uint8_t address, uint8_t value) {
-    return ads1299_write_registers(dev, address, &value, 1);
+ads1299_status_t ads1299_write_register(ads1299_t *dev,
+                                        uint8_t address,
+                                        uint8_t value) {
+    return ads1299_write_registers(dev, address, &value, 1u);
 }
 
 ads1299_status_t ads1299_set_data_rate(ads1299_t *dev, uint8_t dr_code) {
+    if (dr_code > ADS1299_DR_250SPS) return ADS1299_EINVAL;
+
     uint8_t config1 = 0;
-    ads1299_status_t rc = ads1299_read_register(dev, ADS1299_REG_CONFIG1, &config1);
+    ads1299_status_t rc = ads1299_read_register(dev,
+                                                ADS1299_REG_CONFIG1,
+                                                &config1);
     if (rc != ADS1299_OK) return rc;
-    config1 = (uint8_t)((config1 & ~0x07u) | (dr_code & 0x07u));
+
+    config1 = (uint8_t)((config1 & (uint8_t)~ADS1299_CONFIG1_DR_MASK) |
+                        (dr_code & ADS1299_CONFIG1_DR_MASK));
+    /* Force required reserved bits to the datasheet-defined values. */
+    config1 = (uint8_t)((config1 & 0x6Fu) | ADS1299_CONFIG1_RESERVED_BASE);
     return ads1299_write_register(dev, ADS1299_REG_CONFIG1, config1);
 }
 
-ads1299_status_t ads1299_set_channel(ads1299_t *dev, uint8_t channel_1_to_8,
-                                    uint8_t gain_code, uint8_t mux_code,
-                                    int srb2, int power_down) {
-    if (channel_1_to_8 < 1 || channel_1_to_8 > 8) return ADS1299_EINVAL;
-    uint8_t value = (uint8_t)((gain_code & ADS1299_CH_GAIN_MASK) |
-                              (mux_code & ADS1299_CH_MUX_MASK));
+ads1299_status_t ads1299_set_channel(ads1299_t *dev,
+                                     uint8_t channel_1_to_8,
+                                     uint8_t gain_code,
+                                     uint8_t mux_code,
+                                     int srb2,
+                                     int power_down) {
+    if (channel_1_to_8 < 1u || channel_1_to_8 > ADS1299_CHANNEL_COUNT ||
+        !valid_gain_code(gain_code) || mux_code > ADS1299_MUX_BIAS_DRN) {
+        return ADS1299_EINVAL;
+    }
+
+    uint8_t value = (uint8_t)(gain_code | mux_code);
     if (srb2) value |= ADS1299_CH_SRB2;
     if (power_down) value |= ADS1299_CH_POWER_DOWN;
-    return ads1299_write_register(dev,
-                                  (uint8_t)(ADS1299_REG_CH1SET + channel_1_to_8 - 1u),
-                                  value);
+
+    return ads1299_write_register(
+        dev,
+        (uint8_t)(ADS1299_REG_CH1SET + channel_1_to_8 - 1u),
+        value);
 }
 
 int32_t ads1299_sign_extend24(uint32_t value24) {
@@ -148,19 +237,25 @@ int32_t ads1299_sign_extend24(uint32_t value24) {
     return (int32_t)value24;
 }
 
-static void decode_frame(const uint8_t raw[ADS1299_FRAME_BYTES], ads1299_frame_t *frame) {
+static void decode_frame(const uint8_t raw[ADS1299_FRAME_BYTES],
+                         ads1299_frame_t *frame) {
     memcpy(frame->status, raw, ADS1299_STATUS_BYTES);
     for (uint8_t ch = 0; ch < ADS1299_CHANNEL_COUNT; ++ch) {
-        size_t i = ADS1299_STATUS_BYTES + (size_t)ch * ADS1299_BYTES_PER_CHANNEL;
-        uint32_t u = ((uint32_t)raw[i] << 16) |
-                     ((uint32_t)raw[i + 1] << 8) |
-                     (uint32_t)raw[i + 2];
+        const size_t i = ADS1299_STATUS_BYTES +
+                         (size_t)ch * ADS1299_BYTES_PER_CHANNEL;
+        const uint32_t u = ((uint32_t)raw[i] << 16) |
+                           ((uint32_t)raw[i + 1] << 8) |
+                           (uint32_t)raw[i + 2];
         frame->channel[ch] = ads1299_sign_extend24(u);
     }
 }
 
-ads1299_status_t ads1299_read_frame_continuous(ads1299_t *dev, ads1299_frame_t *frame) {
-    if (check_dev(dev) != ADS1299_OK || !frame || !dev->continuous_mode) return ADS1299_EINVAL;
+ads1299_status_t ads1299_read_frame_continuous(ads1299_t *dev,
+                                               ads1299_frame_t *frame) {
+    if (check_dev(dev) != ADS1299_OK || !frame || !dev->continuous_mode) {
+        return ADS1299_ESTATE;
+    }
+
     uint8_t tx[ADS1299_FRAME_BYTES] = {0};
     uint8_t rx[ADS1299_FRAME_BYTES] = {0};
     ads1299_status_t rc = xfer(dev, tx, rx, ADS1299_FRAME_BYTES);
@@ -168,15 +263,21 @@ ads1299_status_t ads1299_read_frame_continuous(ads1299_t *dev, ads1299_frame_t *
     return rc;
 }
 
-ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev, ads1299_frame_t *frame) {
-    if (check_dev(dev) != ADS1299_OK || !frame || dev->continuous_mode) return ADS1299_EINVAL;
-    uint8_t cmd = ADS1299_CMD_RDATA;
+ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev,
+                                          ads1299_frame_t *frame) {
+    if (check_dev(dev) != ADS1299_OK || !frame) return ADS1299_EINVAL;
+    if (dev->continuous_mode) return ADS1299_ESTATE;
+
+    const uint8_t cmd = ADS1299_CMD_RDATA;
     uint8_t raw[ADS1299_FRAME_BYTES] = {0};
     uint8_t zeros[ADS1299_FRAME_BYTES] = {0};
 
     dev->port.cs_write(dev->port.user, 0);
-    if (dev->port.spi_transfer(dev->port.user, &cmd, NULL, 1) != 0 ||
-        dev->port.spi_transfer(dev->port.user, zeros, raw, ADS1299_FRAME_BYTES) != 0) {
+    if (dev->port.spi_transfer(dev->port.user, &cmd, NULL, 1u) != 0 ||
+        dev->port.spi_transfer(dev->port.user,
+                               zeros,
+                               raw,
+                               ADS1299_FRAME_BYTES) != 0) {
         dev->port.cs_write(dev->port.user, 1);
         return ADS1299_EIO;
     }
@@ -185,7 +286,10 @@ ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev, ads1299_frame_t *frame
     return ADS1299_OK;
 }
 
-double ads1299_code_to_volts(int32_t code, double vref_volts, double gain) {
-    if (gain <= 0.0) return 0.0;
-    return ((double)code * vref_volts) / (gain * 8388607.0);
+double ads1299_code_to_volts(int32_t code,
+                             double vref_volts,
+                             double gain) {
+    if (gain <= 0.0 || vref_volts <= 0.0) return 0.0;
+    return ((double)code * vref_volts) /
+           (gain * (double)ADS1299_ADC_FULL_SCALE_CODE);
 }
