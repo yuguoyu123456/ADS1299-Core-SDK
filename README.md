@@ -442,7 +442,7 @@ Academic and engineering collaboration is welcome, including areas such as:
 
 - **Name:** Guoyu Yu
 - **Status:** PhD Candidate in Biomedical Engineering / Medical Sciences
-- **Affiliation:** School of Medical Frontier Interdisciplinary Studies, Zhengzhou University (郑州大学医学前沿交叉学院; formerly Academy of Medical Sciences of Zhengzhou University / 郑州大学医学科学院)
+- **Affiliation:** School of Medical Frontier Interdisciplinary Studies, Zhengzhou University (formerly Academy of Medical Sciences of Zhengzhou University)
 
 For public technical questions that may help other developers, GitHub Issues are preferred. For direct collaboration or professional inquiries, email is welcome:
 
