@@ -1,0 +1,30 @@
+name: ch32-reference
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'firmware/mcu/wch/**'
+      - 'firmware/core_driver/**'
+      - 'firmware/common/**'
+      - '.github/workflows/ch32-reference.yml'
+  pull_request:
+    paths:
+      - 'firmware/mcu/wch/**'
+      - 'firmware/core_driver/**'
+      - 'firmware/common/**'
+      - '.github/workflows/ch32-reference.yml'
+
+jobs:
+  ch32v307-platformio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PlatformIO
+        run: pip install platformio
+      - name: Build CH32V307 reference project
+        run: pio run -d firmware/mcu/wch/ch32v307_evt
