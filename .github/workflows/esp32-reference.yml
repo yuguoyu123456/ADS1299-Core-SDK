@@ -2,7 +2,7 @@ name: esp32-reference
 
 on:
   push:
-    branches: [ main, production-sdk-v1 ]
+    branches: [ main, production-sdk-v1, repo-architecture-v1 ]
   pull_request:
 
 jobs:
@@ -15,4 +15,4 @@ jobs:
         with:
           esp_idf_version: v5.4
           target: esp32s3
-          path: projects/esp32s3_devkitc
+          path: firmware/mcu/espressif/esp32s3_devkitc
