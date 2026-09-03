@@ -1,0 +1,25 @@
+name: matlab-octave-eeg-ci
+
+on:
+  push:
+    branches: [ main, matlab-eeg-production-v1 ]
+    paths:
+      - 'eeg_analysis/matlab/**'
+      - '.github/workflows/matlab-octave-eeg-ci.yml'
+  pull_request:
+    paths:
+      - 'eeg_analysis/matlab/**'
+      - '.github/workflows/matlab-octave-eeg-ci.yml'
+
+jobs:
+  octave-eeg-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GNU Octave and signal package
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y octave octave-signal
+      - name: Run ADS1299 MATLAB-compatible EEG numerical tests
+        run: |
+          octave --no-gui --quiet --eval "pkg load signal; addpath('eeg_analysis/matlab'); run('eeg_analysis/matlab/tests/run_tests.m');"
