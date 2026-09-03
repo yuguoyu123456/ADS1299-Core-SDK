@@ -15,6 +15,8 @@ The port provides:
 
 The ADS1299 data frame is 216 bits = 24-bit status + 8 x 24-bit channel samples.
 
+For `RREG` and `WREG`, the common driver keeps `CS` low across the complete command/data transaction but sends the two command bytes as separate SPI transfers with a conservative decode delay between them and before register data. This makes the driver obey the TI `4 tCLK` multi-byte command-decode requirement without relying on a slow controller SPI bitrate. Ports must therefore implement `delay_us` accurately enough for microsecond-scale command timing.
+
 ## Multi-device project policy
 
 The primary multi-ADS1299 architecture in this repository is **standard/cascaded SPI with one independent CS per ADS1299**.
