@@ -57,11 +57,19 @@ stopifnot(bp$relative$alpha[1] > 0.50)
 ent <- spectral_entropy(ps)
 stopifnot(all(is.finite(ent)), all(ent >= 0), all(ent <= 1 + 1e-12))
 
-# 6) Flat channel quality detection.
-q <- channel_quality(cbind(good = x1, flat = rep(0, n)), fs)
-stopifnot(!q$bad[1])
-stopifnot(q$bad[2])
-stopifnot(grepl("flat", q$reason[2]))
+# 6) Quality detection: test flatline and line noise independently.
+clean_good <- alpha + noise
+q_flat <- channel_quality(
+  cbind(good = clean_good, flat = rep(0, n)), fs,
+  max_line_noise_ratio = Inf
+)
+stopifnot(!q_flat$bad[1])
+stopifnot(q_flat$bad[2])
+stopifnot(grepl("flat", q_flat$reason[2]))
+
+q_line <- channel_quality(cbind(line_contaminated = x1), fs, max_line_noise_ratio = 5)
+stopifnot(q_line$bad[1])
+stopifnot(grepl("line_noise", q_line$reason[1]))
 
 # 7) Hjorth metrics have expected dimensions and finite positive activity.
 hj <- hjorth_parameters(x)
