@@ -4,13 +4,14 @@ This matrix separates **ecosystem coverage** from **verified integration status*
 
 | Category | Target ecosystems | Current status | Intended role |
 |---|---|---|---|
-| Mobile | Android | Planned | BLE/Wi-Fi acquisition, live view, recording, control |
-| Mobile | iOS / iPadOS | Planned | BLE/Wi-Fi acquisition, live view, recording, control |
+| Cross-platform web | Android/iOS/iPadOS/Windows/macOS/Linux/ChromeOS browser | **Prototype** | live 8-channel viewer via WebSocket/PWA |
+| Mobile | Android native | Planned | BLE/Wi-Fi acquisition, live view, recording, control |
+| Mobile | iOS / iPadOS native | Planned | BLE/Wi-Fi acquisition, live view, recording, control |
 | Mobile | HarmonyOS / OpenHarmony | Planned | portable acquisition and companion app |
-| Desktop | Windows | PC tools exist; unified app roadmap | acquisition, debugging, recording, analysis bridge |
-| Desktop | macOS | Planned integration packaging | acquisition, recording, analysis bridge |
-| Desktop | Linux | Python/host tooling foundation; deeper integration planned | CLI/GUI, services, gateways |
-| Desktop | ChromeOS | Planned | Linux/browser-compatible workflows where supported |
+| Desktop | Windows | PC tools + Web/PWA prototype | acquisition, debugging, recording, analysis bridge |
+| Desktop | macOS | Web/PWA prototype; native packaging planned | acquisition, recording, analysis bridge |
+| Desktop | Linux | Python host tools + **WebSocket gateway prototype** | CLI/GUI, services, gateways |
+| Desktop | ChromeOS | Web/PWA prototype | Linux/browser-compatible workflows where supported |
 | Smart watch | watchOS | Planned | companion display/control/neurofeedback |
 | Smart watch | Wear OS | Planned | companion display/control/neurofeedback |
 | Smart watch | HarmonyOS/OpenHarmony wearable | Planned | companion display/control |
@@ -24,14 +25,34 @@ This matrix separates **ecosystem coverage** from **verified integration status*
 | Smart home | openHAB | Planned | explicit BCI/event bridge |
 | Smart home | Node-RED | Planned | rapid prototyping / automation bridge |
 | Smart home | MQTT / Matter-facing bridge | Planned | distributed integration |
-| Open edge | Linux SBC | Planned first-class gateway | logging, network bridge, preprocessing |
+| Open edge | Linux/Windows/macOS Python gateway | **Prototype** | serial-to-WebSocket bridge |
+| Open edge | Linux SBC | Gateway prototype foundation | logging, network bridge, preprocessing |
 | Open edge | OpenWrt | Planned | embedded network gateway |
 | Open edge | Zephyr gateway | Planned | embedded/open gateway |
 | Research transport | LSL | Planned priority | neuroscience/multimodal stream interoperability |
 | Interactive transport | OSC | Planned | BCI/media prototyping |
-| Network transport | TCP/UDP/WebSocket/MQTT | Planned common adapters | cross-device streaming |
+| Network transport | WebSocket | **Prototype** | cross-device JSON streaming via gateway |
+| Network transport | TCP/UDP/MQTT | Planned common adapters | cross-device streaming |
 | Portable transport | BLE GATT | Planned priority | phones/wearables |
 | Wired transport | USB CDC / serial | Existing foundation | PC/edge acquisition |
+
+## Current runnable integration pair
+
+The first end-to-end integration foundation is:
+
+```text
+ADS1299-Core 49-byte serial packet
+        │
+        ▼
+integrations/open_edge_systems/linux_gateway/
+        │   serial → validated packet parser → WebSocket JSON
+        ▼
+integrations/mobile/web_pwa/
+        │
+        └── live 8-channel browser/PWA viewer
+```
+
+Both can be exercised without ADS1299 hardware by running the gateway with `--simulate`.
 
 ## Status definitions
 
