@@ -6,7 +6,7 @@ Build the world's most comprehensive open ADS1299 ecosystem for learning, engine
 
 The repository should allow a newcomer to progress through the complete chain:
 
-**Understand ADS1299 → connect hardware → build firmware → verify internal test signals → acquire real channels → stream data → inspect quality → analyze EEG → build BCI experiments.**
+**Understand ADS1299 → connect hardware → build firmware → verify internal test signals → acquire real channels → stream data → open it on phones/computers/wearables/XR/edge systems → inspect quality → analyze EEG → build BCI experiments.**
 
 ## What “complete” means
 
@@ -52,7 +52,19 @@ A large repository is not automatically a complete ecosystem. This project measu
    - logging;
    - plotting and inspection.
 
-5. **Signal-processing coverage**
+5. **Cross-device and OS integration**
+   - Android;
+   - iOS / iPadOS;
+   - HarmonyOS / OpenHarmony;
+   - Windows / macOS / Linux / ChromeOS-class workflows;
+   - watchOS / Wear OS / other smart-watch ecosystems;
+   - smart earbuds / headphones / ear-EEG;
+   - smart glasses / AR / XR;
+   - smart-home hubs;
+   - Linux/OpenWrt/open edge systems;
+   - stable transports such as USB, BLE, TCP/UDP, WebSocket, MQTT, LSL and OSC.
+
+6. **Signal-processing coverage**
    - Python;
    - MATLAB;
    - R;
@@ -65,25 +77,27 @@ A large repository is not automatically a complete ecosystem. This project measu
    - artifact handling;
    - feature extraction and statistics.
 
-6. **BCI coverage**
+7. **BCI coverage**
    - SSVEP;
    - motor imagery;
    - P300;
    - online windows and buffering;
    - classical machine learning;
    - Riemannian methods;
-   - deep-learning examples where justified.
+   - deep-learning examples where justified;
+   - real-device interaction paths rather than analysis-only demos.
 
-7. **Learning and documentation**
+8. **Learning and documentation**
    - beginner path;
    - datasheet interpretation;
    - hardware bring-up;
    - debugging guides;
    - platform-specific quick starts;
+   - device-integration guides;
    - validation reports;
    - reproducible examples.
 
-8. **Quality and maintenance**
+9. **Quality and maintenance**
    - CI builds;
    - tests;
    - validation labels;
@@ -94,15 +108,13 @@ A large repository is not automatically a complete ecosystem. This project measu
 
 ## Global positioning
 
-The project is intentionally ambitious. Our target is for ADS1299-Core-SDK to become the **largest and most complete open ADS1299 learning-and-development ecosystem in the world**.
+The project is intentionally ambitious. Our engineering target is for ADS1299-Core-SDK to become the **world's #1 open ADS1299 learning-and-development ecosystem** in overall breadth, depth and practical usefulness.
 
-Public claims must remain evidence-based. Until breadth, working-platform count, validation coverage, documentation depth, external contributors, stars, forks, citations and downstream use support the strongest wording, project communication should use phrases such as:
+The ranking target is not based on folder count. It is based on whether a single coherent project can connect:
 
-- “Building the world's most comprehensive open ADS1299 ecosystem.”
-- “A cross-platform ADS1299 SDK, learning hub, EEG toolkit and BCI ecosystem.”
-- “One repository from ADS1299 register access to EEG/BCI workflows.”
+**ADS1299 silicon → hardware → MCU/FPGA → multi-device acquisition → PC/mobile/wearables/XR/edge systems → EEG analysis → BCI → research/education/product prototyping.**
 
-When evidence becomes strong enough, the maintainers can update the wording to a direct claim.
+Public claims must remain evidence-based. Until breadth, working-platform count, real-device integration, validation coverage, documentation depth, external contributors, stars, forks, citations and downstream use support an unconditional ranking claim, project communication should present “world's #1” as the explicit mission and engineering target.
 
 ## Reader-first repository design
 
@@ -116,6 +128,7 @@ Recommended navigation hierarchy:
 - **I use FPGA:** `firmware/fpga/`
 - **I need the portable ADS1299 driver:** `firmware/core_driver/ads1299/`
 - **I need PC recording / visualization:** `pc_tools/`
+- **I want phones / OS / watches / earbuds / glasses / smart home / edge integration:** `integrations/`
 - **I want EEG analysis:** `eeg_analysis/`
 - **I want BCI:** `bci/`
 - **I need datasets:** `datasets/`
@@ -136,7 +149,7 @@ Every major folder should contain a local README explaining:
 
 The public tree is organized around what a user wants to accomplish.
 
-A user should **not** have to gather one controller project from separate `ports/`, `examples/` and `projects/` trees. The intended model is:
+A user should **not** have to gather one controller project from separate `ports/`, `examples/` and `projects/` trees. The intended MCU model is:
 
 ```text
 firmware/mcu/<vendor>/<target>/
@@ -149,20 +162,35 @@ firmware/mcu/<vendor>/<target>/
 └── project README
 ```
 
-The portable ADS1299 programming model remains shared under `firmware/core_driver/ads1299/`.
+The device/OS integration model is similarly user-facing:
+
+```text
+integrations/
+├── mobile/
+├── desktop_os/
+├── smart_watches/
+├── smart_audio/
+├── smart_glasses_xr/
+├── smart_home_hubs/
+├── open_edge_systems/
+└── protocols/
+```
+
+The portable ADS1299 programming model remains shared under `firmware/core_driver/ads1299/`, while the integration layer preserves a common logical data model across transports and devices.
 
 ## Maintenance principles
 
-1. **No fake platform support.** A directory is not a working port.
-2. **No meaningless code inflation.** More lines are useful only when they implement real device behavior, portability, checks, examples or documentation.
+1. **No fake platform support.** A directory is not a working port or device integration.
+2. **No meaningless code inflation.** More lines are useful only when they implement real behavior, portability, checks, examples or documentation.
 3. **No hidden magic numbers when a readable API is possible.**
-4. **No unsupported hardware claims.** Validation labels describe what was actually tested.
+4. **No unsupported hardware/device claims.** Validation labels describe what was actually tested.
 5. **No copied third-party code without license review.** Prefer clean implementation, interoperability and proper attribution.
 6. **Every reference project should be understandable by a new engineer.**
 7. **Prefer automated builds and tests over confidence by inspection.**
 8. **Treat TI documentation as the device-level electrical and protocol authority.**
-9. **Keep PC-side APIs independent of the selected MCU whenever possible.**
-10. **Documentation is part of the product, not an afterthought.**
+9. **Keep upper software APIs independent of the selected MCU whenever possible.**
+10. **Preserve one coherent ADS1299 data model across USB, BLE, network and app integrations.**
+11. **Documentation is part of the product, not an afterthought.**
 
 ## Promotion strategy
 
@@ -170,9 +198,10 @@ The strongest promotion for an engineering repository is reproducible usefulness
 
 - real controller projects, not placeholder folders;
 - one common ADS1299 driver;
-- one common data protocol;
+- one common logical data model;
 - internal-test-first hardware bring-up;
 - standard multi-device SPI with independent chip selects for scalable systems;
+- PC + mobile + wearable + XR + smart-home + edge integration roadmap;
 - EEG + BCI learning path;
 - transparent validation status;
 - CI-backed builds;
@@ -181,11 +210,12 @@ The strongest promotion for an engineering repository is reproducible usefulness
 
 Future launch material should include:
 
-- an English README as the global landing page;
+- a strong English README as the global landing page;
 - a Chinese quick-start path for the Chinese developer community;
 - architecture and data-flow diagrams;
-- support-matrix graphics;
+- firmware and integration support-matrix graphics;
 - build screenshots / terminal output;
+- mobile/desktop/wearable screenshots as real integrations arrive;
 - internal-test waveform examples;
 - input-short noise measurements;
 - real EEG acquisition examples after hardware validation;
