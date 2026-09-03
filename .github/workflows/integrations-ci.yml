@@ -1,0 +1,82 @@
+name: integrations-ci
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'integrations/**'
+      - 'pc_tools/python/**'
+      - '.github/workflows/integrations-ci.yml'
+  pull_request:
+    paths:
+      - 'integrations/**'
+      - 'pc_tools/python/**'
+      - '.github/workflows/integrations-ci.yml'
+
+jobs:
+  gateway-and-web-client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install integration gateway dependencies
+        run: pip install -r integrations/open_edge_systems/linux_gateway/requirements.txt
+
+      - name: Python syntax check
+        run: |
+          python -m py_compile integrations/open_edge_systems/linux_gateway/gateway.py
+          python -m py_compile pc_tools/python/packet.py
+          python -m py_compile pc_tools/python/serial_reader.py
+
+      - name: JavaScript syntax check
+        run: |
+          node --check integrations/mobile/web_pwa/app.js
+          node --check integrations/mobile/web_pwa/service-worker.js
+
+      - name: Start simulated ADS1299 WebSocket gateway
+        run: |
+          python integrations/open_edge_systems/linux_gateway/gateway.py \
+            --simulate --host 127.0.0.1 --ws-port 8765 --rate 250 \
+            > /tmp/ads1299-gateway.log 2>&1 &
+          echo $! > /tmp/ads1299-gateway.pid
+          sleep 2
+
+      - name: End-to-end WebSocket frame test
+        run: |
+          python - <<'PY'
+          import asyncio
+          import json
+          import websockets
+
+          async def test():
+              async with websockets.connect('ws://127.0.0.1:8765') as ws:
+                  hello = json.loads(await asyncio.wait_for(ws.recv(), 3))
+                  assert hello['type'] == 'hello'
+                  assert hello['channels'] == 8
+
+                  for _ in range(20):
+                      msg = json.loads(await asyncio.wait_for(ws.recv(), 3))
+                      if msg.get('type') == 'eeg':
+                          assert len(msg['channels']) == 8
+                          assert isinstance(msg['sequence'], int)
+                          assert isinstance(msg['timestamp_us'], int)
+                          assert len(msg['status_hex']) == 6
+                          print('Received EEG frame', msg['sequence'])
+                          return
+                  raise AssertionError('No EEG frame received')
+
+          asyncio.run(test())
+          PY
+
+      - name: Stop gateway and print log
+        if: always()
+        run: |
+          if [ -f /tmp/ads1299-gateway.pid ]; then
+            kill "$(cat /tmp/ads1299-gateway.pid)" || true
+          fi
+          cat /tmp/ads1299-gateway.log || true
