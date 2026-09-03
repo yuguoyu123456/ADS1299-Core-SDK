@@ -1,65 +1,105 @@
 # ADS1299-Core-SDK
 
-> **Mission: build the world's most comprehensive open ADS1299 ecosystem — from bare-metal MCU/FPGA acquisition to host streaming, EEG analysis and BCI starter workflows.**
+> ## Building the world's most comprehensive open ADS1299 ecosystem
+> **From register-level control to real MCU/FPGA projects, multi-device acquisition, host streaming, Python/MATLAB/R EEG analysis, and BCI workflows — in one repository.**
 
-A vendor-oriented, cross-platform SDK and learning hub for **Texas Instruments ADS1299** based 8-channel biopotential acquisition systems.
+**ADS1299-Core-SDK** is a vendor-oriented, cross-platform engineering and learning ecosystem for the **Texas Instruments ADS1299** family of biopotential front ends.
 
-The long-term goal is simple: **if someone anywhere in the world is building with ADS1299, this repository should be one of the first places they come to learn, verify hardware, start firmware, stream data, analyze EEG and build BCI applications.**
+The goal is not to create another ADS1299 code snippet.
 
-> **Status: v0.1 production-SDK buildout / pre-hardware-validation.** A folder existing does **not** mean that platform is hardware-verified. We prefer honest validation labels over inflated platform counts.
+The goal is to build a place where a student, researcher, embedded engineer, FPGA developer, neuroscience laboratory, BCI team, medical-device R&D group, or hardware company can start with an ADS1299 board and continue all the way to **validated acquisition, signal analysis and BCI development** without rebuilding the same infrastructure from zero.
 
-## What we are building
+> **Project status:** active production-SDK buildout / pre-hardware-validation.  
+> A folder is **not** counted as support until it reaches the validation level stated in the support matrix.
 
-ADS1299-Core-SDK is intended to become a complete ADS1299 ecosystem, not merely a single driver file. The repository is organized around the full path from chip to research application:
+---
 
-1. **ADS1299 device driver** — register access, configuration, test signals, BIAS, lead-off, GPIO, frame acquisition and conversion helpers.
-2. **Real MCU projects** — complete board/toolchain projects for major global MCU families, with build instructions, pin maps, SPI/DRDY handling and reproducible examples.
-3. **FPGA projects** — SPI master, controller, frame reader/unpacker, FIFO, top-level integration, constraints and testbenches.
-4. **Common streaming protocol** — one packet format across MCU/SoC/FPGA targets so host tools do not care which controller is underneath.
-5. **Host tools** — serial capture, packet decoding, integrity checks, logging and visualization foundations.
-6. **EEG algorithms** — Python, MATLAB and R starter workflows for preprocessing, filtering, PSD, band power, ERP, connectivity, QC and feature extraction.
-7. **BCI starter kit** — SSVEP, motor imagery, P300 and online-window examples, with a roadmap toward reproducible advanced baselines.
-8. **Documentation and learning** — datasheet-grounded explanations, bring-up guides, debugging checklists, validation reports and reference material.
+## Why this repository is different
 
-## Our quality promise
+Most ADS1299 projects focus on only one layer: a driver, one MCU, one board, one application, or one analysis script.
 
-We do **not** count a directory as platform support. A controller target should only graduate to a supported reference project when it has a real build system, executable entry point, board configuration, documented pinout, ADS1299 initialization path, internal-test acquisition, continuous streaming and reproducible build instructions.
+**ADS1299-Core-SDK is being designed as a full-stack ADS1299 ecosystem.**
 
-Validation labels used throughout the project:
+| Layer | What this repository aims to provide |
+|---|---|
+| **ADS1299 device layer** | Complete register definitions, commands, channel configuration, BIAS, lead-off, GPIO, clocking, internal test, frame decoding and diagnostics |
+| **MCU layer** | Complete reference projects for major global MCU ecosystems rather than isolated snippets |
+| **FPGA layer** | SPI engine, device-control FSM, frame acquisition, unpacking, buffering, top-level projects, constraints and testbenches |
+| **Multi-device layer** | 8/16/24/32/64-channel scaling with standard multi-device SPI and independent chip-select control |
+| **Host layer** | One common packet protocol, capture, integrity checking, recording, visualization and device-independent host tools |
+| **EEG layer** | Python, MATLAB and R workflows for preprocessing, filtering, PSD, band power, ERP, connectivity, QC and feature extraction |
+| **BCI layer** | SSVEP, motor imagery, P300, online-window pipelines, classical ML, Riemannian methods and future deep-learning baselines |
+| **Learning layer** | Datasheet explanations, bring-up guides, debugging checklists, validation reports and beginner-to-research learning paths |
 
-- `Planned` — roadmap or placeholder only
-- `Compiles` — relevant toolchain build verified
-- `Bench-tested` — tested on real ADS1299-Core hardware
-- `24h-tested` — long-duration acquisition verified
+### Our long-term ambition
 
-BCI examples additionally use `Educational`, `Dataset-tested`, `Hardware-tested`, and `Online-tested`.
+We are building ADS1299-Core-SDK to become the **largest and most complete open ADS1299 learning-and-development ecosystem in the world**.
 
-## Hardware facts used by the SDK
+That is an engineering target, not an excuse for exaggerated support claims. We would rather have ten reproducible projects than one hundred placeholder folders.
 
-- ADS1299: 8 simultaneous 24-bit biopotential channels
-- SPI-compatible digital interface
-- 250 SPS to 16 kSPS device data-rate range
-- one conversion frame: 24-bit status + 8 × 24-bit channels = 216 bits / 27 bytes
-- serial timing uses CPOL=0, CPHA=1
+The standard is simple:
 
-Always treat the **current TI ADS1299 datasheet** as the electrical and timing authority.
+> **Clone it. Build it. Flash it. Connect ADS1299. Verify the internal test signal. Stream data. Analyze EEG. Continue into BCI.**
 
-## Multi-ADS1299 architecture policy
+If a project cannot eventually support that workflow, it is not finished.
 
-For 16/32/64-channel systems, the project's primary architecture is **standard/cascaded SPI with an independent `CS` for every ADS1299**, not daisy-chain mode.
+---
 
-The normal topology is:
+## A chip-to-BCI ecosystem
 
-- shared `SCLK`;
-- shared `DIN/MOSI`;
-- shared `DOUT/MISO` where the TI cascaded topology is used;
-- one dedicated `CS` per ADS1299;
-- common clock and synchronized START strategy;
-- per-device `DRDY` retained during bring-up whenever GPIO resources permit.
+The distinctive scope of this repository is the complete path from **ADS1299 silicon to BCI research**:
 
-This keeps every converter independently configurable and much easier to debug or isolate. Daisy-chain mode remains an optional ADS1299 feature for special low-pin-count designs, but it is not the default reference architecture for this project.
+```text
+ADS1299
+  │
+  ├── Register / command driver
+  │
+  ├── STM32 / GD32 / CH32 / ESP32 / nRF / RP2040 / NXP / TI / ...
+  │
+  ├── FPGA acquisition
+  │
+  ├── 8 / 16 / 32 / 64-channel systems
+  │
+  ├── Common streaming protocol
+  │
+  ├── Python / MATLAB / R
+  │
+  ├── EEG preprocessing and analysis
+  │
+  └── BCI
+       ├── SSVEP
+       ├── Motor Imagery
+       ├── P300
+       ├── Online pipelines
+       ├── Classical ML
+       ├── Riemannian methods
+       └── Deep-learning baselines
+```
 
-See [`docs/MULTI_ADS1299_SPI_ARCHITECTURE.md`](docs/MULTI_ADS1299_SPI_ARCHITECTURE.md).
+For BCI developers, the intention is that this repository should not stop at “we can read SPI.” It should help bridge **hardware acquisition → trustworthy data → reproducible signal processing → usable BCI baselines**.
+
+---
+
+## Start here
+
+| I want to... | Start with |
+|---|---|
+| Understand the repository | This README |
+| See what controllers are actually supported | [`docs/SUPPORT_MATRIX.md`](docs/SUPPORT_MATRIX.md) |
+| Bring up a new ADS1299 board | [`docs/BRINGUP.md`](docs/BRINGUP.md) |
+| Understand 16/32/64-channel scaling | [`docs/MULTI_ADS1299_SPI_ARCHITECTURE.md`](docs/MULTI_ADS1299_SPI_ARCHITECTURE.md) |
+| Use the portable ADS1299 driver | [`drivers/ads1299/`](drivers/ads1299/) |
+| Build a complete MCU example | [`projects/`](projects/) |
+| Work with FPGA | [`fpga/`](fpga/) |
+| Stream data to a computer | [`host/`](host/) |
+| Learn EEG analysis | [`algorithms/`](algorithms/) |
+| Start BCI experiments | [`bci/`](bci/) and [`docs/BCI_QUICKSTART.md`](docs/BCI_QUICKSTART.md) |
+| Check algorithm coverage | [`docs/ALGORITHM_MATRIX.md`](docs/ALGORITHM_MATRIX.md) |
+| Understand project quality rules | [`docs/PROJECT_QUALITY_STANDARD.md`](docs/PROJECT_QUALITY_STANDARD.md) |
+| Contribute | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| Contact the maintainer | [`CONTACT.md`](CONTACT.md) |
+
+---
 
 ## Repository map
 
@@ -67,99 +107,327 @@ See [`docs/MULTI_ADS1299_SPI_ARCHITECTURE.md`](docs/MULTI_ADS1299_SPI_ARCHITECTU
 ADS1299-Core-SDK/
 ├── drivers/ads1299/         # portable ADS1299 device driver
 ├── ports/                   # low-level MCU/SoC portability layers
-├── projects/                # complete board/toolchain reference projects
-├── examples/                # focused usage examples and demonstrations
+├── projects/                # complete board + toolchain reference projects
+├── examples/                # focused demonstrations and usage examples
 ├── fpga/                    # reusable RTL, board projects and testbenches
-├── host/                    # common packet protocol, capture and tooling
+├── host/                    # protocol, capture, recording and visualization
 ├── algorithms/              # EEG analysis in Python / MATLAB / R
-├── bci/                     # SSVEP / motor imagery / P300 / online BCI
-├── docs/                    # bring-up, support matrix, validation, references
-├── tests/                   # C / Python / RTL checks
-├── CONTRIBUTING.md          # contribution and quality rules
-└── CONTACT.md               # maintainer contact information
+├── bci/                     # SSVEP / MI / P300 / online BCI
+├── docs/                    # bring-up, architecture, support, validation
+├── tests/                   # C / Python / RTL tests
+├── CONTRIBUTING.md
+└── CONTACT.md
 ```
 
-## Global controller roadmap
+Every major folder is expected to become self-explanatory. A new user should be able to understand **what it contains, why it exists, what to run first, which dependencies are required and what has actually been validated**.
 
-The platform roadmap covers:
+---
 
-- **STMicroelectronics:** STM32 families
-- **GigaDevice:** GD32 families
-- **WCH:** CH32 families
-- **Espressif:** ESP32 families
-- **Nordic:** nRF52 / nRF53
-- **Raspberry Pi:** RP2040 / RP2350
-- **NXP:** MCX / i.MX RT class targets
-- **Microchip:** 32-bit MCU families
-- **Renesas:** RA families
-- **Texas Instruments:** MCU targets
-- **Infineon / Cypress:** PSoC-class targets
-- **Silicon Labs:** EFR32-class targets
-- **Chinese MCU ecosystems:** HC32, AT32, MM32, N32, PY32, APM32 and others
-- **8-bit ecosystems:** AVR and STC where technically appropriate
-- **FPGA:** AMD/Xilinx, Intel/Altera and Lattice tracks
+## Global controller ecosystem
 
-See [`docs/SUPPORT_MATRIX.md`](docs/SUPPORT_MATRIX.md) for the actual validation state. **Roadmap coverage is not the same as verified support.**
+The roadmap intentionally spans both international and Chinese MCU ecosystems.
 
-## EEG analysis
+### Major MCU / SoC families
 
-Host-side starter algorithms are provided/planned in:
+- **STMicroelectronics** — STM32
+- **GigaDevice** — GD32
+- **WCH** — CH32
+- **Espressif** — ESP32 / ESP32-S3 and related families
+- **Nordic Semiconductor** — nRF52 / nRF53
+- **Raspberry Pi** — RP2040 / RP2350
+- **NXP** — MCX / i.MX RT class targets
+- **Microchip** — SAM / PIC32 class targets
+- **Renesas** — RA / related families
+- **Texas Instruments** — MSPM0 / other suitable MCU targets
+- **Infineon / Cypress** — PSoC / XMC class targets
+- **Silicon Labs** — EFM32 / EFR32 class targets
+- **HDSC** — HC32
+- **Artery** — AT32
+- **MindMotion** — MM32
+- **Nationstech** — N32
+- **Puya** — PY32
+- **Geehy** — APM32
+- **STC** — STC8 / STC32 where technically appropriate
+- **Microchip AVR** — selected 8-bit educational/reference targets
 
-- **Python** — NumPy/SciPy first; interoperability with MNE-Python, scikit-learn, pyRiemann and MOABB
-- **MATLAB** — transparent starter functions; interoperability with EEGLAB and FieldTrip
-- **R** — readable starter analysis and reproducible statistical workflows
+### FPGA tracks
 
-Methods include preprocessing, rereferencing, notch/band-pass filtering, PSD, band power, alpha peak, Hjorth parameters, ERP, connectivity and artifact/QC workflows.
+- **AMD / Xilinx**
+- **Intel / Altera**
+- **Lattice**
 
-## BCI
+The repository uses explicit validation labels. See [`docs/SUPPORT_MATRIX.md`](docs/SUPPORT_MATRIX.md) before assuming that a roadmap target has already been built or bench-tested.
 
-Educational and engineering baselines include:
+---
 
-- **SSVEP:** canonical correlation analysis (CCA)
-- **Motor imagery:** common spatial patterns (CSP)
-- **P300:** baseline correction, ERP averaging, amplitude and peak latency
-- **Online:** ring buffer and sliding-window pipeline foundations
+## ADS1299 device coverage
 
-Roadmap: FBCCA, harmonic SNR, ERD/ERS, FBCSP, LDA/SVM, Riemannian features, xDAWN, EEGNet and reproducible online demonstrations.
+The common driver is intended to expose readable APIs rather than forcing users to scatter register “magic numbers” throughout applications.
 
-## First hardware acceptance sequence
+Coverage includes or is being built for:
+
+- device identification and register dump
+- RESET / START / STOP / RDATAC / SDATAC / RDATA
+- single and multi-register access
+- data-rate configuration
+- channel gain / MUX / power state
+- SRB1 / SRB2
+- BIAS configuration and status
+- lead-off configuration and status
+- internal test signal
+- input-short noise testing
+- GPIO
+- clock-output control
+- standard multi-device operation
+- continuous 27-byte frame capture
+- signed 24-bit decoding
+- ADC-code-to-voltage conversion
+- diagnostics and validation helpers
+
+The **current TI ADS1299 datasheet remains the electrical and timing authority**.
+
+---
+
+## Multi-ADS1299 architecture: our default is standard SPI, not daisy-chain
+
+For 16/32/64-channel systems, this project uses **standard/cascaded multi-device SPI with one independent `CS` per ADS1299** as the primary architecture.
+
+Typical topology:
+
+```text
+                         +----------- ADS1299 #1  -> CH1-8
+MCU / FPGA SCLK --------+----------- ADS1299 #2  -> CH9-16
+MCU / FPGA MOSI --------+----------- ...
+MCU / FPGA MISO <-------+----------- ADS1299 #8  -> CH57-64
+
+GPIO CS1  --------------------------> ADS1299 #1 CS
+GPIO CS2  --------------------------> ADS1299 #2 CS
+...
+GPIO CS8  --------------------------> ADS1299 #8 CS
+
+SYNC START --------------------------> all converters
+COMMON CLK --------------------------> all converters
+```
+
+Why this architecture is preferred here:
+
+- every ADS1299 remains independently configurable;
+- fault isolation is straightforward;
+- debugging is simpler;
+- the same portable driver instance can be reused for every converter;
+- modern MCUs and FPGAs usually have sufficient GPIO;
+- the architecture scales naturally from one ADS1299 to eight devices / 64 channels.
+
+Daisy-chain mode remains documented as an ADS1299 capability for special low-pin-count designs, but it is **not the mainstream reference architecture of this project**.
+
+See [`docs/MULTI_ADS1299_SPI_ARCHITECTURE.md`](docs/MULTI_ADS1299_SPI_ARCHITECTURE.md).
+
+---
+
+## EEG analysis: Python + MATLAB + R
+
+The repository is being developed so that hardware users can continue directly into signal analysis.
+
+### Python
+
+Target ecosystem:
+
+- NumPy
+- SciPy
+- pandas
+- matplotlib
+- MNE-Python
+- scikit-learn
+- pyRiemann
+- MOABB interoperability
+
+### MATLAB
+
+Target ecosystem:
+
+- transparent starter functions
+- Signal Processing Toolbox workflows where appropriate
+- EEGLAB interoperability
+- FieldTrip interoperability
+
+### R
+
+Target scope:
+
+- reproducible statistical analysis
+- visualization
+- feature tables
+- group-level analysis
+- research reporting workflows
+
+### Core EEG methods
+
+- rereferencing
+- notch filtering
+- band-pass filtering
+- PSD / Welch spectrum
+- band power
+- alpha-peak analysis
+- Hjorth parameters
+- epoching
+- ERP
+- artifact / QC workflows
+- connectivity baselines
+- feature extraction
+
+The objective is to offer both **beginner-readable implementations** and paths toward established research ecosystems.
+
+---
+
+## BCI: from acquisition to reproducible baselines
+
+BCI is a first-class part of ADS1299-Core-SDK rather than an afterthought.
+
+### SSVEP
+
+- FFT / PSD baseline
+- harmonic SNR
+- CCA
+- FBCCA
+- multi-frequency recognition workflows
+
+### Motor imagery
+
+- ERD / ERS
+- CSP
+- FBCSP
+- LDA
+- SVM
+- Riemannian geometry pipelines
+
+### P300 / ERP BCI
+
+- epoching and baseline correction
+- ERP averaging
+- amplitude / latency extraction
+- xDAWN roadmap
+- LDA / SWLDA style baselines
+
+### Online BCI
+
+- ring buffers
+- sliding windows
+- streaming preprocessing
+- online feature extraction
+- classification pipeline foundations
+- packet-loss detection
+- latency measurement
+
+### Advanced roadmap
+
+- reproducible dataset examples
+- MOABB-compatible benchmarking paths
+- Riemannian methods
+- EEGNet and selected deep-learning baselines
+- hardware-to-BCI demonstrations after real ADS1299-Core validation
+
+Each algorithm should state its evidence level, such as `Educational`, `Dataset-tested`, `Hardware-tested`, or `Online-tested`.
+
+---
+
+## Quality before quantity
+
+A major repository is useful only if users can trust what the labels mean.
+
+### Validation labels
+
+- `Planned` — roadmap or placeholder only
+- `Compiles` — the relevant toolchain build has been verified
+- `Bench-tested` — tested with real ADS1299 hardware
+- `24h-tested` — long-duration acquisition has been verified
+
+### Minimum hardware acceptance path
 
 1. Verify power rails, reference, clock and reset electrically.
 2. Read the ADS1299 ID register.
-3. Read/write registers after leaving continuous-read mode.
-4. Capture the internal test signal on all eight channels.
-5. Verify correct 24-bit two's-complement decoding.
+3. Verify register write / readback.
+4. Acquire the internal test signal on all eight channels.
+5. Verify 24-bit two's-complement conversion.
 6. Verify 250 SPS first, then higher configured rates.
-7. Stream the common host packet and verify sequence/CRC on the host.
-8. Run long-duration acquisition before declaring the platform hardware-supported.
+7. Stream the common host packet and verify sequence / CRC.
+8. Record packet-loss statistics.
+9. Perform longer acquisition tests.
+10. Only then upgrade the project's validation status.
 
-## For contributors
+> **No fake support. No placeholder counted as a finished port. No “works on my machine” as the final standard.**
 
-We welcome firmware engineers, FPGA developers, neuroscientists, biomedical engineers, signal-processing researchers, BCI developers, educators and students.
+---
 
-Please read [`CONTRIBUTING.md`](CONTRIBUTING.md). The guiding principle is:
+## For researchers, developers and educators
 
-> **Correctness, reproducibility and clear documentation matter more than the number of folders.**
+This repository is intended to be useful across several communities:
 
-If you contribute a new platform, make it a real project that another person can clone, build, flash and understand.
+- biomedical engineering
+- neuroscience
+- EEG / electrophysiology
+- BCI / neurotechnology
+- embedded systems
+- FPGA development
+- medical-device R&D
+- digital health research
+- university teaching
+- student projects
+- signal-processing education
+
+If you are learning ADS1299 for the first time, start with the bring-up path. If you are an experienced embedded developer, use the common driver and a complete reference project. If you are a neuroscience or BCI researcher, start from the host, algorithm and BCI layers.
+
+---
+
+## Contributions
+
+We welcome high-quality contributions from firmware engineers, FPGA developers, researchers, educators, students and companies.
+
+Before opening a pull request, please read [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+The core rule is:
+
+> **Correctness, reproducibility, useful documentation and real validation matter more than raw file count.**
+
+A good contribution should make it easier for the next person to succeed.
+
+---
 
 ## Project positioning
 
-Our ambition is to make ADS1299-Core-SDK the **largest and most complete open ADS1299 learning-and-development ecosystem in the world**. Until that claim is objectively demonstrated by breadth, working examples, validation coverage and community adoption, we deliberately phrase it as our **mission**, not as an unverified fact.
+Our ambition is explicit: **make ADS1299-Core-SDK the world's most comprehensive open ADS1299 ecosystem.**
 
-That distinction is important: the project should become famous because it is genuinely useful, technically trustworthy and easy to learn from — not because the README makes a claim we cannot yet prove.
+We want this repository to become a natural reference point when someone searches for:
 
-## Contact
+`ADS1299 STM32` · `ADS1299 GD32` · `ADS1299 CH32` · `ADS1299 ESP32` · `ADS1299 FPGA` · `ADS1299 Python` · `ADS1299 MATLAB` · `ADS1299 R` · `ADS1299 EEG` · `ADS1299 BCI` · `ADS1299 64 channel`
 
-Project maintainer: **Biomedical Engineering / Medical PhD researcher**
+The strongest form of promotion is usefulness: **good code, complete projects, reproducible builds, clear documentation, real validation data, and examples that save other people days or weeks of engineering work.**
 
-For technical discussion, collaboration, research exchange, hardware feedback, bug reports, teaching use or contributions, you are very welcome to contact me:
+---
 
-- **Gmail:** yuguoyu520@gmail.com
-- **Email:** yuguoyu123456@126.com
+## Collaboration & professional support
 
-Community issues and pull requests are strongly encouraged so that solutions can benefit everyone.
+This project is maintained by a **Biomedical Engineering / Medical PhD researcher** and is open to serious technical, academic and educational collaboration.
 
-## Intended use
+If your work involves ADS1299, EEG, electrophysiology, BCI, embedded acquisition or neurotechnology, collaboration is welcome in areas such as:
 
-Research, education, prototyping and engineering development. This repository is **not** a medical device, diagnostic system or validated clinical software.
+- **medical-device R&D collaboration** — research prototypes, acquisition electronics, embedded architecture, EEG/BCI technical evaluation and engineering discussion;
+- **research and paper collaboration** — experimental systems, EEG/BCI methods, multimodal sensing, reproducible analysis and technical co-development;
+- **technical support and engineering consulting** — ADS1299 bring-up, MCU/FPGA integration, multi-device acquisition, firmware architecture and debugging;
+- **teaching, courses and workshops** — ADS1299, EEG instrumentation, embedded physiological-signal acquisition, signal processing and introductory BCI;
+- **laboratory and university collaboration** — teaching platforms, research hardware, student projects and reproducible experimental pipelines;
+- **company / product collaboration** — integration evaluation, SDK adaptation, hardware-software co-design and technical exchange.
+
+Public questions that can benefit the community are encouraged through GitHub Issues. For collaboration, teaching, research, product discussions or direct technical contact:
+
+**Gmail:** **yuguoyu520@gmail.com**  
+**Email:** **yuguoyu123456@126.com**
+
+> Good collaborations usually start with a concrete problem, a schematic, a dataset, an experimental goal or a clearly defined engineering requirement. You are welcome to get in touch.
+
+---
+
+## Intended use and responsibility
+
+This repository is intended for **research, education, prototyping and engineering development**.
+
+It is **not a medical device, not diagnostic software, and not a validated clinical system**. Any use in regulated medical products requires the appropriate independent engineering, risk-management, verification, validation, quality-system and regulatory work.
