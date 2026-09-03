@@ -71,6 +71,10 @@
 #define ADS1299_TEST_FREQ_RESERVED    0x02u
 #define ADS1299_TEST_FREQ_DC          0x03u
 
+/* Readable aliases used by application code. */
+#define ADS1299_TEST_FREQ_FCLK_DIV_2_21 ADS1299_TEST_FREQ_FCLK_2_21
+#define ADS1299_TEST_FREQ_FCLK_DIV_2_20 ADS1299_TEST_FREQ_FCLK_2_20
+
 /* CHnSET */
 #define ADS1299_CH_POWER_DOWN   0x80u
 #define ADS1299_CH_GAIN_MASK    0x70u
