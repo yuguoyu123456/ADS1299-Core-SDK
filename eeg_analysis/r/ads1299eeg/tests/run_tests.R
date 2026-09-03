@@ -94,8 +94,10 @@ for (k in seq_len(dim(ep0)[3])) {
 erp <- erp_average(ep0)
 stopifnot(identical(dim(erp$waveform), c(251L, 2L)), erp$n_trials == 4L)
 
-# 10) Coherence: two phase-shifted 10-Hz channels should be highly coherent.
-coh <- coherence_matrix(x[, 1:2], fs, band_hz = c(8, 13))
+# 10) Coherence: validate the narrow band containing the known 10-Hz source.
+# A wide 8-13 Hz average would also include noise-only bins, so it is not a
+# valid test for the strength of one deliberately injected 10-Hz oscillator.
+coh <- coherence_matrix(x[, 1:2], fs, band_hz = c(9.5, 10.5))
 stopifnot(near(diag(coh), c(1, 1), 1e-12))
 stopifnot(near(coh[1, 2], coh[2, 1], 1e-12))
 stopifnot(coh[1, 2] > 0.70, all(coh >= 0), all(coh <= 1 + 1e-12))
