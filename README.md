@@ -44,6 +44,23 @@ BCI examples additionally use `Educational`, `Dataset-tested`, `Hardware-tested`
 
 Always treat the **current TI ADS1299 datasheet** as the electrical and timing authority.
 
+## Multi-ADS1299 architecture policy
+
+For 16/32/64-channel systems, the project's primary architecture is **standard/cascaded SPI with an independent `CS` for every ADS1299**, not daisy-chain mode.
+
+The normal topology is:
+
+- shared `SCLK`;
+- shared `DIN/MOSI`;
+- shared `DOUT/MISO` where the TI cascaded topology is used;
+- one dedicated `CS` per ADS1299;
+- common clock and synchronized START strategy;
+- per-device `DRDY` retained during bring-up whenever GPIO resources permit.
+
+This keeps every converter independently configurable and much easier to debug or isolate. Daisy-chain mode remains an optional ADS1299 feature for special low-pin-count designs, but it is not the default reference architecture for this project.
+
+See [`docs/MULTI_ADS1299_SPI_ARCHITECTURE.md`](docs/MULTI_ADS1299_SPI_ARCHITECTURE.md).
+
 ## Repository map
 
 ```text
