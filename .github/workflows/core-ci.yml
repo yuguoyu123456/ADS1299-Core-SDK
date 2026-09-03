@@ -2,7 +2,7 @@ name: core-ci
 
 on:
   push:
-    branches: [ main, bootstrap-v0.1 ]
+    branches: [ main, bootstrap-v0.1, phase-a-platforms, eeg-bci-toolkit-v0.2 ]
   pull_request:
 
 jobs:
@@ -36,6 +36,8 @@ jobs:
         run: python bci/ssvep/cca_baseline.py
       - name: Run CSP baseline demo
         run: python bci/motor_imagery/csp_baseline.py
+      - name: Run extended BCI smoke tests
+        run: python tests/python/test_bci_extended.py
 
   fpga-smoke:
     runs-on: ubuntu-latest
