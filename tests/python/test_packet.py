@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "host" / "python"))
+sys.path.insert(0, str(ROOT / "pc_tools" / "python"))
 
 from packet import Frame, decode_packet, encode_packet
 
@@ -18,4 +18,4 @@ p = encode_packet(f)
 g = decode_packet(p)
 assert g == f
 assert len(p) == 49
-print("host packet round-trip passed")
+print("PC packet round-trip passed")
