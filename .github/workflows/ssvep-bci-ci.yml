@@ -1,0 +1,48 @@
+name: ssvep-bci-ci
+
+on:
+  pull_request:
+    paths:
+      - 'bci/ssvep/**'
+      - '.github/workflows/ssvep-bci-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'bci/ssvep/**'
+      - '.github/workflows/ssvep-bci-ci.yml'
+
+jobs:
+  python-ssvep-package:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade packaging tools
+        run: python -m pip install --upgrade pip setuptools wheel
+
+      - name: Install ADS1299 SSVEP package
+        run: python -m pip install -e bci/ssvep
+
+      - name: Compile SSVEP package and compatibility scripts
+        run: |
+          python -m compileall -q bci/ssvep/ads1299_ssvep
+          python -m py_compile bci/ssvep/cca_baseline.py bci/ssvep/fbcca_baseline.py
+
+      - name: Run numerical SSVEP regression tests
+        run: python bci/ssvep/tests/test_ssvep_package.py
+
+      - name: Run legacy CCA baseline
+        run: python bci/ssvep/cca_baseline.py
+
+      - name: Run legacy FBCCA baseline
+        run: python bci/ssvep/fbcca_baseline.py
