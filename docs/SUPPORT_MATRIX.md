@@ -1,50 +1,66 @@
 # Platform support matrix
 
-The project uses one common ADS1299 driver plus thin platform ports. A platform is **not** called supported just because a folder exists.
+ADS1299-Core-SDK uses one common ADS1299 device driver and complete per-board MCU/FPGA reference projects. A platform is **not** called supported because a folder or a small port file exists.
 
-| Platform family | Status | Representative target | Notes |
-|---|---|---|---|
-| ST STM32 | Planned | F103/F407/G4/H7 | HAL first, LL later |
-| GigaDevice GD32 | Planned | GD32F4 / GD32E5 | SPL/HAL-style port |
-| WCH CH32 | Planned | CH32V203 / CH32V307 | RISC-V priority |
-| Espressif ESP32 | Planned | ESP32-S3 | ESP-IDF |
-| Nordic nRF | Planned | nRF52840 / nRF5340 | nrfx / Zephyr path |
-| Raspberry Pi MCU | Planned | RP2040 / RP2350 | Pico SDK |
-| NXP | Planned | MCX / i.MX RT | MCUXpresso |
-| Microchip 32-bit | Planned | SAM / PIC32 | MPLAB ecosystem |
-| Renesas | Planned | RA / RX | FSP / e2 studio |
-| Texas Instruments MCU | Planned | MSPM0 / TM4C / CC13xx-26xx | representative ports |
-| Infineon | Planned | XMC / PSoC | ModusToolbox where appropriate |
-| Silicon Labs | Planned | EFM32 / EFR32 | Gecko SDK |
-| HDSC | Planned | HC32 | China ecosystem |
-| Artery | Planned | AT32 | China ecosystem |
-| MindMotion | Planned | MM32 | China ecosystem |
-| Nationstech | Planned | N32 | China ecosystem |
-| Puya | Planned | PY32 | low-cost ecosystem |
-| Geehy | Planned | APM32 | China ecosystem |
-| STC | Planned | STC8 / STC32 | low-rate/basic examples |
-| Microchip AVR | Planned | ATmega / AVR Dx | educational/basic examples |
+## Current complete-project track
+
+| Platform family | Repository target | Build status | Hardware status | Notes |
+|---|---|---|---|---|
+| ST STM32 | `firmware/mcu/st/stm32f407_black/` | CI build tracked | Pre-hardware-validation | STM32Cube HAL / PlatformIO reference |
+| Espressif ESP32 | `firmware/mcu/espressif/esp32s3_devkitc/` | CI build tracked | Pre-hardware-validation | Native ESP-IDF reference |
+| Raspberry Pi MCU | `firmware/mcu/raspberry_pi/rp2040_pico/` | CI build tracked | Pre-hardware-validation | Pico SDK reference |
+
+A project graduates to **Compiles** only after the documented clean build is confirmed. It graduates to **Bench-tested** only after real ADS1299 hardware is tested.
+
+## Global MCU roadmap
+
+| Platform family | Representative targets | Planned ecosystem |
+|---|---|---|
+| STMicroelectronics | STM32F1 / F4 / G4 / H7 | HAL first; LL/bare-metal where useful |
+| GigaDevice | GD32F4 / GD32E5 | vendor SDK reference project |
+| WCH | CH32V203 / CH32V307 | RISC-V priority |
+| Espressif | ESP32 / ESP32-S3 | ESP-IDF |
+| Nordic Semiconductor | nRF52840 / nRF5340 | nrfx / nRF Connect SDK |
+| Raspberry Pi | RP2040 / RP2350 | Pico SDK |
+| NXP | MCX / i.MX RT | MCUXpresso |
+| Microchip 32-bit | SAM / PIC32 | MPLAB ecosystem |
+| Renesas | RA / RX | FSP / e2 studio |
+| Texas Instruments MCU | MSPM0 / TM4C / CC13xx-CC26xx | representative SDK projects |
+| Infineon / Cypress | XMC / PSoC | ModusToolbox where appropriate |
+| Silicon Labs | EFM32 / EFR32 | Gecko SDK |
+| HDSC | HC32 | representative vendor SDK project |
+| Artery | AT32 | representative vendor SDK project |
+| MindMotion | MM32 | representative vendor SDK project |
+| Nationstech | N32 | representative vendor SDK project |
+| Puya | PY32 | low-cost MCU track |
+| Geehy | APM32 | representative vendor SDK project |
+| STC | STC8 / STC32 | educational / lower-rate project where appropriate |
+| Microchip AVR | ATmega / AVR Dx | educational / lower-rate project where appropriate |
 
 ## FPGA track
 
-- AMD/Xilinx: Planned
-- Intel/Altera: Planned
-- Lattice: Planned
+- AMD/Xilinx — complete board project + RTL + constraints + simulation target
+- Intel/Altera — complete board project + RTL + constraints + simulation target
+- Lattice — complete board project + RTL + constraints + simulation target
 
 ## Status vocabulary
 
-- **Planned**: roadmap only
-- **Compiles**: toolchain build verified
-- **Bench-tested**: real ADS1299 hardware verified
-- **24h-tested**: long-run capture verified
+- **Planned** — roadmap only.
+- **Compiles** — clean build verified with the documented toolchain.
+- **Bench-tested** — real ADS1299 hardware verified.
+- **24h-tested** — long-duration acquisition verified.
 
-## Minimum hardware acceptance
+## Minimum acceptance for a visible MCU project
 
-1. Read the device ID.
-2. Read/write registers.
-3. Acquire the internal test signal on all 8 channels.
-4. Decode the 216-bit frame (24-bit status + 8 x 24-bit channels).
-5. Verify 24-bit two's-complement sign extension.
-6. Verify 250 SPS; document any higher tested rates.
-7. Export the common host packet format.
-8. Run the Python viewer/recorder.
+1. Complete build system and executable entry point.
+2. Exact board and pin map documented.
+3. SPI Mode 1 configured correctly.
+4. ADS1299 reset and device-ID read.
+5. Register read/write verified.
+6. Internal test signal acquired on all 8 channels.
+7. Full 27-byte frame decoded correctly.
+8. Signed 24-bit channel conversion verified.
+9. Common packet output with sequence/integrity checking.
+10. PC decoder/recorder compatibility.
+11. Real hardware evidence before `Bench-tested`.
+12. Long-duration evidence before `24h-tested`.
