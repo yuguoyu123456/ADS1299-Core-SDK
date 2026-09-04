@@ -4,9 +4,9 @@ This directory contains the controller-independent C core for the Texas Instrume
 
 ## Register layer
 
-`ads1299_regs.h` defines the complete user-visible address map from `ID` (0x00) through `CONFIG4` (0x17), every SPI command opcode, the semantic field masks/codes used by the API, and the fixed datasheet reset values. `ads1299_register_model.[ch]` is the machine-readable safety model for all 24 addresses: reset value/known state, writable mask, prescribed reserved-one/reserved-zero bits, read-only classification, and ADS1299-4/-6/8 availability.
+`ads1299_regs.h` defines the complete user-visible address map from `ID` (0x00) through `CONFIG4` (0x17), every SPI command opcode, semantic field masks/codes, fixed datasheet reset values, and explicit constants for encodings that TI marks Reserved or Do not use. `ads1299_register_model.[ch]` is the machine-readable safety model for all 24 addresses: reset value/known state, writable mask, prescribed reserved-one/reserved-zero bits, read-only classification, ADS1299-4/-6/8 availability, and field-semantic legality.
 
-`ads1299_runtime.[ch]` exposes safe single, consecutive and masked register mutation. Safe consecutive writes validate every target before any SPI write occurs; safe masked updates reject masks containing reserved/read-only bits. Raw RREG/WREG remain available for expert diagnostics and compatibility.
+`ads1299_runtime.[ch]` exposes safe single, consecutive and masked register mutation. Safe operations validate the complete request before SPI I/O: they reject read-only/unavailable registers, wrong reserved-bit values, unavailable variant channel bits, and TI-forbidden semantic encodings such as `CONFIG1.DR=111`, `CONFIG2.CAL_FREQ=10`, and `CHnSET.GAIN=111`. Raw RREG/WREG remain available for expert diagnostics and compatibility.
 
 ## Functional API layer
 
@@ -20,6 +20,6 @@ Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count. Chan
 
 ## Completion criterion
 
-For the **register/API software layer**, “datasheet-complete” means that every user-visible register address and meaningful programmable field in SBAS499C is represented by the register model and is reachable through either a named high-level function or the datasheet-safe register API, with reserved/read-only rules and ADS1299-4/-6/8 differences tested. Convenience APIs may continue to grow after that point without changing the completeness claim.
+For the **register/API software layer**, “datasheet-complete” means every user-visible register address and meaningful programmable field in SBAS499C is represented by the register model and reachable through either a named high-level function or the datasheet-safe register API. Safe APIs must additionally enforce reserved/read-only rules, ADS1299-4/-6/8 differences, and field encodings explicitly prohibited by TI. Convenience APIs may continue to grow after that point without changing the completeness claim.
 
 Passing host unit tests and GitHub CI supports a **CI-verified software** claim only. It does not establish `Bench-tested` or `24h-tested`. Hardware claims require the exact target hardware to be exercised and measured.
