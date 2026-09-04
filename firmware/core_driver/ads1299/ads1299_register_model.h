@@ -38,8 +38,20 @@ uint8_t ads1299_variant_channel_mask(ads1299_variant_t variant);
 int ads1299_register_available(uint8_t address, ads1299_variant_t variant);
 
 /**
- * Produce the only datasheet-valid byte corresponding to a requested write.
- * Returns -1 for invalid/read-only/unavailable registers or unknown variants.
+ * Validate a byte exactly as it would be written to the silicon.
+ * Returns 1 only when the register is writable/available, reserved bits have
+ * TI-prescribed values, variant-only channel bits are clear, and no field uses
+ * an encoding that TI marks Reserved or Do not use.
+ */
+int ads1299_register_write_value_valid(uint8_t address,
+                                       uint8_t value,
+                                       ads1299_variant_t variant);
+
+/**
+ * Produce a datasheet-valid byte corresponding to a requested write.
+ * Reserved bits and unavailable channel bits are normalized, but semantic
+ * field encodings marked Reserved/Do not use by TI are rejected rather than
+ * silently changed. Returns -1 on failure.
  */
 int ads1299_sanitize_register_write(uint8_t address,
                                     uint8_t requested,

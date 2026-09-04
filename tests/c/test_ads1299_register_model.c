@@ -51,12 +51,12 @@ static void test_required_reserved_bits(void) {
     assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG1, 0x00u,
                                            ADS1299_VARIANT_8CH, &value) == 0);
     assert(value == 0x90u);
-    assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG1, 0xFFu,
+    assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG1, 0xF6u,
                                            ADS1299_VARIANT_8CH, &value) == 0);
-    assert(value == 0xF7u);
-    assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG2, 0xFFu,
+    assert(value == 0xF6u);
+    assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG2, 0xD5u,
                                            ADS1299_VARIANT_8CH, &value) == 0);
-    assert(value == 0xD7u);
+    assert(value == 0xD5u);
     assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG3, 0x00u,
                                            ADS1299_VARIANT_8CH, &value) == 0);
     assert(value == 0x60u);
@@ -69,6 +69,46 @@ static void test_required_reserved_bits(void) {
     assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG4, 0xFFu,
                                            ADS1299_VARIANT_8CH, &value) == 0);
     assert(value == 0x0Au);
+}
+
+static void test_forbidden_field_encodings(void) {
+    uint8_t value = 0u;
+
+    /* TI CONFIG1 DR=111 is reserved. */
+    assert(!ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x97u,
+                                                ADS1299_VARIANT_8CH));
+    assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG1, 0xFFu,
+                                           ADS1299_VARIANT_8CH, &value) == -1);
+    assert(ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x96u,
+                                               ADS1299_VARIANT_8CH));
+
+    /* TI CONFIG2 CAL_FREQ=10 is explicitly Do not use. */
+    assert(!ads1299_register_write_value_valid(ADS1299_REG_CONFIG2, 0xC2u,
+                                                ADS1299_VARIANT_8CH));
+    assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG2, 0xC2u,
+                                           ADS1299_VARIANT_8CH, &value) == -1);
+    assert(ads1299_register_write_value_valid(ADS1299_REG_CONFIG2, 0xD5u,
+                                               ADS1299_VARIANT_8CH));
+
+    /* TI CHnSET GAIN=111 is explicitly Do not use. */
+    assert(!ads1299_register_write_value_valid(ADS1299_REG_CH1SET, 0x70u,
+                                                ADS1299_VARIANT_8CH));
+    assert(ads1299_sanitize_register_write(ADS1299_REG_CH1SET, 0x70u,
+                                           ADS1299_VARIANT_8CH, &value) == -1);
+    assert(ads1299_register_write_value_valid(ADS1299_REG_CH1SET, 0x60u,
+                                               ADS1299_VARIANT_8CH));
+}
+
+static void test_exact_write_value_validation(void) {
+    /* Prescribed reserved bits are part of exact-byte validation. */
+    assert(!ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x06u,
+                                                ADS1299_VARIANT_8CH));
+    assert(ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x96u,
+                                               ADS1299_VARIANT_8CH));
+    assert(!ads1299_register_write_value_valid(ADS1299_REG_MISC1, 0x21u,
+                                                ADS1299_VARIANT_8CH));
+    assert(ads1299_register_write_value_valid(ADS1299_REG_MISC1, 0x20u,
+                                               ADS1299_VARIANT_8CH));
 }
 
 static void test_variant_availability_and_masks(void) {
@@ -92,6 +132,8 @@ static void test_variant_availability_and_masks(void) {
     assert(value == 0xFFu);
     assert(ads1299_sanitize_register_write(ADS1299_REG_CH8SET, 0x61u,
                                            ADS1299_VARIANT_6CH, &value) == -1);
+    assert(!ads1299_register_write_value_valid(ADS1299_REG_BIAS_SENSP, 0x10u,
+                                                ADS1299_VARIANT_4CH));
 }
 
 int main(void) {
@@ -99,7 +141,9 @@ int main(void) {
     test_reset_values();
     test_read_only_and_reserved_registers();
     test_required_reserved_bits();
+    test_forbidden_field_encodings();
+    test_exact_write_value_validation();
     test_variant_availability_and_masks();
-    puts("ADS1299 complete register-model tests passed");
+    puts("ADS1299 complete register-model and field-semantics tests passed");
     return 0;
 }

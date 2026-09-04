@@ -109,7 +109,7 @@
 #define ADS1299_DR_1KSPS  0x04u
 #define ADS1299_DR_500SPS 0x05u
 #define ADS1299_DR_250SPS 0x06u
-#define ADS1299_DR_RESERVED 0x07u
+#define ADS1299_DR_RESERVED 0x07u /* TI: reserved; do not use */
 
 /* CONFIG2 */
 #define ADS1299_CONFIG2_RESERVED_BASE 0xC0u
@@ -118,7 +118,7 @@
 #define ADS1299_CONFIG2_CAL_FREQ_MASK 0x03u
 #define ADS1299_TEST_FREQ_FCLK_2_21   0x00u
 #define ADS1299_TEST_FREQ_FCLK_2_20   0x01u
-#define ADS1299_TEST_FREQ_RESERVED    0x02u
+#define ADS1299_TEST_FREQ_RESERVED    0x02u /* TI: do not use */
 #define ADS1299_TEST_FREQ_DC          0x03u
 #define ADS1299_TEST_FREQ_FCLK_DIV_2_21 ADS1299_TEST_FREQ_FCLK_2_21
 #define ADS1299_TEST_FREQ_FCLK_DIV_2_20 ADS1299_TEST_FREQ_FCLK_2_20
@@ -163,13 +163,14 @@
 #define ADS1299_CH_GAIN_MASK    0x70u
 #define ADS1299_CH_SRB2         0x08u
 #define ADS1299_CH_MUX_MASK     0x07u
-#define ADS1299_GAIN_1   0x00u
-#define ADS1299_GAIN_2   0x10u
-#define ADS1299_GAIN_4   0x20u
-#define ADS1299_GAIN_6   0x30u
-#define ADS1299_GAIN_8   0x40u
-#define ADS1299_GAIN_12  0x50u
-#define ADS1299_GAIN_24  0x60u
+#define ADS1299_GAIN_1          0x00u
+#define ADS1299_GAIN_2          0x10u
+#define ADS1299_GAIN_4          0x20u
+#define ADS1299_GAIN_6          0x30u
+#define ADS1299_GAIN_8          0x40u
+#define ADS1299_GAIN_12         0x50u
+#define ADS1299_GAIN_24         0x60u
+#define ADS1299_GAIN_DO_NOT_USE 0x70u /* TI: 111 is do not use */
 #define ADS1299_MUX_NORMAL      0x00u
 #define ADS1299_MUX_SHORTED     0x01u
 #define ADS1299_MUX_BIAS_MEAS   0x02u

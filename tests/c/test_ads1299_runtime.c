@@ -87,19 +87,36 @@ int main(void) {
 
     uint8_t written = 0u;
     before = m.spi_calls;
-    assert(ads1299_safe_write_register(&dev, ADS1299_REG_CONFIG1, 0xFFu,
+    assert(ads1299_safe_write_register(&dev, ADS1299_REG_CONFIG1, 0xF6u,
                                        ADS1299_VARIANT_8CH, &written) == ADS1299_OK);
-    assert(written == 0xF7u);
+    assert(written == 0xF6u);
     assert(m.tx_log[before] == ADS1299_CMD_SDATAC);
     assert(m.tx_log[before + 1u] ==
            (uint8_t)(ADS1299_CMD_WREG | ADS1299_REG_CONFIG1));
 
-    const uint8_t requested[2] = {0xFFu, 0xFFu};
+    /* Safe writes reject TI-reserved semantic encodings before touching SPI. */
+    before = m.spi_calls;
+    assert(ads1299_safe_write_register(&dev, ADS1299_REG_CONFIG1, 0xFFu,
+                                       ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
+    assert(ads1299_safe_write_register(&dev, ADS1299_REG_CONFIG2, 0xC2u,
+                                       ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
+    assert(ads1299_safe_write_register(&dev, ADS1299_REG_CH1SET,
+                                       ADS1299_GAIN_DO_NOT_USE,
+                                       ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
+
+    const uint8_t requested[2] = {0xF6u, 0xD5u};
     uint8_t sanitized[2] = {0u, 0u};
     assert(ads1299_safe_write_registers(&dev, ADS1299_REG_CONFIG1, requested, 2u,
                                         ADS1299_VARIANT_8CH, sanitized) == ADS1299_OK);
-    assert(sanitized[0] == 0xF7u);
-    assert(sanitized[1] == 0xD7u);
+    assert(sanitized[0] == 0xF6u);
+    assert(sanitized[1] == 0xD5u);
+
+    const uint8_t bad_bulk[2] = {0xF6u, 0xC2u};
+    before = m.spi_calls;
+    assert(ads1299_safe_write_registers(&dev, ADS1299_REG_CONFIG1, bad_bulk, 2u,
+                                        ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
 
     before = m.spi_calls;
     assert(ads1299_safe_update_register_bits(&dev, ADS1299_REG_CONFIG1,
@@ -123,6 +140,6 @@ int main(void) {
                                ADS1299_MUX_NORMAL, 0, 0) == ADS1299_EINVAL);
     assert(m.spi_calls == before);
 
-    puts("ADS1299 runtime/state/variant/safe-register tests passed");
+    puts("ADS1299 runtime/state/variant/safe-field tests passed");
     return 0;
 }
