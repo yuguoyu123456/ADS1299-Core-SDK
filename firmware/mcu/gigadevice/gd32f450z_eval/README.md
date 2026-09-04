@@ -1,6 +1,6 @@
 # GD32F450Z-EVAL ADS1299 reference firmware
 
-Status: **Reference source / build-pending** until this branch's clean CI build succeeds. Hardware validation pending.
+Status: **Compiles** — clean GitHub Actions build verified. Hardware validation pending.
 
 Target: **GD32F450ZKT6** on **GD32F450Z-EVAL**. The build uses the GD32F4xx SPL through a pinned PlatformIO package; GigaDevice's current GD32F4xx Firmware Library is the normative vendor SDK family for this target.
 
@@ -29,6 +29,6 @@ python -m pip install platformio==6.1.18
 pio run -d firmware/mcu/gigadevice/gd32f450z_eval -e gd32f450z_eval
 ```
 
-`platformio.ini` pins both the GD32 PlatformIO integration and GD32 SPL package commits so CI does not silently move with upstream HEAD.
+`platformio.ini` pins both the GD32 PlatformIO integration and GD32 SPL package commits so CI does not silently move with upstream HEAD. The dedicated `gd32-reference` workflow has completed this command successfully from a fresh Ubuntu runner.
 
-Do not label this target `Compiles` until the clean build above passes in GitHub Actions. No Bench-tested claim is made without the real board and ADS1299 hardware.
+`Compiles` is a software-build claim only. No Bench-tested or 24h-tested claim is made without the real GD32F450 board and ADS1299 hardware.
