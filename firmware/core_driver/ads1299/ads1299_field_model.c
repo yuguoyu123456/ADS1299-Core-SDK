@@ -3,7 +3,8 @@
 #include <stddef.h>
 
 #define FIELD(id_, name_, reg_, mask_, shift_, reset_, wr_, rel_, vmask_, valid_) \
-    { (id_), (name_), (reg_), (mask_), (shift_), (reset_), (wr_), (rel_), (vmask_), (valid_) }
+    { (id_), (name_), (reg_), (mask_), (shift_), (reset_), \
+      (uint8_t)((reg_) != ADS1299_REG_ID), (wr_), (rel_), (vmask_), (valid_) }
 
 /*
  * Semantic fields from TI SBAS499C Rev. C. Reserved cells are intentionally not
@@ -12,7 +13,7 @@
  */
 static const ads1299_field_info_t k_fields[ADS1299_FIELD_COUNT] = {
     FIELD(ADS1299_FIELD_ID_REV, "ID.REV", ADS1299_REG_ID, 0xE0u, 5u, 0u, 0u, 0u, 0u, 0u),
-    FIELD(ADS1299_FIELD_ID_DEVICE, "ID.DEVICE", ADS1299_REG_ID, 0x0Cu, 2u, ADS1299_ID_DEVICE_ADS1299, 0u, 0u, 0u, 0u),
+    FIELD(ADS1299_FIELD_ID_DEVICE, "ID.DEVICE", ADS1299_REG_ID, 0x0Cu, 2u, 0u, 0u, 0u, 0u, 0u),
     FIELD(ADS1299_FIELD_ID_CHANNEL_CODE, "ID.CHANNEL_CODE", ADS1299_REG_ID, 0x03u, 0u, 0u, 0u, 0u, 0u, 0x0007u),
 
     FIELD(ADS1299_FIELD_CONFIG1_DAISY_EN, "CONFIG1.DAISY_EN", ADS1299_REG_CONFIG1, 0x40u, 6u, 0u, 1u, 0u, 0u, 0x0003u),
@@ -128,9 +129,6 @@ int ads1299_field_encode(ads1299_field_id_t field,
         (current_register_value & (uint8_t)~info->mask) |
         ((uint8_t)(code << info->shift) & info->mask));
 
-    /* Normalize the write byte through the register model. This removes
-     * read-only status bits, restores TI-prescribed reserved bits, applies
-     * variant channel masks, and rejects forbidden encodings in other fields. */
     uint8_t sanitized = 0u;
     if (ads1299_sanitize_register_write(address, requested, variant, &sanitized) != 0)
         return -1;
