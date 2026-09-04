@@ -124,9 +124,22 @@ int ads1299_field_encode(ads1299_field_id_t field,
         return -1;
     }
 
-    const uint8_t next = (uint8_t)((current_register_value & (uint8_t)~info->mask) |
-                                   ((uint8_t)(code << info->shift) & info->mask));
-    if (!ads1299_register_write_value_valid(address, next, variant)) return -1;
-    *encoded_register_value = next;
+    const uint8_t requested = (uint8_t)(
+        (current_register_value & (uint8_t)~info->mask) |
+        ((uint8_t)(code << info->shift) & info->mask));
+
+    /* Normalize the write byte through the register model. This removes
+     * read-only status bits, restores TI-prescribed reserved bits, applies
+     * variant channel masks, and rejects forbidden encodings in other fields. */
+    uint8_t sanitized = 0u;
+    if (ads1299_sanitize_register_write(address, requested, variant, &sanitized) != 0)
+        return -1;
+
+    uint8_t round_trip_code = 0u;
+    if (ads1299_field_decode(field, sanitized, &round_trip_code) != 0 ||
+        round_trip_code != code) {
+        return -1;
+    }
+    *encoded_register_value = sanitized;
     return 0;
 }
