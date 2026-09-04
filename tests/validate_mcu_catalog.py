@@ -24,7 +24,8 @@ for item in projects:
         assert (p / 'port' / 'board_sdk.h').is_file(), f'missing BSP contract for {key}'
     elif style == 'native':
         assert (p / 'CMakeLists.txt').is_file() or (p / 'platformio.ini').is_file(), f'missing native build file for {key}'
-        assert (p / 'src' / 'main.c').is_file(), f'missing native main.c for {key}'
+        entry_sources = list(p.rglob('main.c')) + list(p.rglob('app_main.c'))
+        assert entry_sources, f'missing native entry source for {key}'
         port_sources = list(p.rglob('ads1299_port_*.c'))
         assert port_sources, f'missing native ADS1299 port source for {key}'
     else:
