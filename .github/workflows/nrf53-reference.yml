@@ -1,0 +1,38 @@
+name: nrf53-reference
+
+on:
+  push:
+    paths:
+      - 'firmware/mcu/nordic/nrf5340_dk/**'
+      - 'firmware/mcu/common/reference_app/**'
+      - 'firmware/core_driver/ads1299/**'
+      - 'firmware/common/data_packet/**'
+      - '.github/workflows/nrf53-reference.yml'
+  pull_request:
+    paths:
+      - 'firmware/mcu/nordic/nrf5340_dk/**'
+      - 'firmware/mcu/common/reference_app/**'
+      - 'firmware/core_driver/ads1299/**'
+      - 'firmware/common/data_packet/**'
+      - '.github/workflows/nrf53-reference.yml'
+
+jobs:
+  nrf5340-ncs:
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.4.0
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize pinned nRF Connect SDK workspace
+        run: |
+          west init -m https://github.com/nrfconnect/sdk-nrf --mr v3.4.0 /tmp/ncs
+          cd /tmp/ncs
+          west update --narrow
+          west zephyr-export
+      - name: Clean build nRF5340 DK application-core reference
+        run: |
+          cd /tmp/ncs
+          west build -p always --no-sysbuild -b nrf5340dk/nrf5340/cpuapp "$GITHUB_WORKSPACE/firmware/mcu/nordic/nrf5340_dk"
