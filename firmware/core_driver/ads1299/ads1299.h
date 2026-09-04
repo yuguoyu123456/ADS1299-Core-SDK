@@ -184,6 +184,21 @@ ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev,
 
 /* Numeric conversion */
 int32_t ads1299_sign_extend24(uint32_t value24);
+/** SBAS499C Equation 8 quantizer step: VREF / (Gain * 2^23). */
+double ads1299_lsb_volts_equation8(double vref_volts, double gain);
+/** Convert signed ADC code using the Equation-8 LSB definition. */
+double ads1299_code_to_volts_equation8(int32_t code,
+                                        double vref_volts,
+                                        double gain);
+/**
+ * Convert signed ADC code using positive-full-scale endpoint normalization:
+ * VREF / (Gain * (2^23-1)). This matches TI Table-9/E2E endpoint-style
+ * guidance and is retained as the historical project convention.
+ */
+double ads1299_code_to_volts_positive_fs(int32_t code,
+                                         double vref_volts,
+                                         double gain);
+/** Backward-compatible alias of ads1299_code_to_volts_positive_fs(). */
 double ads1299_code_to_volts(int32_t code, double vref_volts, double gain);
 double ads1299_code_to_microvolts(int32_t code, double vref_volts, double gain);
 
