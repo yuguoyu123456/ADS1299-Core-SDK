@@ -1,23 +1,23 @@
 # ADS1299 portable core driver
 
-This directory contains the controller-independent C core for the Texas Instruments ADS1299, ADS1299-6 and ADS1299-4 family. The normative device specification is the TI ADS1299-x datasheet SBAS499C (Rev. C). OpenBCI/HackEEG and other public implementations are useful implementation cross-checks, but they are not specification authorities.
+This directory contains the controller-independent C core for the Texas Instruments ADS1299, ADS1299-6 and ADS1299-4 family. The normative specification is the TI ADS1299-x datasheet SBAS499C (Rev. C). OpenBCI, HackEEG and other public implementations are implementation cross-checks only; they are not specification authorities.
 
-## Register completeness
+## Register layer
 
-`ads1299_regs.h` defines the complete user-visible register address map from `ID` (0x00) through `CONFIG4` (0x17), command opcodes, field masks/codes, and fixed reset values. `ads1299_register_model.[ch]` is the machine-readable safety model for all 24 addresses: reset value/known state, writable mask, prescribed reserved-one/reserved-zero bits, read-only classification, and ADS1299-4/-6/8 register/channel availability.
+`ads1299_regs.h` defines the complete user-visible address map from `ID` (0x00) through `CONFIG4` (0x17), every SPI command opcode, the semantic field masks/codes used by the API, and the fixed datasheet reset values. `ads1299_register_model.[ch]` is the machine-readable safety model for all 24 addresses: reset value/known state, writable mask, prescribed reserved-one/reserved-zero bits, read-only classification, and ADS1299-4/-6/8 availability.
 
-The safe mutation API in `ads1299_runtime.[ch]` validates and sanitizes requested writes against that model before SPI is touched. `ads1299_safe_write_registers()` validates an entire consecutive write first, so an invalid/read-only/unavailable register makes the whole operation side-effect-free. `ads1299_safe_update_register_bits()` rejects masks that include reserved or read-only bits.
+`ads1299_runtime.[ch]` exposes safe single, consecutive and masked register mutation. Safe consecutive writes validate every target before any SPI write occurs; safe masked updates reject masks containing reserved/read-only bits. Raw RREG/WREG remain available for expert diagnostics and compatibility.
 
-## Functional API completeness
+## Functional API layer
 
-The public core covers all meaningful writable functions described by the register map: CONFIG1 data rate, clock output and daisy/multiple-readback mode; CONFIG2 external/internal calibration source, amplitude and frequency; CONFIG3 reference/BIAS controls and BIAS sense masks/status; LOFF threshold/current/frequency, sense masks, current flip and comparator enable; every CHnSET field (power, PGA gain, SRB2 and all eight mux selections); SRB1; GPIO data/direction; CONFIG4 continuous/single-shot and lead-off comparator power; raw RREG/WREG plus safe register access; and the full SPI command set.
+The core covers the meaningful programmable functions in the register map: CONFIG1 data rate, clock output and daisy/multiple-readback mode; CONFIG2 external/internal calibration source, amplitude and frequency; CONFIG3 reference/BIAS controls and BIAS sense masks/status; LOFF threshold/current/frequency, sense masks, current flip and comparator enable; every CHnSET field (power, PGA gain, SRB2 and all eight mux selections); SRB1; GPIO data/direction; CONFIG4 continuous/single-shot and lead-off comparator power; plus the full SPI command set.
 
-The runtime layer also separates START-pin control from the START/STOP opcodes, supports PWDN and DRDY polling, enforces the TI STANDBY rule that only WAKEUP is valid until exit, and deterministically establishes command mode with SDATAC before register/RDATA transactions because RDATAC is the power-up default.
+Runtime APIs separate START-pin control from START/STOP opcodes, support PWDN and DRDY polling, enforce TI's STANDBY rule that only WAKEUP is accepted until exit, and deterministically issue SDATAC before register/RDATA transactions because RDATAC is the power-up default.
 
-Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count in the handle. Channel-oriented high-level APIs then reject unavailable channels and mask BIAS/lead-off channel bits to the detected device. Before ID probing, the API preserves backward compatibility by assuming the maximum eight-channel surface.
+Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count. Channel-oriented high-level APIs reject unavailable channels and mask BIAS/lead-off channel fields to the detected variant. Before ID probing, the API preserves compatibility by exposing the maximum eight-channel surface.
 
-`ads1299_frame.[ch]` provides variant-aware 15/21/27-byte frame decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The older fixed-27-byte acquisition helpers remain for existing ADS1299 8-channel callers.
+`ads1299_frame.[ch]` provides variant-aware 15/21/27-byte decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The older fixed-27-byte acquisition helpers remain for existing eight-channel callers.
 
 ## Validation language
 
-Passing host unit tests and GitHub CI supports a **CI-verified software** claim only. It does not establish `Bench-tested` or `24h-tested`. Hardware timing claims require the exact target board/device to be exercised and measured.
+Passing host unit tests and GitHub CI supports a **CI-verified software** claim only. It does not establish `Bench-tested` or `24h-tested`. Hardware claims require the exact target hardware to be exercised and measured.
