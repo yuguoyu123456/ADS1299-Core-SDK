@@ -94,7 +94,6 @@ int main(void) {
     assert(m.tx_log[before + 1u] ==
            (uint8_t)(ADS1299_CMD_WREG | ADS1299_REG_CONFIG1));
 
-    /* Safe writes reject TI-reserved semantic encodings before touching SPI. */
     before = m.spi_calls;
     assert(ads1299_safe_write_register(&dev, ADS1299_REG_CONFIG1, 0xFFu,
                                        ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
@@ -118,6 +117,35 @@ int main(void) {
                                         ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
     assert(m.spi_calls == before);
 
+    /* Strict mode never fixes caller mistakes. TI Rev. C's application example
+     * contains LOFF=0x13 for "dc lead-off" even though bit4 is reserved=0 and
+     * FLEAD_OFF=11 selects fDR/4. Strict mode catches the byte before SPI. */
+    before = m.spi_calls;
+    assert(ads1299_strict_write_register(&dev, ADS1299_REG_LOFF, 0x13u,
+                                         ADS1299_VARIANT_8CH) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
+
+    /* Normalizing mode is intentionally different: it clears reserved bit4 and
+     * reports the actual WREG byte, making the semantic change visible. */
+    written = 0xFFu;
+    assert(ads1299_safe_write_register(&dev, ADS1299_REG_LOFF, 0x13u,
+                                       ADS1299_VARIANT_8CH, &written) == ADS1299_OK);
+    assert(written == 0x03u);
+
+    before = m.spi_calls;
+    assert(ads1299_strict_write_register(&dev, ADS1299_REG_CONFIG1, 0xF6u,
+                                         ADS1299_VARIANT_8CH) == ADS1299_OK);
+    assert(m.spi_calls > before);
+
+    const uint8_t strict_good[2] = {0xF6u, 0xD5u};
+    assert(ads1299_strict_write_registers(&dev, ADS1299_REG_CONFIG1, strict_good, 2u,
+                                          ADS1299_VARIANT_8CH) == ADS1299_OK);
+    const uint8_t strict_bad[2] = {0xF6u, 0xC2u};
+    before = m.spi_calls;
+    assert(ads1299_strict_write_registers(&dev, ADS1299_REG_CONFIG1, strict_bad, 2u,
+                                          ADS1299_VARIANT_8CH) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
+
     before = m.spi_calls;
     assert(ads1299_safe_update_register_bits(&dev, ADS1299_REG_CONFIG1,
                                              0x08u, 0x08u,
@@ -129,7 +157,6 @@ int main(void) {
                                        ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
     assert(m.spi_calls == before);
 
-    /* ID 0x1C: ADS1299 family, 4-channel variant. Cache physical channel count. */
     m.rx_fill = 0x1Cu;
     ads1299_device_id_t id = {0};
     assert(ads1299_read_device_id(&dev, &id) == ADS1299_OK);
@@ -140,6 +167,6 @@ int main(void) {
                                ADS1299_MUX_NORMAL, 0, 0) == ADS1299_EINVAL);
     assert(m.spi_calls == before);
 
-    puts("ADS1299 runtime/state/variant/safe-field tests passed");
+    puts("ADS1299 runtime/state/strict-normalize/field tests passed");
     return 0;
 }
