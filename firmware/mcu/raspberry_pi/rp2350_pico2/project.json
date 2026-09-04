@@ -1,1 +1,1 @@
-{"vendor":"Raspberry Pi","family":"RP2350","mcu":"RP2350","board":"Raspberry Pi Pico 2","sdk":"Pico SDK 2.3.0","status":"reference-source-build-pending","style":"native","profile":"250sps-gain24-internal-test"}
+{"vendor":"Raspberry Pi","family":"RP2350","mcu":"RP2350","board":"Raspberry Pi Pico 2","sdk":"Pico SDK 2.3.0","status":"compiles","style":"native","profile":"250sps-gain24-internal-test"}
