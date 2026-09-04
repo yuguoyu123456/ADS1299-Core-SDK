@@ -1,0 +1,24 @@
+name: mcu-catalog-ci
+
+on:
+  push:
+    paths:
+      - 'firmware/mcu/**'
+      - 'tests/validate_mcu_catalog.py'
+      - '.github/workflows/mcu-catalog-ci.yml'
+  pull_request:
+    paths:
+      - 'firmware/mcu/**'
+      - 'tests/validate_mcu_catalog.py'
+      - '.github/workflows/mcu-catalog-ci.yml'
+
+jobs:
+  validate-mcu-catalog:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate 23-project MCU catalog
+        run: python tests/validate_mcu_catalog.py
