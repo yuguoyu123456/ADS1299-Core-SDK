@@ -78,7 +78,9 @@ int main(void) {
     assert(ads1299_safe_write_register(&dev, ADS1299_REG_CONFIG1, 0xFFu,
                                        ADS1299_VARIANT_8CH, &written) == ADS1299_OK);
     assert(written == 0xF7u);
-    assert(m.tx_log[before] == (uint8_t)(ADS1299_CMD_WREG | ADS1299_REG_CONFIG1));
+    assert(m.tx_log[before] == ADS1299_CMD_SDATAC);
+    assert(m.tx_log[before + 1u] ==
+           (uint8_t)(ADS1299_CMD_WREG | ADS1299_REG_CONFIG1));
 
     before = m.spi_calls;
     assert(ads1299_safe_write_register(&dev, ADS1299_REG_ID, 0xFFu,
