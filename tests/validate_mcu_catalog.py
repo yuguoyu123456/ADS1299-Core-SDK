@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MCU = ROOT / 'firmware' / 'mcu'
 CATALOG = json.loads((MCU / 'catalog.json').read_text(encoding='utf-8'))
 projects = CATALOG.get('projects', [])
-assert len(projects) >= 23, f'expected at least 23 MCU projects, got {len(projects)}'
+assert len(projects) >= 30, f'expected at least 30 MCU projects, got {len(projects)}'
 seen = set()
 allowed = {'compiles', 'reference-source-build-pending'}
 for item in projects:
@@ -19,6 +19,8 @@ for item in projects:
         assert (p / required).is_file(), f'missing {p / required}'
     manifest = json.loads((p / 'project.json').read_text(encoding='utf-8'))
     assert manifest['status'] == item['status'], f'status mismatch for {key}'
+    for required_key in ('vendor', 'family', 'mcu', 'board', 'sdk', 'status'):
+        assert manifest.get(required_key), f'missing manifest field {required_key!r} for {key}'
     style = manifest.get('style', item.get('style', 'shared-reference-app'))
     if style == 'shared-reference-app':
         assert (p / 'port' / 'board_sdk.h').is_file(), f'missing BSP contract for {key}'
