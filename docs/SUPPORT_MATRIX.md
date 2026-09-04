@@ -1,6 +1,6 @@
 # Platform support matrix
 
-ADS1299-Core-SDK separates **project presence** from **verified support**. The MCU catalog currently contains 23 representative projects.
+ADS1299-Core-SDK separates **project presence** from **verified support**. The MCU catalog currently contains **30 representative MCU/DSP projects**.
 
 ## Compiles — clean build verified
 
@@ -21,13 +21,21 @@ The following are **not yet verified support**. Each has a target manifest, READ
 
 | Vendor/family | Project |
 |---|---|
+| ST STM32H7 | `st/stm32h743_nucleo` |
+| Espressif ESP32-C6 | `espressif/esp32c6_devkitc` |
 | NXP i.MX RT | `nxp/mimxrt1060_evk` |
+| NXP LPC55 | `nxp/lpc55s69_evk` |
 | Renesas RA6 | `renesas/ek_ra6m5` |
+| Renesas RX72N | `renesas/rx72n_envision` |
 | TI MSPM0 | `ti/mspm0g3507_launchpad` |
 | TI C2000 DSP | `ti/c2000_f28379d_launchpad` |
+| TI TM4C129x | `ti/tm4c1294_launchpad` |
 | Infineon PSoC 6 | `infineon/cy8ckit_062s2_43012` |
 | Silicon Labs EFR32MG24 | `silicon_labs/efr32mg24_explorer` |
 | Microchip SAME54 | `microchip/same54_xplained_pro` |
+| Microchip SAMD51 | `microchip/samd51_xplained_pro` |
+| Microchip megaAVR | `microchip/atmega4809_curiosity_nano` |
+| Nuvoton M480 | `nuvoton/numaker_m487` |
 | HDSC HC32F460 | `hdsc/hc32f460_eval` |
 | Artery AT32F435 | `artery/at32f435_start` |
 | MindMotion MM32F3277 | `mindmotion/mm32f3277_eval` |
@@ -35,7 +43,6 @@ The following are **not yet verified support**. Each has a target manifest, READ
 | Puya PY32F403 | `puya/py32f403_eval` |
 | Geehy APM32F407 | `geehy/apm32f407_mini` |
 | STC STC32G12 | `stc/stc32g12k128_dev` |
-| Microchip megaAVR | `microchip/atmega4809_curiosity_nano` |
 
 ## Status vocabulary
 
