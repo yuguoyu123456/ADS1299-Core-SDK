@@ -1,0 +1,1 @@
+{"vendor":"STMicroelectronics","family":"STM32F4","mcu":"STM32F407VGT6","board":"Black F407VE/VG-class board","sdk":"STM32Cube HAL / PlatformIO","status":"compiles","style":"native","profile":"250sps-gain24-internal-test"}

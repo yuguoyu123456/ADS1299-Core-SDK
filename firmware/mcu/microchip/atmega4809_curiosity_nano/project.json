@@ -1,0 +1,1 @@
+{"vendor":"Microchip","family":"megaAVR 0-series","mcu":"ATmega4809","board":"ATmega4809 Curiosity Nano","sdk":"avr-gcc / Microchip device pack","status":"reference-source-build-pending","shared_app":"../../../common/reference_app","profile":"250sps-gain24-internal-test"}
