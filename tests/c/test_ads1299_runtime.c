@@ -48,6 +48,7 @@ int main(void) {
     mock_t m = {0};
     m.drdy_level = 1;
     ads1299_t dev = make_dev(&m);
+    assert(ads1299_effective_variant(&dev) == ADS1299_VARIANT_8CH);
 
     size_t before = m.spi_calls;
     assert(ads1299_standby(&dev) == ADS1299_OK);
@@ -84,6 +85,10 @@ int main(void) {
     assert(ads1299_wait_drdy(&dev, 5u, 2u) == ADS1299_ETIMEOUT);
     m.drdy_level = 0;
     assert(ads1299_wait_drdy(&dev, 5u, 2u) == ADS1299_OK);
+
+    before = m.spi_calls;
+    assert(ads1299_set_data_rate(&dev, ADS1299_DR_RESERVED) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
 
     uint8_t written = 0u;
     before = m.spi_calls;
@@ -162,11 +167,22 @@ int main(void) {
     assert(ads1299_read_device_id(&dev, &id) == ADS1299_OK);
     assert(id.is_ads1299_family == 1u && id.channel_count == 4u);
     assert(dev.channel_count == 4u);
+    assert(ads1299_effective_variant(&dev) == ADS1299_VARIANT_4CH);
+
     before = m.spi_calls;
     assert(ads1299_set_channel(&dev, 5u, ADS1299_GAIN_24,
                                ADS1299_MUX_NORMAL, 0, 0) == ADS1299_EINVAL);
     assert(m.spi_calls == before);
+    uint8_t field_code = 0u;
+    assert(ads1299_read_field(&dev, ADS1299_FIELD_CH_GAIN, 5u,
+                              ADS1299_VARIANT_4CH, &field_code) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
 
-    puts("ADS1299 runtime/state/strict-normalize/field tests passed");
+    m.rx_fill = ADS1299_RESET_CONFIG1;
+    assert(ads1299_read_field(&dev, ADS1299_FIELD_CONFIG1_DR, 0u,
+                              ADS1299_VARIANT_4CH, &field_code) == ADS1299_OK);
+    assert(field_code == ADS1299_DR_250SPS);
+
+    puts("ADS1299 runtime/state/strict-normalize/symmetric-field tests passed");
     return 0;
 }
