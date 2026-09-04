@@ -8,12 +8,14 @@ This directory contains the controller-independent C core for the Texas Instrume
 
 `ads1299_field_model.[ch]` adds a field-level specification layer. Each meaningful datasheet field has a stable field ID and machine-readable name, register location, mask, shift, reset code/known state, writable/read-only state, channel-relative behavior, variant-channel-mask behavior, and legal encoded-value set. Generic helpers resolve `CHnSET` fields to physical channel registers, decode fields, validate codes, encode fields through the register safety model, and safely write them through `ads1299_safe_write_field()`.
 
+`ads1299_semantics.[ch]` adds the physical-meaning layer above encoded fields. A valid field code can be described with a stable short name, concise meaning, quantity class, unit, optional physical value, and explicit missing-context requirements. Clock/reference-dependent values are calculated from caller-supplied context rather than being hard-coded to the nominal device setup. Examples include data rate from `fCLK`, internal test amplitude from `VREFP-VREFN`, test/lead-off frequency from `fCLK` or `fDR`, internal BIASREF from `(AVDD+AVSS)/2`, lead-off threshold/current, and PGA gain. This lets host tools, configuration inspectors and future generated bindings explain what a register configuration physically means without duplicating datasheet formulas.
+
 `ads1299_runtime.[ch]` intentionally exposes two validated whole-register write policies:
 
 - `ads1299_strict_write_register(s)` accepts only bytes that are already exactly TI-valid. It never repairs the caller's request. Wrong reserved bits, unavailable variant bits, read-only registers, or TI do-not-use encodings reject the whole call before SPI I/O.
 - `ads1299_safe_write_register(s)` is a normalizing API. It reconstructs the actual WREG byte from the TI model, reports that byte to the caller, and still rejects forbidden semantic encodings. This is useful when deliberate normalization is desired.
 
-The distinction is intentional. For example, SBAS499C section 10.1.2.1 contains a known inconsistent DC lead-off pseudo-code value `LOFF=0x13`: register Table 16 requires bit4=0 and defines `FLEAD_OFF=11` as `fDR/4`, whereas DC lead-off uses `FLEAD_OFF=00`. Strict mode rejects `0x13`; normalizing mode would produce `0x03` and return that changed byte, so applications can detect that normalization changed the requested configuration.
+The distinction is intentional. For example, SBAS499C section 10.1.2.1 contains an inconsistent DC lead-off pseudo-code value `LOFF=0x13`: register Table 16 requires bit4=0 and defines `FLEAD_OFF=11` as `fDR/4`, whereas DC lead-off uses `FLEAD_OFF=00`. Strict mode rejects `0x13`; normalizing mode produces `0x03` and returns that changed byte, so applications can detect that normalization changed the requested configuration.
 
 Raw RREG/WREG remain available for expert diagnostics and compatibility.
 
@@ -31,8 +33,10 @@ Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count. Chan
 
 Register-model tests exhaust all `24 registers × 256 byte values × 3 variants = 18,432` register-byte/variant combinations. The invariants require every successful normalization to produce an exact-valid byte, sanitizer idempotence, exact validity to match no-change normalization, and read-only/unavailable registers to remain unwritable. Field-model tests additionally exhaust every representable code of every machine-readable field across ADS1299-4/-6/8 and require valid writable fields to encode/decode round-trip through an exact-valid register byte.
 
+Semantic-value tests independently check TI formulas and nominal values (including 16 kSPS/250 SPS at 2.048 MHz, calibration-signal amplitude/frequency, BIASREF midpoint, all lead-off thresholds/currents/frequencies and PGA gains) and then exhaust every valid field code across all three variants to ensure each code is machine-describable. Tests also prove that missing `fCLK`, `fDR`, reference span or analog-supply context is reported explicitly rather than silently replaced by nominal assumptions.
+
 ## Completion criterion
 
-For the **register/API software layer**, “datasheet-complete” means every user-visible register address and meaningful programmable field in SBAS499C is represented by machine-readable register and field models and reachable through either a named high-level function or the datasheet-safe register/field APIs. Safe APIs must additionally enforce reserved/read-only rules, ADS1299-4/-6/8 differences, and field encodings explicitly prohibited by TI. Convenience APIs may continue to grow after that point without changing the completeness claim.
+For the **register/API software layer**, “datasheet-complete” means every user-visible register address and meaningful programmable field in SBAS499C is represented by machine-readable register, field and semantic models and reachable through either a named high-level function or the datasheet-safe register/field APIs. Safe APIs must additionally enforce reserved/read-only rules, ADS1299-4/-6/8 differences, and field encodings explicitly prohibited by TI. Convenience APIs may continue to grow after that point without changing the completeness claim.
 
 Passing host unit tests and GitHub CI supports a **CI-verified software** claim only. It does not establish `Bench-tested` or `24h-tested`. Hardware claims require the exact target hardware to be exercised and measured.
