@@ -1,4 +1,5 @@
 #include "ads1299.h"
+#include "ads1299_runtime.h"
 
 static uint8_t active_channel_count(const ads1299_t *dev) {
     if (dev && (dev->channel_count == 4u || dev->channel_count == 6u ||
@@ -8,36 +9,59 @@ static uint8_t active_channel_count(const ads1299_t *dev) {
     return ADS1299_CHANNEL_COUNT;
 }
 
-ads1299_status_t ads1299_set_daisy_chain_mode(ads1299_t *dev, int enable) {
-    uint8_t config1 = 0;
-    ads1299_status_t rc = ads1299_read_register(dev, ADS1299_REG_CONFIG1, &config1);
-    if (rc != ADS1299_OK) return rc;
-
-    if (enable) {
-        config1 &= (uint8_t)~ADS1299_CONFIG1_DAISY_EN;
-    } else {
-        config1 |= ADS1299_CONFIG1_DAISY_EN;
+static int encode_config2_field(ads1299_field_id_t field,
+                                uint8_t code,
+                                uint8_t *value) {
+    uint8_t next = 0u;
+    if (!value || ads1299_field_encode(field, 0u, code, *value,
+                                       ADS1299_VARIANT_8CH, &next) != 0) {
+        return -1;
     }
-    return ads1299_write_register(dev, ADS1299_REG_CONFIG1, config1);
+    *value = next;
+    return 0;
+}
+
+ads1299_status_t ads1299_set_daisy_chain_mode(ads1299_t *dev, int enable) {
+    if (!dev) return ADS1299_EINVAL;
+    const ads1299_variant_t variant = ads1299_effective_variant(dev);
+    /* TI DAISY_EN is inverted: 0=daisy-chain, 1=multiple readback. */
+    return ads1299_safe_write_field(dev, ADS1299_FIELD_CONFIG1_DAISY_EN, 0u,
+                                    enable ? 0u : 1u, variant, NULL);
+}
+
+ads1299_status_t ads1299_build_test_config2(
+    const ads1299_test_signal_config_t *config, uint8_t *value) {
+    if (!config || !value) return ADS1299_EINVAL;
+
+    uint8_t built = ADS1299_RESET_CONFIG2;
+    if (encode_config2_field(ADS1299_FIELD_CONFIG2_INT_CAL,
+                             config->use_internal_source, &built) != 0 ||
+        encode_config2_field(ADS1299_FIELD_CONFIG2_CAL_AMP,
+                             config->amplitude_x2, &built) != 0 ||
+        encode_config2_field(ADS1299_FIELD_CONFIG2_CAL_FREQ,
+                             config->frequency_code, &built) != 0) {
+        return ADS1299_EINVAL;
+    }
+    *value = built;
+    return ADS1299_OK;
 }
 
 uint8_t ads1299_make_test_config2(const ads1299_test_signal_config_t *config) {
-    if (!config) return ADS1299_CONFIG2_RESERVED_BASE;
-    uint8_t value = (uint8_t)(ADS1299_CONFIG2_RESERVED_BASE |
-                              (config->frequency_code & ADS1299_CONFIG2_CAL_FREQ_MASK));
-    if (config->use_internal_source) value |= ADS1299_CONFIG2_INT_CAL;
-    if (config->amplitude_x2) value |= ADS1299_CONFIG2_CAL_AMP;
+    uint8_t value = ADS1299_CONFIG2_RESERVED_BASE;
+    if (ads1299_build_test_config2(config, &value) != ADS1299_OK) {
+        return ADS1299_CONFIG2_RESERVED_BASE;
+    }
     return value;
 }
 
 ads1299_status_t ads1299_configure_test_signal(
     ads1299_t *dev, const ads1299_test_signal_config_t *config) {
-    if (!dev || !config || config->frequency_code > ADS1299_TEST_FREQ_DC ||
-        config->frequency_code == ADS1299_TEST_FREQ_RESERVED) {
-        return ADS1299_EINVAL;
-    }
-    return ads1299_write_register(dev, ADS1299_REG_CONFIG2,
-                                  ads1299_make_test_config2(config));
+    if (!dev || !config) return ADS1299_EINVAL;
+    uint8_t value = 0u;
+    ads1299_status_t rc = ads1299_build_test_config2(config, &value);
+    if (rc != ADS1299_OK) return rc;
+    return ads1299_strict_write_register(dev, ADS1299_REG_CONFIG2, value,
+                                         ads1299_effective_variant(dev));
 }
 
 uint8_t ads1299_make_internal_test_config2(int amplitude_x2, uint8_t freq_code) {
