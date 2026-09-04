@@ -1,6 +1,6 @@
 # MCU Reference Projects
 
-`firmware/mcu/` is organized first by MCU vendor, then by exact board/MCU project. The repository currently tracks **23 representative MCU/DSP projects**. Five have clean CI build evidence; eighteen have a concrete reference-source profile and BSP contract but still require vendor-SDK binding and clean-build evidence before they can be called `Compiles`.
+`firmware/mcu/` is organized first by MCU vendor, then by exact board/MCU project. The repository currently tracks **23 representative MCU/DSP projects**. Six have clean CI build evidence; seventeen have a concrete reference-source profile and BSP contract but still require vendor-SDK binding and clean-build evidence before they can be called `Compiles`.
 
 ## Validation vocabulary
 
@@ -15,13 +15,13 @@
 
 - STMicroelectronics — `st/stm32f407_black/`
 - Espressif — `espressif/esp32s3_devkitc/`
+- GigaDevice — `gigadevice/gd32f450z_eval/`
 - Raspberry Pi — `raspberry_pi/rp2040_pico/`
 - Raspberry Pi — `raspberry_pi/rp2350_pico2/`
 - WCH — `wch/ch32v307_evt/`
 
 ### Reference source / build-pending
 
-- GigaDevice — `gigadevice/gd32f450z_eval/`
 - Nordic — `nordic/nrf52840_dk/`
 - Nordic — `nordic/nrf5340_dk/`
 - NXP — `nxp/mimxrt1060_evk/`
@@ -44,4 +44,4 @@
 
 `common/reference_app/` contains the reusable ADS1299 acquisition path for build-pending projects. It owns reset, ID read, 250 SPS, gain 24, internal test signal, RDATAC/START, DRDY handling, frame decode and the common 49-byte packet. Each shared-style MCU project supplies only the board-specific BSP contract. This avoids divergent copies of ADS1299 logic.
 
-The next maintenance objective is not to add more names. It is to graduate these eighteen projects one by one from `Reference source / build-pending` to `Compiles` using their real vendor SDKs and CI/toolchain evidence.
+The next maintenance objective is not to add more names. It is to graduate these seventeen projects one by one from `Reference source / build-pending` to `Compiles` using their real vendor SDKs and CI/toolchain evidence.
