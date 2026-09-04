@@ -124,3 +124,32 @@ ads1299_status_t ads1299_safe_update_register_bits(ads1299_t *dev,
     const uint8_t requested = (uint8_t)((current & (uint8_t)~mask) | (value & mask));
     return ads1299_safe_write_register(dev, address, requested, variant, written_value);
 }
+
+ads1299_status_t ads1299_safe_write_field(ads1299_t *dev,
+                                          ads1299_field_id_t field,
+                                          uint8_t channel_1_to_8,
+                                          uint8_t code,
+                                          ads1299_variant_t variant,
+                                          uint8_t *written_register_value) {
+    if (!dev) return ADS1299_EINVAL;
+
+    uint8_t address = 0u;
+    if (ads1299_field_register_address(field, channel_1_to_8, variant, &address) != 0 ||
+        !ads1299_field_code_valid(field, code, variant)) {
+        return ADS1299_EINVAL;
+    }
+    const ads1299_field_info_t *info = ads1299_field_info(field);
+    if (!info || !info->writable) return ADS1299_EINVAL;
+
+    uint8_t current = 0u;
+    ads1299_status_t rc = ads1299_read_register(dev, address, &current);
+    if (rc != ADS1299_OK) return rc;
+
+    uint8_t requested = 0u;
+    if (ads1299_field_encode(field, channel_1_to_8, code, current, variant,
+                             &requested) != 0) {
+        return ADS1299_EINVAL;
+    }
+    return ads1299_safe_write_register(dev, address, requested, variant,
+                                       written_register_value);
+}
