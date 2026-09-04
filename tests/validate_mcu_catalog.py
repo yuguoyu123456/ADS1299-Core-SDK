@@ -25,7 +25,7 @@ for item in projects:
     elif style == 'native':
         assert (p / 'CMakeLists.txt').is_file() or (p / 'platformio.ini').is_file(), f'missing native build file for {key}'
         assert (p / 'src' / 'main.c').is_file(), f'missing native main.c for {key}'
-        port_sources = list((p / 'port').glob('ads1299_port_*.c')) if (p / 'port').is_dir() else []
+        port_sources = list(p.rglob('ads1299_port_*.c'))
         assert port_sources, f'missing native ADS1299 port source for {key}'
     else:
         raise AssertionError(f'unknown project style {style!r} for {key}')
