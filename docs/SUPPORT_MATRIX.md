@@ -10,6 +10,7 @@ ADS1299-Core-SDK separates **project presence** from **verified support**. The M
 | Espressif | `firmware/mcu/espressif/esp32s3_devkitc/` | ESP-IDF | Pre-hardware-validation |
 | GigaDevice | `firmware/mcu/gigadevice/gd32f450z_eval/` | pinned GD32 PlatformIO + GD32F4xx SPL | Pre-hardware-validation |
 | Nordic Semiconductor | `firmware/mcu/nordic/nrf52840_dk/` | nRF Connect SDK v3.4.0 LTS / Zephyr | Pre-hardware-validation |
+| Nordic Semiconductor | `firmware/mcu/nordic/nrf5340_dk/` | nRF Connect SDK v3.4.0 LTS / Zephyr | Pre-hardware-validation |
 | Raspberry Pi | `firmware/mcu/raspberry_pi/rp2040_pico/` | Pico SDK 2.3.0 | Pre-hardware-validation |
 | Raspberry Pi | `firmware/mcu/raspberry_pi/rp2350_pico2/` | Pico SDK 2.3.0 | Pre-hardware-validation |
 | WCH | `firmware/mcu/wch/ch32v307_evt/` | WCH NoneOS / PlatformIO | Pre-hardware-validation |
@@ -20,7 +21,6 @@ The following are **not yet verified support**. Each has a target manifest, READ
 
 | Vendor/family | Project |
 |---|---|
-| Nordic nRF53 | `nordic/nrf5340_dk` |
 | NXP i.MX RT | `nxp/mimxrt1060_evk` |
 | Renesas RA6 | `renesas/ek_ra6m5` |
 | TI MSPM0 | `ti/mspm0g3507_launchpad` |
