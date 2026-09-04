@@ -8,13 +8,19 @@ ads1299_status_t ads1299_wakeup(ads1299_t *dev) {
     ads1299_status_t rc = ads1299_command(dev, ADS1299_CMD_WAKEUP);
     if (rc == ADS1299_OK) {
         dev->port.delay_us(dev->port.user, ADS1299_WAKEUP_GUARD_US);
+        dev->standby_mode = 0u;
     }
     return rc;
 }
 
 ads1299_status_t ads1299_standby(ads1299_t *dev) {
     if (!dev) return ADS1299_EINVAL;
-    return ads1299_command(dev, ADS1299_CMD_STANDBY);
+    ads1299_status_t rc = ads1299_command(dev, ADS1299_CMD_STANDBY);
+    if (rc == ADS1299_OK) {
+        dev->standby_mode = 1u;
+        dev->continuous_mode = 0u;
+    }
+    return rc;
 }
 
 ads1299_status_t ads1299_set_power_down(ads1299_t *dev, int power_down) {
@@ -22,21 +28,22 @@ ads1299_status_t ads1299_set_power_down(ads1299_t *dev, int power_down) {
     dev->port.pwdn_write(dev->port.user, power_down ? 0 : 1);
     if (power_down) {
         dev->continuous_mode = 0u;
+        dev->standby_mode = 0u;
     }
     return ADS1299_OK;
 }
 
 ads1299_status_t ads1299_start_pin(ads1299_t *dev) {
     if (!dev || !dev->port.start_write || !dev->port.delay_us) return ADS1299_EINVAL;
+    if (dev->standby_mode) return ADS1299_ESTATE;
     dev->port.start_write(dev->port.user, 1);
-    /* TI requires START high for at least 2 tCLK. A 2-us guard is conservative
-       for the nominal 2.048-MHz device clock while keeping this API portable. */
     dev->port.delay_us(dev->port.user, ADS1299_START_PULSE_US);
     return ADS1299_OK;
 }
 
 ads1299_status_t ads1299_stop_pin(ads1299_t *dev) {
     if (!dev || !dev->port.start_write) return ADS1299_EINVAL;
+    if (dev->standby_mode) return ADS1299_ESTATE;
     dev->port.start_write(dev->port.user, 0);
     return ADS1299_OK;
 }
@@ -47,6 +54,7 @@ ads1299_status_t ads1299_wait_drdy(ads1299_t *dev,
     if (!dev || !dev->port.drdy_read || !dev->port.delay_us || timeout_us == 0u) {
         return ADS1299_EINVAL;
     }
+    if (dev->standby_mode) return ADS1299_ESTATE;
     if (poll_interval_us == 0u) poll_interval_us = 1u;
 
     uint32_t elapsed = 0u;
@@ -60,17 +68,59 @@ ads1299_status_t ads1299_wait_drdy(ads1299_t *dev,
     return ADS1299_ETIMEOUT;
 }
 
+ads1299_status_t ads1299_safe_write_registers(ads1299_t *dev,
+                                              uint8_t address,
+                                              const uint8_t *requested,
+                                              size_t count,
+                                              ads1299_variant_t variant,
+                                              uint8_t *written_values) {
+    if (!dev || !requested || count == 0u || address > ADS1299_REG_LAST ||
+        count > (size_t)(ADS1299_REG_LAST - address + 1u) ||
+        count > ADS1299_REGISTER_COUNT) {
+        return ADS1299_EINVAL;
+    }
+
+    uint8_t sanitized[ADS1299_REGISTER_COUNT] = {0};
+    for (size_t i = 0; i < count; ++i) {
+        if (ads1299_sanitize_register_write((uint8_t)(address + i), requested[i],
+                                            variant, &sanitized[i]) != 0) {
+            return ADS1299_EINVAL;
+        }
+    }
+
+    ads1299_status_t rc = ads1299_write_registers(dev, address, sanitized, count);
+    if (rc == ADS1299_OK && written_values) {
+        for (size_t i = 0; i < count; ++i) written_values[i] = sanitized[i];
+    }
+    return rc;
+}
+
 ads1299_status_t ads1299_safe_write_register(ads1299_t *dev,
                                              uint8_t address,
                                              uint8_t requested,
                                              ads1299_variant_t variant,
                                              uint8_t *written_value) {
-    if (!dev) return ADS1299_EINVAL;
-    uint8_t sanitized = 0u;
-    if (ads1299_sanitize_register_write(address, requested, variant, &sanitized) != 0) {
+    return ads1299_safe_write_registers(dev, address, &requested, 1u, variant,
+                                        written_value);
+}
+
+ads1299_status_t ads1299_safe_update_register_bits(ads1299_t *dev,
+                                                   uint8_t address,
+                                                   uint8_t mask,
+                                                   uint8_t value,
+                                                   ads1299_variant_t variant,
+                                                   uint8_t *written_value) {
+    if (!dev || mask == 0u) return ADS1299_EINVAL;
+    const ads1299_register_info_t *info = ads1299_register_info(address);
+    if (!info || info->read_only || !ads1299_register_available(address, variant) ||
+        (mask & (uint8_t)~info->writable_mask) != 0u) {
         return ADS1299_EINVAL;
     }
-    ads1299_status_t rc = ads1299_write_register(dev, address, sanitized);
-    if (rc == ADS1299_OK && written_value) *written_value = sanitized;
-    return rc;
+
+    uint8_t current = 0u;
+    ads1299_status_t rc = ads1299_read_register(dev, address, &current);
+    if (rc != ADS1299_OK) return rc;
+
+    const uint8_t requested = (uint8_t)((current & (uint8_t)~mask) | (value & mask));
+    return ads1299_safe_write_register(dev, address, requested, variant, written_value);
 }
