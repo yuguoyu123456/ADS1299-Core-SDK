@@ -1,8 +1,8 @@
 # nRF5340 DK ADS1299 reference firmware
 
-Status: **Reference source / build-pending** until this branch's clean CI build succeeds. Hardware validation pending.
+Status: **Compiles** with clean GitHub Actions build against **nRF Connect SDK v3.4.0 LTS / Zephyr**. Hardware validation pending.
 
-Target: **nRF5340 application core** on **nRF5340 DK**, using **nRF Connect SDK v3.4.0 LTS / Zephyr** and board target `nrf5340dk/nrf5340/cpuapp`.
+Target: **nRF5340 application core** on **nRF5340 DK**, using board target `nrf5340dk/nrf5340/cpuapp`.
 
 The firmware reuses `firmware/mcu/common/reference_app/`: ADS1299 reset, ID read, 250 SPS, gain 24, internal-test routing, RDATAC/START, DRDY polling, 27-byte frame decoding and common 49-byte packet output. The nRF5340-specific code is only the GPIO/timing BSP in `src/board_sdk.c`.
 
@@ -32,6 +32,6 @@ Inside an nRF Connect SDK v3.4.0 workspace:
 west build -p always --no-sysbuild -b nrf5340dk/nrf5340/cpuapp firmware/mcu/nordic/nrf5340_dk
 ```
 
-GitHub Actions uses Nordic's `ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.4.0` container and initializes a pinned NCS v3.4.0 workspace before building.
+GitHub Actions uses Nordic's `ghcr.io/nrfconnect/sdk-nrf-toolchain:v3.4.0` container and initializes a pinned NCS v3.4.0 workspace before building. The clean build succeeded before this status was upgraded.
 
-Do not label this target `Compiles` until the final-head clean build above succeeds. No Bench-tested or 24h-tested claim is made without real hardware evidence.
+This is a **compile-level** claim only. No Bench-tested or 24h-tested claim is made without real hardware evidence.
