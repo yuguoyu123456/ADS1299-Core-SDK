@@ -45,8 +45,7 @@
 #define ADS1299_REG_LAST         ADS1299_REG_CONFIG4
 #define ADS1299_REGISTER_COUNT   24u
 
-/* Datasheet reset values. ID is silicon/revision dependent, so no fixed ID
- * reset byte is defined; use ads1299_register_info() for reset_known metadata. */
+/* Fixed reset values. ID is device/revision dependent. */
 #define ADS1299_RESET_CONFIG1      0x96u
 #define ADS1299_RESET_CONFIG2      0xC0u
 #define ADS1299_RESET_CONFIG3      0x60u
@@ -63,6 +62,21 @@
 #define ADS1299_RESET_MISC1        0x00u
 #define ADS1299_RESET_MISC2        0x00u
 #define ADS1299_RESET_CONFIG4      0x00u
+
+/* Semantic user-writable masks. Reserved bits with prescribed values are
+ * intentionally excluded even when TI labels the physical cell R/W. */
+#define ADS1299_ID_WRITABLE_MASK           0x00u
+#define ADS1299_CONFIG1_WRITABLE_MASK      0x67u
+#define ADS1299_CONFIG2_WRITABLE_MASK      0x17u
+#define ADS1299_CONFIG3_WRITABLE_MASK      0x9Eu
+#define ADS1299_LOFF_WRITABLE_MASK         0xEFu
+#define ADS1299_CHNSET_WRITABLE_MASK       0xFFu
+#define ADS1299_CHANNEL_BITS_WRITABLE_MASK 0xFFu
+#define ADS1299_LOFF_STAT_WRITABLE_MASK    0x00u
+#define ADS1299_GPIO_WRITABLE_MASK         0xFFu
+#define ADS1299_MISC1_WRITABLE_MASK        0x20u
+#define ADS1299_MISC2_WRITABLE_MASK        0x00u
+#define ADS1299_CONFIG4_WRITABLE_MASK      0x0Au
 
 #define ADS1299_CHANNEL_COUNT       8u
 #define ADS1299_STATUS_BYTES        3u
@@ -117,7 +131,6 @@
 #define ADS1299_CONFIG3_PD_BIAS          0x04u
 #define ADS1299_CONFIG3_BIAS_LOFF_SENS   0x02u
 #define ADS1299_CONFIG3_BIAS_STAT        0x01u
-#define ADS1299_CONFIG3_WRITABLE_MASK    0xFEu
 #define ADS1299_CONFIG3_REFBUF_ENABLE    ADS1299_CONFIG3_PD_REFBUF
 #define ADS1299_CONFIG3_BIASBUF_ENABLE   ADS1299_CONFIG3_PD_BIAS
 
@@ -178,12 +191,10 @@
 
 /* MISC1 */
 #define ADS1299_MISC1_SRB1            0x20u
-#define ADS1299_MISC1_WRITABLE_MASK   0x20u
 
 /* CONFIG4 */
 #define ADS1299_CONFIG4_SINGLE_SHOT      0x08u
 #define ADS1299_CONFIG4_PD_LOFF_COMP     0x02u
 #define ADS1299_CONFIG4_LOFF_COMP_ENABLE ADS1299_CONFIG4_PD_LOFF_COMP
-#define ADS1299_CONFIG4_WRITABLE_MASK    0x0Au
 
 #endif /* ADS1299_REGS_H */
