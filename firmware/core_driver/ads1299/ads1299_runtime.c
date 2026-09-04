@@ -68,6 +68,44 @@ ads1299_status_t ads1299_wait_drdy(ads1299_t *dev,
     return ADS1299_ETIMEOUT;
 }
 
+ads1299_variant_t ads1299_effective_variant(const ads1299_t *dev) {
+    if (dev) {
+        if (dev->channel_count == 4u) return ADS1299_VARIANT_4CH;
+        if (dev->channel_count == 6u) return ADS1299_VARIANT_6CH;
+        if (dev->channel_count == 8u) return ADS1299_VARIANT_8CH;
+    }
+    return ADS1299_VARIANT_8CH;
+}
+
+ads1299_status_t ads1299_read_field(ads1299_t *dev,
+                                    ads1299_field_id_t field,
+                                    uint8_t channel_1_to_8,
+                                    ads1299_variant_t variant,
+                                    uint8_t *code) {
+    if (!dev || !code || ads1299_variant_channel_mask(variant) == 0u) {
+        return ADS1299_EINVAL;
+    }
+
+    uint8_t address = 0u;
+    if (ads1299_field_register_address(field, channel_1_to_8, variant, &address) != 0) {
+        return ADS1299_EINVAL;
+    }
+
+    uint8_t register_value = 0u;
+    ads1299_status_t rc = ads1299_read_register(dev, address, &register_value);
+    if (rc != ADS1299_OK) return rc;
+
+    uint8_t decoded = 0u;
+    if (ads1299_field_decode(field, register_value, &decoded) != 0) {
+        return ADS1299_EINVAL;
+    }
+    if (!ads1299_field_code_valid(field, decoded, variant)) {
+        return ADS1299_EVERIFY;
+    }
+    *code = decoded;
+    return ADS1299_OK;
+}
+
 ads1299_status_t ads1299_safe_write_registers(ads1299_t *dev,
                                               uint8_t address,
                                               const uint8_t *requested,
