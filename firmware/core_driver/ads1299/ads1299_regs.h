@@ -105,7 +105,8 @@
 #define ADS1299_ID_CHANNEL_6        0x01u
 #define ADS1299_ID_CHANNEL_8        0x02u
 
-/* CONFIG1 */
+/* CONFIG1. Historical SPS names are the nominal values at fCLK=2.048 MHz;
+ * formula aliases below are clock-independent and preferred in generic tools. */
 #define ADS1299_CONFIG1_RESERVED_BASE 0x90u
 #define ADS1299_CONFIG1_DAISY_EN      0x40u
 #define ADS1299_CONFIG1_CLK_EN        0x20u
@@ -118,6 +119,13 @@
 #define ADS1299_DR_500SPS 0x05u
 #define ADS1299_DR_250SPS 0x06u
 #define ADS1299_DR_RESERVED 0x07u /* TI: reserved; do not use */
+#define ADS1299_DR_FMOD_DIV_64   ADS1299_DR_16KSPS
+#define ADS1299_DR_FMOD_DIV_128  ADS1299_DR_8KSPS
+#define ADS1299_DR_FMOD_DIV_256  ADS1299_DR_4KSPS
+#define ADS1299_DR_FMOD_DIV_512  ADS1299_DR_2KSPS
+#define ADS1299_DR_FMOD_DIV_1024 ADS1299_DR_1KSPS
+#define ADS1299_DR_FMOD_DIV_2048 ADS1299_DR_500SPS
+#define ADS1299_DR_FMOD_DIV_4096 ADS1299_DR_250SPS
 
 /* CONFIG2 */
 #define ADS1299_CONFIG2_RESERVED_BASE 0xC0u
@@ -161,12 +169,16 @@
 #define ADS1299_LOFF_CURRENT_6UA         0x02u
 #define ADS1299_LOFF_CURRENT_24UA        0x03u
 #define ADS1299_LOFF_FREQ_DC             0x00u
-#define ADS1299_LOFF_FREQ_7_8HZ          0x01u
-#define ADS1299_LOFF_FREQ_31_2HZ         0x02u
+#define ADS1299_LOFF_FREQ_7_8HZ          0x01u /* nominal at fCLK=2.048 MHz */
+#define ADS1299_LOFF_FREQ_31_2HZ         0x02u /* nominal at fCLK=2.048 MHz */
 #define ADS1299_LOFF_FREQ_FDR_DIV_4      0x03u
+#define ADS1299_LOFF_FREQ_FCLK_DIV_2_18  ADS1299_LOFF_FREQ_7_8HZ
+#define ADS1299_LOFF_FREQ_FCLK_DIV_2_16  ADS1299_LOFF_FREQ_31_2HZ
+/* Historical typo retained only for source compatibility. */
 #define ADS1299_LOFF_FREQ_FDR_DIV_450    ADS1299_LOFF_FREQ_FDR_DIV_4
 
-/* CHnSET */
+/* CHnSET. ADS1299_GAIN_* values are register-bit encodings. Generic field APIs
+ * consume the unshifted ADS1299_GAIN_CODE_* values instead. */
 #define ADS1299_CH_POWER_DOWN   0x80u
 #define ADS1299_CH_GAIN_MASK    0x70u
 #define ADS1299_CH_SRB2         0x08u
@@ -179,6 +191,21 @@
 #define ADS1299_GAIN_12         0x50u
 #define ADS1299_GAIN_24         0x60u
 #define ADS1299_GAIN_DO_NOT_USE 0x70u /* TI: 111 is do not use */
+#define ADS1299_GAIN_BITS_1     ADS1299_GAIN_1
+#define ADS1299_GAIN_BITS_2     ADS1299_GAIN_2
+#define ADS1299_GAIN_BITS_4     ADS1299_GAIN_4
+#define ADS1299_GAIN_BITS_6     ADS1299_GAIN_6
+#define ADS1299_GAIN_BITS_8     ADS1299_GAIN_8
+#define ADS1299_GAIN_BITS_12    ADS1299_GAIN_12
+#define ADS1299_GAIN_BITS_24    ADS1299_GAIN_24
+#define ADS1299_GAIN_CODE_1     0x00u
+#define ADS1299_GAIN_CODE_2     0x01u
+#define ADS1299_GAIN_CODE_4     0x02u
+#define ADS1299_GAIN_CODE_6     0x03u
+#define ADS1299_GAIN_CODE_8     0x04u
+#define ADS1299_GAIN_CODE_12    0x05u
+#define ADS1299_GAIN_CODE_24    0x06u
+#define ADS1299_GAIN_CODE_DO_NOT_USE 0x07u
 #define ADS1299_MUX_NORMAL      0x00u
 #define ADS1299_MUX_SHORTED     0x01u
 #define ADS1299_MUX_BIAS_MEAS   0x02u
