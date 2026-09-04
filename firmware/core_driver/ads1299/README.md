@@ -29,6 +29,8 @@ Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count. Chan
 
 `ads1299_frame.[ch]` provides variant-aware 15/21/27-byte decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The older fixed-27-byte acquisition helpers remain for existing eight-channel callers.
 
+`ads1299_diagnostics.[ch]` makes TI's built-in diagnostic MUX functions directly usable instead of leaving them as bare MUX codes. It provides named temperature- and supply-measurement channel profiles, implements the SBAS499C Equation-3 temperature conversion from input-referred microvolts, and exposes the channel-dependent MVDD differential stimulus (`0.5*(AVDD+AVSS)` for channels 1,2,5,6,7,8; `DVDD/4` for channels 3,4). Supply measurement is configured at gain=1 as TI recommends to reduce saturation risk. The temperature helper deliberately starts from microvolts so callers must make their ADC code-scaling convention explicit first.
+
 ## ADC code-to-voltage conventions
 
 SBAS499C Rev. C presents two closely related ways to talk about the signed 24-bit transfer function. Equation 8 defines one quantizer LSB as `(2 × VREF / Gain) / 2^24 = +FS / 2^23`. The maximum positive code is nevertheless `0x7FFFFF` (`2^23-1`), while the negative endpoint is `0x800000` (`-2^23`). Table 9 and TI support examples also commonly normalize the maximum positive code to +FS using `2^23-1`.
@@ -47,7 +49,7 @@ Register-model tests exhaust all `24 registers × 256 byte values × 3 variants 
 
 Semantic-value tests independently check TI formulas and nominal values (including 16 kSPS/250 SPS at 2.048 MHz, calibration-signal amplitude/frequency, BIASREF midpoint, all lead-off thresholds/currents/frequencies and PGA gains) and then exhaust every valid field code across all three variants to ensure each code is machine-describable. Tests also prove that missing `fCLK`, `fDR`, reference span or analog-supply context is reported explicitly rather than silently replaced by nominal assumptions.
 
-ADC-conversion tests separately verify sign-extension endpoints, the Equation-8 one-LSB weight, both full-scale conventions, their one-LSB endpoint difference, invalid-parameter handling, and backward compatibility of the historical conversion API.
+ADC-conversion tests separately verify sign-extension endpoints, the Equation-8 one-LSB weight, both full-scale conventions, their one-LSB endpoint difference, invalid-parameter handling, and backward compatibility of the historical conversion API. Diagnostic tests check Equation-3 temperature points, both MVDD channel formulas including bipolar analog supply context, TI's gain=1 supply profile, MUX selection, and variant/channel rejection before SPI I/O.
 
 ## Completion criterion
 
