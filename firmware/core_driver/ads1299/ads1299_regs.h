@@ -151,7 +151,10 @@
 #define ADS1299_LOFF_FREQ_DC             0x00u
 #define ADS1299_LOFF_FREQ_7_8HZ          0x01u
 #define ADS1299_LOFF_FREQ_31_2HZ         0x02u
-#define ADS1299_LOFF_FREQ_FDR_DIV_450    0x03u
+/* SBAS499C Table 16 defines FLEAD_OFF=11 as AC lead-off at fDR/4. */
+#define ADS1299_LOFF_FREQ_FDR_DIV_4      0x03u
+/* Backward-compatible alias for a historical naming error. Do not use in new code. */
+#define ADS1299_LOFF_FREQ_FDR_DIV_450    ADS1299_LOFF_FREQ_FDR_DIV_4
 
 /* -------------------------------------------------------------------------- */
 /* CHnSET: per-channel power, PGA gain, SRB2 and input mux                    */
