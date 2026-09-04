@@ -6,18 +6,19 @@
 #include "ads1299_runtime.h"
 
 typedef struct {
-    uint8_t tx_log[32];
+    uint8_t tx_log[64];
     size_t spi_calls;
     uint32_t delay_total;
     int start_level;
     int pwdn_level;
     int drdy_level;
+    uint8_t rx_fill;
 } mock_t;
 
 static int spi_transfer(void *user, const uint8_t *tx, uint8_t *rx, size_t len) {
     mock_t *m = (mock_t *)user;
     if (tx && len) m->tx_log[m->spi_calls] = tx[0];
-    if (rx) memset(rx, 0, len);
+    if (rx) memset(rx, m->rx_fill, len);
     m->spi_calls++;
     return 0;
 }
@@ -50,10 +51,21 @@ int main(void) {
 
     size_t before = m.spi_calls;
     assert(ads1299_standby(&dev) == ADS1299_OK);
+    assert(dev.standby_mode == 1u);
     assert(m.tx_log[before] == ADS1299_CMD_STANDBY);
+
     before = m.spi_calls;
+    assert(ads1299_start(&dev) == ADS1299_ESTATE);
+    assert(ads1299_sdatac(&dev) == ADS1299_ESTATE);
+    assert(m.spi_calls == before);
+
+    uint8_t tmp = 0u;
+    assert(ads1299_read_register(&dev, ADS1299_REG_CONFIG1, &tmp) == ADS1299_ESTATE);
+    assert(m.spi_calls == before);
+
     uint32_t delay_before = m.delay_total;
     assert(ads1299_wakeup(&dev) == ADS1299_OK);
+    assert(dev.standby_mode == 0u);
     assert(m.tx_log[before] == ADS1299_CMD_WAKEUP);
     assert(m.delay_total >= delay_before + 4u);
 
@@ -82,11 +94,35 @@ int main(void) {
     assert(m.tx_log[before + 1u] ==
            (uint8_t)(ADS1299_CMD_WREG | ADS1299_REG_CONFIG1));
 
+    const uint8_t requested[2] = {0xFFu, 0xFFu};
+    uint8_t sanitized[2] = {0u, 0u};
+    assert(ads1299_safe_write_registers(&dev, ADS1299_REG_CONFIG1, requested, 2u,
+                                        ADS1299_VARIANT_8CH, sanitized) == ADS1299_OK);
+    assert(sanitized[0] == 0xF7u);
+    assert(sanitized[1] == 0xD7u);
+
+    before = m.spi_calls;
+    assert(ads1299_safe_update_register_bits(&dev, ADS1299_REG_CONFIG1,
+                                             0x08u, 0x08u,
+                                             ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
+
     before = m.spi_calls;
     assert(ads1299_safe_write_register(&dev, ADS1299_REG_ID, 0xFFu,
                                        ADS1299_VARIANT_8CH, NULL) == ADS1299_EINVAL);
     assert(m.spi_calls == before);
 
-    puts("ADS1299 runtime-control and safe-write tests passed");
+    /* ID 0x1C: ADS1299 family, 4-channel variant. Cache physical channel count. */
+    m.rx_fill = 0x1Cu;
+    ads1299_device_id_t id = {0};
+    assert(ads1299_read_device_id(&dev, &id) == ADS1299_OK);
+    assert(id.is_ads1299_family == 1u && id.channel_count == 4u);
+    assert(dev.channel_count == 4u);
+    before = m.spi_calls;
+    assert(ads1299_set_channel(&dev, 5u, ADS1299_GAIN_24,
+                               ADS1299_MUX_NORMAL, 0, 0) == ADS1299_EINVAL);
+    assert(m.spi_calls == before);
+
+    puts("ADS1299 runtime/state/variant/safe-register tests passed");
     return 0;
 }
