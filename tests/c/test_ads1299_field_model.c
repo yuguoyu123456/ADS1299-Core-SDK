@@ -86,6 +86,15 @@ static void test_decode_and_encode(void) {
                                 ADS1299_VARIANT_8CH, &encoded) == 0);
     assert((encoded & ADS1299_CH_GAIN_MASK) == ADS1299_GAIN_12);
 
+    /* BIAS_STAT is read-only. A high status bit from RREG must never be echoed
+     * into the WREG byte while changing another CONFIG3 field. */
+    assert(ads1299_field_encode(ADS1299_FIELD_CONFIG3_PD_BIAS, 0u, 1u,
+                                (uint8_t)(ADS1299_RESET_CONFIG3 |
+                                          ADS1299_CONFIG3_BIAS_STAT),
+                                ADS1299_VARIANT_8CH, &encoded) == 0);
+    assert((encoded & ADS1299_CONFIG3_BIAS_STAT) == 0u);
+    assert((encoded & ADS1299_CONFIG3_PD_BIAS) != 0u);
+
     assert(ads1299_field_encode(ADS1299_FIELD_CONFIG3_BIAS_STAT, 0u, 1u,
                                 ADS1299_RESET_CONFIG3,
                                 ADS1299_VARIANT_8CH, &encoded) == -1);
