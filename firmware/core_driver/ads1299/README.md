@@ -6,9 +6,16 @@ This directory contains the controller-independent C core for the Texas Instrume
 
 `ads1299_regs.h` defines the complete user-visible address map from `ID` (0x00) through `CONFIG4` (0x17), every SPI command opcode, semantic field masks/codes, fixed datasheet reset values, and explicit constants for encodings that TI marks Reserved or Do not use. `ads1299_register_model.[ch]` is the machine-readable safety model for all 24 addresses: reset value/known state, writable mask, prescribed reserved-one/reserved-zero bits, read-only classification, ADS1299-4/-6/8 availability, and field-semantic legality.
 
-`ads1299_field_model.[ch]` adds a second, field-level specification layer. Each meaningful datasheet field has a stable field ID and machine-readable name, register location, mask, shift, reset code, writable/read-only state, channel-relative behavior, variant-channel-mask behavior, and legal encoded-value set. Generic helpers can resolve `CHnSET` fields to a physical channel register, decode a field, validate its code, encode it without touching unrelated bits, and safely write it through `ads1299_safe_write_field()`.
+`ads1299_field_model.[ch]` adds a field-level specification layer. Each meaningful datasheet field has a stable field ID and machine-readable name, register location, mask, shift, reset code/known state, writable/read-only state, channel-relative behavior, variant-channel-mask behavior, and legal encoded-value set. Generic helpers resolve `CHnSET` fields to physical channel registers, decode fields, validate codes, encode fields through the register safety model, and safely write them through `ads1299_safe_write_field()`.
 
-`ads1299_runtime.[ch]` exposes safe field, single-register, consecutive-register and masked register mutation. Safe operations validate the complete request before SPI I/O: they reject read-only/unavailable registers, wrong reserved-bit values, unavailable variant channel bits, and TI-forbidden semantic encodings such as `CONFIG1.DR=111`, `CONFIG2.CAL_FREQ=10`, and `CHnSET.GAIN=111`. Raw RREG/WREG remain available for expert diagnostics and compatibility.
+`ads1299_runtime.[ch]` intentionally exposes two validated whole-register write policies:
+
+- `ads1299_strict_write_register(s)` accepts only bytes that are already exactly TI-valid. It never repairs the caller's request. Wrong reserved bits, unavailable variant bits, read-only registers, or TI do-not-use encodings reject the whole call before SPI I/O.
+- `ads1299_safe_write_register(s)` is a normalizing API. It reconstructs the actual WREG byte from the TI model, reports that byte to the caller, and still rejects forbidden semantic encodings. This is useful when deliberate normalization is desired.
+
+The distinction is intentional. For example, SBAS499C section 10.1.2.1 contains a known inconsistent DC lead-off pseudo-code value `LOFF=0x13`: register Table 16 requires bit4=0 and defines `FLEAD_OFF=11` as `fDR/4`, whereas DC lead-off uses `FLEAD_OFF=00`. Strict mode rejects `0x13`; normalizing mode would produce `0x03` and return that changed byte, so applications can detect that normalization changed the requested configuration.
+
+Raw RREG/WREG remain available for expert diagnostics and compatibility.
 
 ## Functional API layer
 
@@ -19,6 +26,10 @@ Runtime APIs separate START-pin control from START/STOP opcodes, support PWDN an
 Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count. Channel-oriented high-level APIs reject unavailable channels and mask BIAS/lead-off channel fields to the detected variant. Before ID probing, the API preserves compatibility by exposing the maximum eight-channel surface.
 
 `ads1299_frame.[ch]` provides variant-aware 15/21/27-byte decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The older fixed-27-byte acquisition helpers remain for existing eight-channel callers.
+
+## Verification strategy
+
+Register-model tests exhaust all `24 registers × 256 byte values × 3 variants = 18,432` register-byte/variant combinations. The invariants require every successful normalization to produce an exact-valid byte, sanitizer idempotence, exact validity to match no-change normalization, and read-only/unavailable registers to remain unwritable. Field-model tests additionally exhaust every representable code of every machine-readable field across ADS1299-4/-6/8 and require valid writable fields to encode/decode round-trip through an exact-valid register byte.
 
 ## Completion criterion
 
