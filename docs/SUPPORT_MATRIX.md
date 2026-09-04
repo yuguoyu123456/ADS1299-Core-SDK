@@ -9,6 +9,7 @@ ADS1299-Core-SDK separates **project presence** from **verified support**. The M
 | STMicroelectronics | `firmware/mcu/st/stm32f407_black/` | STM32Cube HAL / PlatformIO | Pre-hardware-validation |
 | Espressif | `firmware/mcu/espressif/esp32s3_devkitc/` | ESP-IDF | Pre-hardware-validation |
 | Raspberry Pi | `firmware/mcu/raspberry_pi/rp2040_pico/` | Pico SDK 2.3.0 | Pre-hardware-validation |
+| Raspberry Pi | `firmware/mcu/raspberry_pi/rp2350_pico2/` | Pico SDK 2.3.0 | Pre-hardware-validation |
 | WCH | `firmware/mcu/wch/ch32v307_evt/` | WCH NoneOS / PlatformIO | Pre-hardware-validation |
 
 ## Reference source / build-pending
@@ -20,7 +21,6 @@ The following are **not yet verified support**. Each has a target manifest, READ
 | GigaDevice GD32F4 | `gigadevice/gd32f450z_eval` |
 | Nordic nRF52 | `nordic/nrf52840_dk` |
 | Nordic nRF53 | `nordic/nrf5340_dk` |
-| Raspberry Pi RP2350 | `raspberry_pi/rp2350_pico2` |
 | NXP i.MX RT | `nxp/mimxrt1060_evk` |
 | Renesas RA6 | `renesas/ek_ra6m5` |
 | TI MSPM0 | `ti/mspm0g3507_launchpad` |
