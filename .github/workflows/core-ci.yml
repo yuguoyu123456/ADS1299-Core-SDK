@@ -17,6 +17,7 @@ jobs:
             firmware/core_driver/ads1299/ads1299.c \
             firmware/core_driver/ads1299/ads1299_bringup.c \
             firmware/core_driver/ads1299/ads1299_control.c \
+            firmware/core_driver/ads1299/ads1299_field_model.c \
             firmware/core_driver/ads1299/ads1299_frame.c \
             firmware/core_driver/ads1299/ads1299_register_model.c \
             firmware/core_driver/ads1299/ads1299_runtime.c \
@@ -33,6 +34,18 @@ jobs:
             -o /tmp/test_ads1299_register_model
       - name: Run ADS1299 register-model test
         run: /tmp/test_ads1299_register_model
+      - name: Build ADS1299 field-model test
+        run: |
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/core_driver/ads1299 \
+            firmware/core_driver/ads1299/ads1299.c \
+            firmware/core_driver/ads1299/ads1299_field_model.c \
+            firmware/core_driver/ads1299/ads1299_register_model.c \
+            firmware/core_driver/ads1299/ads1299_runtime.c \
+            tests/c/test_ads1299_field_model.c \
+            -o /tmp/test_ads1299_field_model
+      - name: Run ADS1299 field-model test
+        run: /tmp/test_ads1299_field_model
       - name: Build ADS1299 runtime-control test
         run: |
           gcc -std=c11 -Wall -Wextra -Werror \
@@ -40,6 +53,7 @@ jobs:
             firmware/core_driver/ads1299/ads1299.c \
             firmware/core_driver/ads1299/ads1299_bringup.c \
             firmware/core_driver/ads1299/ads1299_control.c \
+            firmware/core_driver/ads1299/ads1299_field_model.c \
             firmware/core_driver/ads1299/ads1299_register_model.c \
             firmware/core_driver/ads1299/ads1299_runtime.c \
             tests/c/test_ads1299_runtime.c \
