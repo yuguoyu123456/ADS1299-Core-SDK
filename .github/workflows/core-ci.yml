@@ -21,6 +21,7 @@ jobs:
             firmware/core_driver/ads1299/ads1299_frame.c \
             firmware/core_driver/ads1299/ads1299_register_model.c \
             firmware/core_driver/ads1299/ads1299_runtime.c \
+            firmware/core_driver/ads1299/ads1299_semantics.c \
             tests/c/test_ads1299.c \
             -o /tmp/test_ads1299
       - name: Run C core test
@@ -46,6 +47,17 @@ jobs:
             -o /tmp/test_ads1299_field_model
       - name: Run ADS1299 field-model test
         run: /tmp/test_ads1299_field_model
+      - name: Build ADS1299 semantic-value test
+        run: |
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/core_driver/ads1299 \
+            firmware/core_driver/ads1299/ads1299_field_model.c \
+            firmware/core_driver/ads1299/ads1299_register_model.c \
+            firmware/core_driver/ads1299/ads1299_semantics.c \
+            tests/c/test_ads1299_semantics.c \
+            -o /tmp/test_ads1299_semantics
+      - name: Run ADS1299 semantic-value test
+        run: /tmp/test_ads1299_semantics
       - name: Build ADS1299 runtime-control test
         run: |
           gcc -std=c11 -Wall -Wextra -Werror \

@@ -7,5 +7,6 @@ idf_component_register(
         "ads1299_frame.c"
         "ads1299_register_model.c"
         "ads1299_runtime.c"
+        "ads1299_semantics.c"
     INCLUDE_DIRS "."
 )
