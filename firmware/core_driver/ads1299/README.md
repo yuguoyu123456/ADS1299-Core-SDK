@@ -29,11 +29,25 @@ Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count. Chan
 
 `ads1299_frame.[ch]` provides variant-aware 15/21/27-byte decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The older fixed-27-byte acquisition helpers remain for existing eight-channel callers.
 
+## ADC code-to-voltage conventions
+
+SBAS499C Rev. C presents two closely related ways to talk about the signed 24-bit transfer function. Equation 8 defines one quantizer LSB as `(2 × VREF / Gain) / 2^24 = +FS / 2^23`. The maximum positive code is nevertheless `0x7FFFFF` (`2^23-1`), while the negative endpoint is `0x800000` (`-2^23`). Table 9 and TI support examples also commonly normalize the maximum positive code to +FS using `2^23-1`.
+
+The core therefore does not hide this distinction:
+
+- `ads1299_lsb_volts_equation8()` and `ads1299_code_to_volts_equation8()` implement the Equation-8 quantizer-step convention. Under this convention `-8388608` maps exactly to `-FS` and `+8388607` maps to `+FS - 1 LSB`.
+- `ads1299_code_to_volts_positive_fs()` maps `+8388607` exactly to `+FS`, matching the historical project behavior and positive-endpoint normalization used in TI Table-9/E2E guidance.
+- `ads1299_code_to_volts()` remains a backward-compatible alias of the positive-full-scale convention; existing applications are not silently rescaled.
+
+The constants `ADS1299_ADC_POSITIVE_FULL_SCALE_CODE`, `ADS1299_ADC_NEGATIVE_FULL_SCALE_CODE`, and `ADS1299_ADC_LSB_CODE_SCALE` keep endpoint codes separate from the `2^23` quantizer scale so future code cannot accidentally use one concept for the other.
+
 ## Verification strategy
 
 Register-model tests exhaust all `24 registers × 256 byte values × 3 variants = 18,432` register-byte/variant combinations. The invariants require every successful normalization to produce an exact-valid byte, sanitizer idempotence, exact validity to match no-change normalization, and read-only/unavailable registers to remain unwritable. Field-model tests additionally exhaust every representable code of every machine-readable field across ADS1299-4/-6/8 and require valid writable fields to encode/decode round-trip through an exact-valid register byte.
 
 Semantic-value tests independently check TI formulas and nominal values (including 16 kSPS/250 SPS at 2.048 MHz, calibration-signal amplitude/frequency, BIASREF midpoint, all lead-off thresholds/currents/frequencies and PGA gains) and then exhaust every valid field code across all three variants to ensure each code is machine-describable. Tests also prove that missing `fCLK`, `fDR`, reference span or analog-supply context is reported explicitly rather than silently replaced by nominal assumptions.
+
+ADC-conversion tests separately verify sign-extension endpoints, the Equation-8 one-LSB weight, both full-scale conventions, their one-LSB endpoint difference, invalid-parameter handling, and backward compatibility of the historical conversion API.
 
 ## Completion criterion
 

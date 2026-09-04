@@ -82,8 +82,16 @@
 #define ADS1299_STATUS_BYTES        3u
 #define ADS1299_BYTES_PER_CHANNEL   3u
 #define ADS1299_FRAME_BYTES         27u
-#define ADS1299_ADC_FULL_SCALE_CODE 8388607L
-#define ADS1299_ADC_MIN_CODE        (-8388607L - 1L)
+
+/* 24-bit two's-complement code geometry. SBAS499C Equation 8 defines one LSB
+ * as +FS / 2^23. The positive endpoint is 0x7FFFFF; the negative endpoint is
+ * 0x800000. Keep endpoint and quantizer-scale constants distinct. */
+#define ADS1299_ADC_POSITIVE_FULL_SCALE_CODE 8388607L
+#define ADS1299_ADC_NEGATIVE_FULL_SCALE_CODE (-8388607L - 1L)
+#define ADS1299_ADC_LSB_CODE_SCALE           8388608L
+/* Backward-compatible endpoint names. */
+#define ADS1299_ADC_FULL_SCALE_CODE ADS1299_ADC_POSITIVE_FULL_SCALE_CODE
+#define ADS1299_ADC_MIN_CODE        ADS1299_ADC_NEGATIVE_FULL_SCALE_CODE
 
 /* ID */
 #define ADS1299_ID_REV_MASK         0xE0u

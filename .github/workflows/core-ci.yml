@@ -17,6 +17,7 @@ jobs:
             firmware/core_driver/ads1299/ads1299.c \
             firmware/core_driver/ads1299/ads1299_bringup.c \
             firmware/core_driver/ads1299/ads1299_control.c \
+            firmware/core_driver/ads1299/ads1299_conversion.c \
             firmware/core_driver/ads1299/ads1299_field_model.c \
             firmware/core_driver/ads1299/ads1299_frame.c \
             firmware/core_driver/ads1299/ads1299_register_model.c \
@@ -26,6 +27,16 @@ jobs:
             -o /tmp/test_ads1299
       - name: Run C core test
         run: /tmp/test_ads1299
+      - name: Build ADS1299 ADC-conversion test
+        run: |
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/core_driver/ads1299 \
+            firmware/core_driver/ads1299/ads1299.c \
+            firmware/core_driver/ads1299/ads1299_conversion.c \
+            tests/c/test_ads1299_conversion.c \
+            -o /tmp/test_ads1299_conversion
+      - name: Run ADS1299 ADC-conversion test
+        run: /tmp/test_ads1299_conversion
       - name: Build ADS1299 register-model test
         run: |
           gcc -std=c11 -Wall -Wextra -Werror \
