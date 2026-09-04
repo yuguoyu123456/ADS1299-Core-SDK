@@ -17,6 +17,7 @@ typedef struct {
     ads1299_spi_transfer_fn spi_transfer;
     ads1299_gpio_write_fn cs_write;
     ads1299_gpio_write_fn reset_write;
+    ads1299_gpio_write_fn pwdn_write;
     ads1299_gpio_write_fn start_write;
     ads1299_gpio_read_fn drdy_read;
     ads1299_delay_us_fn delay_us;
