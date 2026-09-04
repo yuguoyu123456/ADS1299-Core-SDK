@@ -19,6 +19,14 @@ for item in projects:
         assert (p / required).is_file(), f'missing {p / required}'
     manifest = json.loads((p / 'project.json').read_text(encoding='utf-8'))
     assert manifest['status'] == item['status'], f'status mismatch for {key}'
-    if item['status'] == 'reference-source-build-pending':
+    style = manifest.get('style', item.get('style', 'shared-reference-app'))
+    if style == 'shared-reference-app':
         assert (p / 'port' / 'board_sdk.h').is_file(), f'missing BSP contract for {key}'
+    elif style == 'native':
+        assert (p / 'CMakeLists.txt').is_file() or (p / 'platformio.ini').is_file(), f'missing native build file for {key}'
+        assert (p / 'src' / 'main.c').is_file(), f'missing native main.c for {key}'
+        port_sources = list((p / 'port').glob('ads1299_port_*.c')) if (p / 'port').is_dir() else []
+        assert port_sources, f'missing native ADS1299 port source for {key}'
+    else:
+        raise AssertionError(f'unknown project style {style!r} for {key}')
 print(f'MCU catalog OK: {len(projects)} projects, {sum(p["status"]=="compiles" for p in projects)} compiled, {sum(p["status"]!="compiles" for p in projects)} build-pending')
