@@ -17,6 +17,11 @@ static void test_metadata_inventory(void) {
         assert(info->mask != 0u);
     }
     assert(ads1299_field_info(ADS1299_FIELD_COUNT) == NULL);
+    assert(ads1299_field_info(ADS1299_FIELD_ID_REV)->reset_known == 0u);
+    assert(ads1299_field_info(ADS1299_FIELD_ID_DEVICE)->reset_known == 0u);
+    assert(ads1299_field_info(ADS1299_FIELD_ID_CHANNEL_CODE)->reset_known == 0u);
+    assert(ads1299_field_info(ADS1299_FIELD_CONFIG1_DR)->reset_known == 1u);
+    assert(ads1299_field_info(ADS1299_FIELD_CONFIG1_DR)->reset_code == ADS1299_DR_250SPS);
 }
 
 static void test_ti_enumerated_validity(void) {
