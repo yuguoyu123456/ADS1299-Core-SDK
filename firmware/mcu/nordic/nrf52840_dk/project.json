@@ -1,1 +1,1 @@
-{"vendor":"Nordic Semiconductor","family":"nRF52","mcu":"nRF52840","board":"nRF52840 DK","sdk":"nRF Connect SDK / nrfx","status":"reference-source-build-pending","shared_app":"../../../common/reference_app","profile":"250sps-gain24-internal-test"}
+{"vendor":"Nordic Semiconductor","family":"nRF52","mcu":"nRF52840","board":"nRF52840 DK","sdk":"nRF Connect SDK v3.4.0 LTS / Zephyr","status":"compiles","style":"shared-reference-app","shared_app":"../../../common/reference_app","profile":"250sps-gain24-internal-test"}
