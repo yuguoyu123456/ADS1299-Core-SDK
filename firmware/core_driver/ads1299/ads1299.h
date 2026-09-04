@@ -110,7 +110,9 @@ ads1299_status_t ads1299_stop(ads1299_t *dev);
 ads1299_status_t ads1299_rdatac(ads1299_t *dev);
 ads1299_status_t ads1299_sdatac(ads1299_t *dev);
 
-/* Register access and diagnostics */
+/* Raw/expert register access. These functions intentionally do not normalize
+ * reserved bits or field semantics. Prefer ads1299_runtime.h safe/strict field
+ * and register APIs for application configuration. */
 ads1299_status_t ads1299_read_register(ads1299_t *dev, uint8_t address, uint8_t *value);
 ads1299_status_t ads1299_write_register(ads1299_t *dev, uint8_t address, uint8_t value);
 ads1299_status_t ads1299_read_registers(ads1299_t *dev, uint8_t address,
@@ -133,7 +135,9 @@ ads1299_status_t ads1299_set_clock_output(ads1299_t *dev, int enable);
 ads1299_status_t ads1299_set_daisy_chain_mode(ads1299_t *dev, int enable);
 ads1299_status_t ads1299_set_single_shot_mode(ads1299_t *dev, int enable);
 
-/* Channel configuration */
+/* Channel configuration. gain_code uses ADS1299_GAIN_* register-bit constants
+ * for backward compatibility; the field model exposes ADS1299_GAIN_CODE_* for
+ * unshifted generic field APIs. */
 ads1299_status_t ads1299_set_channel(ads1299_t *dev, uint8_t channel_1_to_8,
                                      uint8_t gain_code, uint8_t mux_code,
                                      int srb2, int power_down);
@@ -155,7 +159,13 @@ ads1299_status_t ads1299_read_lead_off_status(ads1299_t *dev,
                                               ads1299_leadoff_status_t *status);
 
 /* CONFIG2 test source and diagnostic profiles */
-/** Build a datasheet-valid CONFIG2 byte, including external/internal source. */
+/** Checked builder: rejects every TI-invalid field code. */
+ads1299_status_t ads1299_build_test_config2(
+    const ads1299_test_signal_config_t *config, uint8_t *value);
+/**
+ * Backward-compatible byte-returning builder. For new code use
+ * ads1299_build_test_config2() so invalid input can be reported explicitly.
+ */
 uint8_t ads1299_make_test_config2(const ads1299_test_signal_config_t *config);
 /** Program all meaningful CONFIG2 test-generator fields. */
 ads1299_status_t ads1299_configure_test_signal(
