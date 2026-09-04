@@ -1,6 +1,6 @@
 # nRF52840 DK ADS1299 reference firmware
 
-Status: **Reference source / build-pending** until the clean NCS build on this branch succeeds. Hardware validation pending.
+Status: **Compiles** — clean nRF Connect SDK v3.4.0 LTS build verified. Hardware validation pending.
 
 Target: **Nordic nRF52840 DK / nRF52840** using **nRF Connect SDK v3.4.0 LTS / Zephyr**. The build target is `nrf52840dk/nrf52840`, matching Nordic's current NCS build documentation.
 
@@ -32,4 +32,6 @@ With an nRF Connect SDK v3.4.0 workspace active:
 west build -p always --no-sysbuild -b nrf52840dk/nrf52840 firmware/mcu/nordic/nrf52840_dk
 ```
 
-The dedicated `nrf52-reference` workflow initializes NCS v3.4.0 and runs this command in Nordic's SDK toolchain container. Do not label the target `Compiles` until that clean build succeeds. No Bench-tested claim is made without real nRF52840 DK + ADS1299 hardware.
+The dedicated `nrf52-reference` workflow initializes NCS v3.4.0 inside Nordic's official SDK toolchain container and has completed this clean build successfully.
+
+`Compiles` is a software-build claim only. No Bench-tested or 24h-tested claim is made without real nRF52840 DK + ADS1299 hardware.
