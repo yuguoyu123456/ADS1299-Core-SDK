@@ -32,6 +32,14 @@ static int valid_gain_code(uint8_t gain_code) {
     }
 }
 
+static uint8_t active_channel_count(const ads1299_t *dev) {
+    if (dev && (dev->channel_count == 4u || dev->channel_count == 6u ||
+                dev->channel_count == 8u)) {
+        return dev->channel_count;
+    }
+    return ADS1299_CHANNEL_COUNT;
+}
+
 static ads1299_status_t xfer(ads1299_t *dev,
                              const uint8_t *tx,
                              uint8_t *rx,
@@ -47,12 +55,16 @@ static ads1299_status_t xfer(ads1299_t *dev,
 static int transfer_register_command_byte(ads1299_t *dev, uint8_t byte) {
     const int rc = dev->port.spi_transfer(dev->port.user, &byte, NULL, 1u);
     if (rc == 0) {
-        /* TI specifies a 4 tCLK command-decode interval for multi-byte
-           RREG/WREG operations. Four microseconds is deliberately
-           conservative for the nominal 2.048-MHz ADS1299 clock and avoids
-           coupling correctness to the controller SPI bitrate. */
         dev->port.delay_us(dev->port.user, ADS1299_TDECODE_DELAY_US);
     }
+    return rc;
+}
+
+/* TI specifies RDATAC as power-up default. Always issue SDATAC before
+ * command-mode register/RDATA transactions rather than trusting cached state. */
+static ads1299_status_t ensure_command_mode(ads1299_t *dev) {
+    ads1299_status_t rc = ads1299_command(dev, ADS1299_CMD_SDATAC);
+    if (rc == ADS1299_OK) dev->continuous_mode = 0u;
     return rc;
 }
 
@@ -71,11 +83,15 @@ ads1299_status_t ads1299_init(ads1299_t *dev, const ads1299_port_t *port) {
 }
 
 ads1299_status_t ads1299_command(ads1299_t *dev, uint8_t command) {
+    if (check_dev(dev) != ADS1299_OK) return ADS1299_EINVAL;
+    /* TI states that after STANDBY only WAKEUP is a valid SPI command. */
+    if (dev->standby_mode && command != ADS1299_CMD_WAKEUP) {
+        return ADS1299_ESTATE;
+    }
+
     uint8_t rx = 0;
     ads1299_status_t rc = xfer(dev, &command, &rx, 1u);
     if (rc == ADS1299_OK) {
-        /* A conservative inter-command delay keeps command sequencing portable
-           across all supported controller speeds. */
         dev->port.delay_us(dev->port.user, 10u);
     }
     return rc;
@@ -93,6 +109,7 @@ ads1299_status_t ads1299_hardware_reset(ads1299_t *dev) {
     dev->port.reset_write(dev->port.user, 1);
     dev->port.delay_us(dev->port.user, 20u);
     dev->continuous_mode = 0u;
+    dev->standby_mode = 0u;
     return ADS1299_OK;
 }
 
@@ -101,6 +118,7 @@ ads1299_status_t ads1299_reset_command(ads1299_t *dev) {
     if (rc == ADS1299_OK) {
         dev->port.delay_us(dev->port.user, 20u);
         dev->continuous_mode = 0u;
+        dev->standby_mode = 0u;
     }
     return rc;
 }
@@ -134,10 +152,8 @@ ads1299_status_t ads1299_read_registers(ads1299_t *dev,
         return ADS1299_EINVAL;
     }
 
-    if (dev->continuous_mode) {
-        ads1299_status_t rc = ads1299_sdatac(dev);
-        if (rc != ADS1299_OK) return rc;
-    }
+    ads1299_status_t mode_rc = ensure_command_mode(dev);
+    if (mode_rc != ADS1299_OK) return mode_rc;
 
     const uint8_t hdr[2] = {
         (uint8_t)(ADS1299_CMD_RREG | (address & 0x1Fu)),
@@ -165,22 +181,16 @@ ads1299_status_t ads1299_write_registers(ads1299_t *dev,
         return ADS1299_EINVAL;
     }
 
-    /* ID, LOFF_STATP and LOFF_STATN are read-only. Reject direct writes rather
-       than relying on the silicon to ignore them. Multi-register writes may
-       span writable registers only. */
     for (size_t i = 0; i < count; ++i) {
         const uint8_t reg = (uint8_t)(address + i);
-        if (reg == ADS1299_REG_ID ||
-            reg == ADS1299_REG_LOFF_STATP ||
+        if (reg == ADS1299_REG_ID || reg == ADS1299_REG_LOFF_STATP ||
             reg == ADS1299_REG_LOFF_STATN) {
             return ADS1299_EINVAL;
         }
     }
 
-    if (dev->continuous_mode) {
-        ads1299_status_t rc = ads1299_sdatac(dev);
-        if (rc != ADS1299_OK) return rc;
-    }
+    ads1299_status_t mode_rc = ensure_command_mode(dev);
+    if (mode_rc != ADS1299_OK) return mode_rc;
 
     const uint8_t hdr[2] = {
         (uint8_t)(ADS1299_CMD_WREG | (address & 0x1Fu)),
@@ -214,14 +224,11 @@ ads1299_status_t ads1299_set_data_rate(ads1299_t *dev, uint8_t dr_code) {
     if (dr_code > ADS1299_DR_250SPS) return ADS1299_EINVAL;
 
     uint8_t config1 = 0;
-    ads1299_status_t rc = ads1299_read_register(dev,
-                                                ADS1299_REG_CONFIG1,
-                                                &config1);
+    ads1299_status_t rc = ads1299_read_register(dev, ADS1299_REG_CONFIG1, &config1);
     if (rc != ADS1299_OK) return rc;
 
     config1 = (uint8_t)((config1 & (uint8_t)~ADS1299_CONFIG1_DR_MASK) |
                         (dr_code & ADS1299_CONFIG1_DR_MASK));
-    /* Force required reserved bits to the datasheet-defined values. */
     config1 = (uint8_t)((config1 & 0x6Fu) | ADS1299_CONFIG1_RESERVED_BASE);
     return ads1299_write_register(dev, ADS1299_REG_CONFIG1, config1);
 }
@@ -232,7 +239,8 @@ ads1299_status_t ads1299_set_channel(ads1299_t *dev,
                                      uint8_t mux_code,
                                      int srb2,
                                      int power_down) {
-    if (channel_1_to_8 < 1u || channel_1_to_8 > ADS1299_CHANNEL_COUNT ||
+    if (!dev || channel_1_to_8 < 1u ||
+        channel_1_to_8 > active_channel_count(dev) ||
         !valid_gain_code(gain_code) || mux_code > ADS1299_MUX_BIAS_DRN) {
         return ADS1299_EINVAL;
     }
@@ -242,9 +250,7 @@ ads1299_status_t ads1299_set_channel(ads1299_t *dev,
     if (power_down) value |= ADS1299_CH_POWER_DOWN;
 
     return ads1299_write_register(
-        dev,
-        (uint8_t)(ADS1299_REG_CH1SET + channel_1_to_8 - 1u),
-        value);
+        dev, (uint8_t)(ADS1299_REG_CH1SET + channel_1_to_8 - 1u), value);
 }
 
 int32_t ads1299_sign_extend24(uint32_t value24) {
@@ -282,7 +288,9 @@ ads1299_status_t ads1299_read_frame_continuous(ads1299_t *dev,
 ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev,
                                           ads1299_frame_t *frame) {
     if (check_dev(dev) != ADS1299_OK || !frame) return ADS1299_EINVAL;
-    if (dev->continuous_mode) return ADS1299_ESTATE;
+
+    ads1299_status_t mode_rc = ensure_command_mode(dev);
+    if (mode_rc != ADS1299_OK) return mode_rc;
 
     const uint8_t cmd = ADS1299_CMD_RDATA;
     uint8_t raw[ADS1299_FRAME_BYTES] = {0};
@@ -290,9 +298,7 @@ ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev,
 
     dev->port.cs_write(dev->port.user, 0);
     if (dev->port.spi_transfer(dev->port.user, &cmd, NULL, 1u) != 0 ||
-        dev->port.spi_transfer(dev->port.user,
-                               zeros,
-                               raw,
+        dev->port.spi_transfer(dev->port.user, zeros, raw,
                                ADS1299_FRAME_BYTES) != 0) {
         dev->port.cs_write(dev->port.user, 1);
         return ADS1299_EIO;
