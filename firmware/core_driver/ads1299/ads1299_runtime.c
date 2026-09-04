@@ -1,4 +1,4 @@
-#include "ads1299.h"
+#include "ads1299_runtime.h"
 
 #define ADS1299_WAKEUP_GUARD_US 4u
 #define ADS1299_START_PULSE_US 2u
