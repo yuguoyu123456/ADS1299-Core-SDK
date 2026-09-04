@@ -24,6 +24,12 @@ typedef enum {
     ADS1299_SEMANTIC_CHANNEL_MASK
 } ads1299_semantic_kind_t;
 
+typedef enum {
+    ADS1299_SEMANTIC_OK = 0,
+    ADS1299_SEMANTIC_CONTEXT_REQUIRED = 1,
+    ADS1299_SEMANTIC_EINVAL = -1
+} ads1299_semantic_status_t;
+
 /** Optional physical context needed to evaluate clock/reference-dependent codes. */
 enum {
     ADS1299_SEMCTX_FCLK       = 1u << 0,
@@ -66,39 +72,44 @@ const char *ads1299_field_meaning(ads1299_field_id_t field);
  * Describe a valid unshifted field code. Context is optional. The function
  * still returns names/meaning when a physical value cannot be evaluated; in
  * that case required_context_mask tells the caller which inputs are missing.
- * Returns 0 on success and -1 for invalid field/code/variant combinations.
+ * Returns ADS1299_SEMANTIC_OK on success and ADS1299_SEMANTIC_EINVAL for an
+ * invalid field/code/variant combination.
  */
-int ads1299_describe_field_code(ads1299_field_id_t field,
-                                uint8_t code,
-                                ads1299_variant_t variant,
-                                const ads1299_semantic_context_t *context,
-                                ads1299_code_descriptor_t *descriptor);
+ads1299_semantic_status_t ads1299_describe_field_code(
+    ads1299_field_id_t field,
+    uint8_t code,
+    ads1299_variant_t variant,
+    const ads1299_semantic_context_t *context,
+    ads1299_code_descriptor_t *descriptor);
 
 /* Focused helpers for physical quantities explicitly defined by SBAS499C. */
-int ads1299_semantic_data_rate_sps(uint8_t dr_code,
-                                   double fclk_hz,
-                                   double *sps);
-int ads1299_semantic_test_amplitude_v(uint8_t amp_code,
-                                      double vref_span_v,
-                                      double *amplitude_v);
-int ads1299_semantic_test_frequency_hz(uint8_t freq_code,
-                                       double fclk_hz,
-                                       double *frequency_hz);
-int ads1299_semantic_biasref_internal_v(double avdd_v,
-                                        double avss_v,
-                                        double *biasref_v);
-int ads1299_semantic_leadoff_threshold_pct(uint8_t threshold_code,
-                                           double *positive_pct,
-                                           double *negative_pct);
-int ads1299_semantic_leadoff_current_a(uint8_t current_code,
-                                       double *current_a);
-int ads1299_semantic_leadoff_frequency_hz(uint8_t frequency_code,
-                                          double fclk_hz,
-                                          double fdr_hz,
-                                          uint8_t available_context_mask,
-                                          double *frequency_hz,
-                                          uint8_t *required_context_mask);
-int ads1299_semantic_gain(uint8_t gain_code, double *gain_x);
+ads1299_semantic_status_t ads1299_semantic_data_rate_sps(uint8_t dr_code,
+                                                         double fclk_hz,
+                                                         double *sps);
+ads1299_semantic_status_t ads1299_semantic_test_amplitude_v(uint8_t amp_code,
+                                                            double vref_span_v,
+                                                            double *amplitude_v);
+ads1299_semantic_status_t ads1299_semantic_test_frequency_hz(uint8_t freq_code,
+                                                             double fclk_hz,
+                                                             double *frequency_hz);
+ads1299_semantic_status_t ads1299_semantic_biasref_internal_v(double avdd_v,
+                                                              double avss_v,
+                                                              double *biasref_v);
+ads1299_semantic_status_t ads1299_semantic_leadoff_threshold_pct(
+    uint8_t threshold_code,
+    double *positive_pct,
+    double *negative_pct);
+ads1299_semantic_status_t ads1299_semantic_leadoff_current_a(uint8_t current_code,
+                                                             double *current_a);
+ads1299_semantic_status_t ads1299_semantic_leadoff_frequency_hz(
+    uint8_t frequency_code,
+    double fclk_hz,
+    double fdr_hz,
+    uint8_t available_context_mask,
+    double *frequency_hz,
+    uint8_t *required_context_mask);
+ads1299_semantic_status_t ads1299_semantic_gain(uint8_t gain_code,
+                                                double *gain_x);
 
 #ifdef __cplusplus
 }
