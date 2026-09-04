@@ -22,6 +22,23 @@ ads1299_status_t ads1299_wait_drdy(ads1299_t *dev,
                                    uint32_t poll_interval_us);
 
 /**
+ * Variant used by device-oriented high-level APIs. After ID probing this is
+ * the detected ADS1299-4/-6/-8 variant. Before ID probing the historical
+ * eight-channel surface is preserved by returning ADS1299_VARIANT_8CH.
+ */
+ads1299_variant_t ads1299_effective_variant(const ads1299_t *dev);
+
+/**
+ * Read and decode one machine-readable field. Forbidden/reserved field states
+ * are reported as ADS1299_EVERIFY instead of being silently accepted.
+ */
+ads1299_status_t ads1299_read_field(ads1299_t *dev,
+                                    ads1299_field_id_t field,
+                                    uint8_t channel_1_to_8,
+                                    ads1299_variant_t variant,
+                                    uint8_t *code);
+
+/**
  * Normalizing safe write. The requested byte is sanitized through the TI
  * register model before WREG: prescribed reserved bits and variant masks are
  * normalized, while read-only/unavailable registers and forbidden semantic
