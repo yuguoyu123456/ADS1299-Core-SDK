@@ -4,6 +4,10 @@
 
 #include "ads1299_register_model.h"
 
+static const ads1299_variant_t k_variants[] = {
+    ADS1299_VARIANT_4CH, ADS1299_VARIANT_6CH, ADS1299_VARIANT_8CH
+};
+
 static void test_complete_address_coverage(void) {
     for (uint8_t address = ADS1299_REG_ID; address <= ADS1299_REG_LAST; ++address) {
         const ads1299_register_info_t *info = ads1299_register_info(address);
@@ -73,24 +77,18 @@ static void test_required_reserved_bits(void) {
 
 static void test_forbidden_field_encodings(void) {
     uint8_t value = 0u;
-
-    /* TI CONFIG1 DR=111 is reserved. */
     assert(!ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x97u,
                                                 ADS1299_VARIANT_8CH));
     assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG1, 0xFFu,
                                            ADS1299_VARIANT_8CH, &value) == -1);
     assert(ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x96u,
                                                ADS1299_VARIANT_8CH));
-
-    /* TI CONFIG2 CAL_FREQ=10 is explicitly Do not use. */
     assert(!ads1299_register_write_value_valid(ADS1299_REG_CONFIG2, 0xC2u,
                                                 ADS1299_VARIANT_8CH));
     assert(ads1299_sanitize_register_write(ADS1299_REG_CONFIG2, 0xC2u,
                                            ADS1299_VARIANT_8CH, &value) == -1);
     assert(ads1299_register_write_value_valid(ADS1299_REG_CONFIG2, 0xD5u,
                                                ADS1299_VARIANT_8CH));
-
-    /* TI CHnSET GAIN=111 is explicitly Do not use. */
     assert(!ads1299_register_write_value_valid(ADS1299_REG_CH1SET, 0x70u,
                                                 ADS1299_VARIANT_8CH));
     assert(ads1299_sanitize_register_write(ADS1299_REG_CH1SET, 0x70u,
@@ -100,7 +98,6 @@ static void test_forbidden_field_encodings(void) {
 }
 
 static void test_exact_write_value_validation(void) {
-    /* Prescribed reserved bits are part of exact-byte validation. */
     assert(!ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x06u,
                                                 ADS1299_VARIANT_8CH));
     assert(ads1299_register_write_value_valid(ADS1299_REG_CONFIG1, 0x96u,
@@ -136,6 +133,48 @@ static void test_variant_availability_and_masks(void) {
                                                 ADS1299_VARIANT_4CH));
 }
 
+/* Exhaustive proof over all 18,432 register-byte/variant combinations.
+ * Invariants:
+ *  1) every sanitizer success yields an exact-valid byte;
+ *  2) sanitization is idempotent;
+ *  3) exact validity is equivalent to sanitizer success with no byte change;
+ *  4) read-only/unavailable registers never sanitize or validate as writable.
+ */
+static void test_exhaustive_register_safety_properties(void) {
+    size_t checked = 0u;
+    for (size_t vi = 0; vi < sizeof(k_variants) / sizeof(k_variants[0]); ++vi) {
+        const ads1299_variant_t variant = k_variants[vi];
+        for (uint8_t address = ADS1299_REG_ID; address <= ADS1299_REG_LAST; ++address) {
+            const ads1299_register_info_t *info = ads1299_register_info(address);
+            assert(info != NULL);
+            const int available = ads1299_register_available(address, variant);
+            for (unsigned raw = 0u; raw <= 0xFFu; ++raw) {
+                const uint8_t input = (uint8_t)raw;
+                uint8_t out = 0xA5u;
+                const int src = ads1299_sanitize_register_write(address, input,
+                                                                 variant, &out);
+                const int exact = ads1299_register_write_value_valid(address, input,
+                                                                      variant);
+                if (!available || info->read_only) {
+                    assert(src == -1);
+                    assert(exact == 0);
+                } else if (src == 0) {
+                    uint8_t again = 0x5Au;
+                    assert(ads1299_register_write_value_valid(address, out, variant));
+                    assert(ads1299_sanitize_register_write(address, out, variant,
+                                                           &again) == 0);
+                    assert(again == out);
+                    assert(exact == (out == input));
+                } else {
+                    assert(exact == 0);
+                }
+                ++checked;
+            }
+        }
+    }
+    assert(checked == 3u * ADS1299_REGISTER_COUNT * 256u);
+}
+
 int main(void) {
     test_complete_address_coverage();
     test_reset_values();
@@ -144,6 +183,7 @@ int main(void) {
     test_forbidden_field_encodings();
     test_exact_write_value_validation();
     test_variant_availability_and_masks();
-    puts("ADS1299 complete register-model and field-semantics tests passed");
+    test_exhaustive_register_safety_properties();
+    puts("ADS1299 exhaustive register safety model tests passed");
     return 0;
 }

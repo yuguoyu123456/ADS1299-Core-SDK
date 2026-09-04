@@ -104,6 +104,34 @@ ads1299_status_t ads1299_safe_write_register(ads1299_t *dev,
                                         written_value);
 }
 
+ads1299_status_t ads1299_strict_write_registers(ads1299_t *dev,
+                                                uint8_t address,
+                                                const uint8_t *values,
+                                                size_t count,
+                                                ads1299_variant_t variant) {
+    if (!dev || !values || count == 0u || address > ADS1299_REG_LAST ||
+        count > (size_t)(ADS1299_REG_LAST - address + 1u) ||
+        count > ADS1299_REGISTER_COUNT) {
+        return ADS1299_EINVAL;
+    }
+
+    /* Validate the complete sequence before any bus activity. */
+    for (size_t i = 0; i < count; ++i) {
+        if (!ads1299_register_write_value_valid((uint8_t)(address + i), values[i],
+                                                variant)) {
+            return ADS1299_EINVAL;
+        }
+    }
+    return ads1299_write_registers(dev, address, values, count);
+}
+
+ads1299_status_t ads1299_strict_write_register(ads1299_t *dev,
+                                               uint8_t address,
+                                               uint8_t value,
+                                               ads1299_variant_t variant) {
+    return ads1299_strict_write_registers(dev, address, &value, 1u, variant);
+}
+
 ads1299_status_t ads1299_safe_update_register_bits(ads1299_t *dev,
                                                    uint8_t address,
                                                    uint8_t mask,

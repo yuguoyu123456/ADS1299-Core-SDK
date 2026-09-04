@@ -6,6 +6,10 @@
 #include "ads1299_field_model.h"
 #include "ads1299_runtime.h"
 
+static const ads1299_variant_t k_variants[] = {
+    ADS1299_VARIANT_4CH, ADS1299_VARIANT_6CH, ADS1299_VARIANT_8CH
+};
+
 static void test_metadata_inventory(void) {
     assert(ads1299_field_count() == (size_t)ADS1299_FIELD_COUNT);
     for (int i = 0; i < ADS1299_FIELD_COUNT; ++i) {
@@ -30,7 +34,6 @@ static void test_ti_enumerated_validity(void) {
                                         ADS1299_VARIANT_8CH));
     assert(!ads1299_field_code_valid(ADS1299_FIELD_CONFIG1_DR, 7u,
                                      ADS1299_VARIANT_8CH));
-
     assert(ads1299_field_code_valid(ADS1299_FIELD_CONFIG2_CAL_FREQ, 0u,
                                     ADS1299_VARIANT_8CH));
     assert(ads1299_field_code_valid(ADS1299_FIELD_CONFIG2_CAL_FREQ, 1u,
@@ -39,7 +42,6 @@ static void test_ti_enumerated_validity(void) {
                                      ADS1299_VARIANT_8CH));
     assert(ads1299_field_code_valid(ADS1299_FIELD_CONFIG2_CAL_FREQ, 3u,
                                     ADS1299_VARIANT_8CH));
-
     for (uint8_t gain = 0u; gain <= 6u; ++gain)
         assert(ads1299_field_code_valid(ADS1299_FIELD_CH_GAIN, gain,
                                         ADS1299_VARIANT_8CH));
@@ -81,28 +83,66 @@ static void test_decode_and_encode(void) {
                                 ADS1299_DR_1KSPS, ADS1299_RESET_CONFIG1,
                                 ADS1299_VARIANT_8CH, &encoded) == 0);
     assert(encoded == 0x94u);
-
     assert(ads1299_field_encode(ADS1299_FIELD_CONFIG1_DR, 0u, 7u,
                                 ADS1299_RESET_CONFIG1,
                                 ADS1299_VARIANT_8CH, &encoded) == -1);
-
     assert(ads1299_field_encode(ADS1299_FIELD_CH_GAIN, 3u, 5u,
                                 ADS1299_RESET_CHNSET,
                                 ADS1299_VARIANT_8CH, &encoded) == 0);
     assert((encoded & ADS1299_CH_GAIN_MASK) == ADS1299_GAIN_12);
 
-    /* BIAS_STAT is read-only. A high status bit from RREG must never be echoed
-     * into the WREG byte while changing another CONFIG3 field. */
     assert(ads1299_field_encode(ADS1299_FIELD_CONFIG3_PD_BIAS, 0u, 1u,
                                 (uint8_t)(ADS1299_RESET_CONFIG3 |
                                           ADS1299_CONFIG3_BIAS_STAT),
                                 ADS1299_VARIANT_8CH, &encoded) == 0);
     assert((encoded & ADS1299_CONFIG3_BIAS_STAT) == 0u);
     assert((encoded & ADS1299_CONFIG3_PD_BIAS) != 0u);
-
     assert(ads1299_field_encode(ADS1299_FIELD_CONFIG3_BIAS_STAT, 0u, 1u,
                                 ADS1299_RESET_CONFIG3,
                                 ADS1299_VARIANT_8CH, &encoded) == -1);
+}
+
+/* Exhaust every code representable by every field for all three variants.
+ * Writable valid fields must encode into an exact-valid register and decode
+ * back to the same code; invalid/read-only requests must not encode.
+ */
+static void test_exhaustive_field_properties(void) {
+    size_t checked = 0u;
+    for (size_t vi = 0; vi < sizeof(k_variants) / sizeof(k_variants[0]); ++vi) {
+        const ads1299_variant_t variant = k_variants[vi];
+        for (int fi = 0; fi < ADS1299_FIELD_COUNT; ++fi) {
+            const ads1299_field_id_t field = (ads1299_field_id_t)fi;
+            const ads1299_field_info_t *info = ads1299_field_info(field);
+            assert(info != NULL);
+            const unsigned max_code = (unsigned)(info->mask >> info->shift);
+            uint8_t address = 0u;
+            const uint8_t channel = info->channel_relative ? 1u : 0u;
+            assert(ads1299_field_register_address(field, channel, variant,
+                                                  &address) == 0);
+            const ads1299_register_info_t *reg = ads1299_register_info(address);
+            assert(reg != NULL);
+            const uint8_t current = reg->reset_known ? reg->reset_value : 0u;
+
+            for (unsigned code_u = 0u; code_u <= max_code; ++code_u) {
+                const uint8_t code = (uint8_t)code_u;
+                const int valid_code = ads1299_field_code_valid(field, code, variant);
+                uint8_t encoded = 0xA5u;
+                const int erc = ads1299_field_encode(field, channel, code, current,
+                                                      variant, &encoded);
+                if (!info->writable || !valid_code) {
+                    assert(erc == -1);
+                } else {
+                    uint8_t decoded = 0xFFu;
+                    assert(erc == 0);
+                    assert(ads1299_register_write_value_valid(address, encoded, variant));
+                    assert(ads1299_field_decode(field, encoded, &decoded) == 0);
+                    assert(decoded == code);
+                }
+                ++checked;
+            }
+        }
+    }
+    assert(checked > 0u);
 }
 
 typedef struct {
@@ -148,7 +188,8 @@ int main(void) {
     test_variant_mask_fields();
     test_channel_relative_addressing();
     test_decode_and_encode();
+    test_exhaustive_field_properties();
     test_safe_field_write_rejects_before_wreg();
-    puts("ADS1299 field-model tests passed");
+    puts("ADS1299 exhaustive field-model tests passed");
     return 0;
 }
