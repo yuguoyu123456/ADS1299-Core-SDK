@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "ads1299.h"
+#include "ads1299_field_model.h"
 #include "ads1299_register_model.h"
 
 #ifdef __cplusplus
@@ -54,6 +55,19 @@ ads1299_status_t ads1299_safe_update_register_bits(ads1299_t *dev,
                                                    uint8_t value,
                                                    ads1299_variant_t variant,
                                                    uint8_t *written_value);
+
+/**
+ * Field-level safe write. `code` is the unshifted datasheet field code.
+ * CHnSET fields require channel_1_to_8; all other fields accept channel=0.
+ * Read-only fields, unavailable channels, out-of-range codes and TI
+ * Reserved/Do-not-use encodings are rejected before WREG.
+ */
+ads1299_status_t ads1299_safe_write_field(ads1299_t *dev,
+                                          ads1299_field_id_t field,
+                                          uint8_t channel_1_to_8,
+                                          uint8_t code,
+                                          ads1299_variant_t variant,
+                                          uint8_t *written_register_value);
 
 #ifdef __cplusplus
 }
