@@ -56,6 +56,7 @@ typedef struct {
     uint8_t mask;
     uint8_t shift;
     uint8_t reset_code;
+    uint8_t reset_known; /* ID fields are unknown because TI specifies ID reset as xxh. */
     uint8_t writable;
     uint8_t channel_relative;
     uint8_t variant_channel_masked;
@@ -83,8 +84,10 @@ int ads1299_field_code_valid(ads1299_field_id_t field,
                              ads1299_variant_t variant);
 
 /**
- * Encode one field into an existing register byte without touching unrelated bits.
- * The result is also checked against the register-level semantic validity model.
+ * Encode one field into an existing register byte without touching unrelated
+ * writable fields. The returned WREG byte is normalized through the register
+ * safety model, so read-only status bits are not echoed and TI-prescribed
+ * reserved bits are restored automatically.
  */
 int ads1299_field_encode(ads1299_field_id_t field,
                          uint8_t channel_1_to_8,
