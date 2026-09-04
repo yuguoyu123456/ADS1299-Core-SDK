@@ -65,6 +65,40 @@ static int is_channel_mask_register(uint8_t address) {
            address == ADS1299_REG_LOFF_FLIP;
 }
 
+static int is_channel_settings_register(uint8_t address) {
+    return address >= ADS1299_REG_CH1SET && address <= ADS1299_REG_CH8SET;
+}
+
+static int semantic_fields_valid(uint8_t address, uint8_t value) {
+    if (address == ADS1299_REG_CONFIG1) {
+        return (value & ADS1299_CONFIG1_DR_MASK) != ADS1299_DR_RESERVED;
+    }
+    if (address == ADS1299_REG_CONFIG2) {
+        return (value & ADS1299_CONFIG2_CAL_FREQ_MASK) != ADS1299_TEST_FREQ_RESERVED;
+    }
+    if (is_channel_settings_register(address)) {
+        return (value & ADS1299_CH_GAIN_MASK) != ADS1299_GAIN_DO_NOT_USE;
+    }
+    return 1;
+}
+
+int ads1299_register_write_value_valid(uint8_t address,
+                                       uint8_t value,
+                                       ads1299_variant_t variant) {
+    const ads1299_register_info_t *info = ads1299_register_info(address);
+    const uint8_t channel_mask = ads1299_variant_channel_mask(variant);
+    if (!info || channel_mask == 0u || info->read_only ||
+        !ads1299_register_available(address, variant)) {
+        return 0;
+    }
+
+    if ((value & info->required_one_mask) != info->required_one_mask) return 0;
+    if ((value & info->required_zero_mask) != 0u) return 0;
+    if ((value & (uint8_t)~(info->writable_mask | info->required_one_mask)) != 0u) return 0;
+    if (is_channel_mask_register(address) && (value & (uint8_t)~channel_mask) != 0u) return 0;
+    return semantic_fields_valid(address, value);
+}
+
 int ads1299_sanitize_register_write(uint8_t address,
                                     uint8_t requested,
                                     ads1299_variant_t variant,
@@ -80,6 +114,7 @@ int ads1299_sanitize_register_write(uint8_t address,
     value = (uint8_t)(value | info->required_one_mask);
     value = (uint8_t)(value & (uint8_t)~info->required_zero_mask);
     if (is_channel_mask_register(address)) value &= channel_mask;
+    if (!semantic_fields_valid(address, value)) return -1;
     *sanitized = value;
     return 0;
 }
