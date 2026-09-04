@@ -43,7 +43,11 @@ jobs:
           gcc -std=c11 -Wall -Wextra -Werror \
             -Ifirmware/core_driver/ads1299 \
             firmware/core_driver/ads1299/ads1299.c \
+            firmware/core_driver/ads1299/ads1299_control.c \
             firmware/core_driver/ads1299/ads1299_diagnostics.c \
+            firmware/core_driver/ads1299/ads1299_field_model.c \
+            firmware/core_driver/ads1299/ads1299_register_model.c \
+            firmware/core_driver/ads1299/ads1299_runtime.c \
             tests/c/test_ads1299_diagnostics.c \
             -o /tmp/test_ads1299_diagnostics
       - name: Run ADS1299 diagnostic-measurement test

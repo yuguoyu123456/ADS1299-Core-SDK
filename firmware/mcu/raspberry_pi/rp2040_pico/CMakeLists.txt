@@ -20,6 +20,9 @@ add_executable(ads1299_core_rp2040
     ../../../core_driver/ads1299/ads1299.c
     ../../../core_driver/ads1299/ads1299_bringup.c
     ../../../core_driver/ads1299/ads1299_control.c
+    ../../../core_driver/ads1299/ads1299_field_model.c
+    ../../../core_driver/ads1299/ads1299_register_model.c
+    ../../../core_driver/ads1299/ads1299_runtime.c
     port/ads1299_port_pico.c
     ../../../common/data_packet/ads1299_packet.c
 )

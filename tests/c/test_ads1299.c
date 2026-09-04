@@ -67,12 +67,31 @@ static void test_math_and_config(void) {
         .frequency_code = ADS1299_TEST_FREQ_DC,
     };
     assert(ads1299_make_test_config2(&ext) == 0xC7u);
+    uint8_t checked = 0u;
+    assert(ads1299_build_test_config2(&ext, &checked) == ADS1299_OK);
+    assert(checked == 0xC7u);
     const ads1299_test_signal_config_t in = {
         .use_internal_source = 1u,
         .amplitude_x2 = 0u,
         .frequency_code = ADS1299_TEST_FREQ_FCLK_2_20,
     };
     assert(ads1299_make_test_config2(&in) == 0xD1u);
+    assert(ads1299_build_test_config2(&in, &checked) == ADS1299_OK);
+    assert(checked == 0xD1u);
+
+    const ads1299_test_signal_config_t invalid_frequency = {
+        .use_internal_source = 1u,
+        .amplitude_x2 = 0u,
+        .frequency_code = ADS1299_TEST_FREQ_RESERVED,
+    };
+    assert(ads1299_build_test_config2(&invalid_frequency, &checked) == ADS1299_EINVAL);
+    assert(ads1299_make_test_config2(&invalid_frequency) == ADS1299_CONFIG2_RESERVED_BASE);
+    const ads1299_test_signal_config_t invalid_boolean = {
+        .use_internal_source = 2u,
+        .amplitude_x2 = 0u,
+        .frequency_code = ADS1299_TEST_FREQ_DC,
+    };
+    assert(ads1299_build_test_config2(&invalid_boolean, &checked) == ADS1299_EINVAL);
 }
 
 static void test_init_contract(void) {
@@ -130,5 +149,5 @@ int main(void) {
     test_math_and_config(); test_init_contract(); test_wreg_always_establishes_command_mode();
     test_rreg_always_establishes_command_mode(); test_stale_stream_flag_cannot_break_register_access();
     test_rdata_always_establishes_command_mode(); test_invalid_register_write_is_side_effect_free();
-    puts("ADS1299 deterministic command-mode and CONFIG2 tests passed"); return 0;
+    puts("ADS1299 deterministic command-mode and checked CONFIG2 tests passed"); return 0;
 }

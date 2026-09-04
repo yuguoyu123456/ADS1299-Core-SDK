@@ -17,29 +17,6 @@ static int valid_register_range(uint8_t address, size_t count) {
     return count <= (size_t)(ADS1299_REG_LAST - address + 1u);
 }
 
-static int valid_gain_code(uint8_t gain_code) {
-    switch (gain_code) {
-        case ADS1299_GAIN_1:
-        case ADS1299_GAIN_2:
-        case ADS1299_GAIN_4:
-        case ADS1299_GAIN_6:
-        case ADS1299_GAIN_8:
-        case ADS1299_GAIN_12:
-        case ADS1299_GAIN_24:
-            return 1;
-        default:
-            return 0;
-    }
-}
-
-static uint8_t active_channel_count(const ads1299_t *dev) {
-    if (dev && (dev->channel_count == 4u || dev->channel_count == 6u ||
-                dev->channel_count == 8u)) {
-        return dev->channel_count;
-    }
-    return ADS1299_CHANNEL_COUNT;
-}
-
 static ads1299_status_t xfer(ads1299_t *dev,
                              const uint8_t *tx,
                              uint8_t *rx,
@@ -218,39 +195,6 @@ ads1299_status_t ads1299_write_register(ads1299_t *dev,
                                         uint8_t address,
                                         uint8_t value) {
     return ads1299_write_registers(dev, address, &value, 1u);
-}
-
-ads1299_status_t ads1299_set_data_rate(ads1299_t *dev, uint8_t dr_code) {
-    if (dr_code > ADS1299_DR_250SPS) return ADS1299_EINVAL;
-
-    uint8_t config1 = 0;
-    ads1299_status_t rc = ads1299_read_register(dev, ADS1299_REG_CONFIG1, &config1);
-    if (rc != ADS1299_OK) return rc;
-
-    config1 = (uint8_t)((config1 & (uint8_t)~ADS1299_CONFIG1_DR_MASK) |
-                        (dr_code & ADS1299_CONFIG1_DR_MASK));
-    config1 = (uint8_t)((config1 & 0x6Fu) | ADS1299_CONFIG1_RESERVED_BASE);
-    return ads1299_write_register(dev, ADS1299_REG_CONFIG1, config1);
-}
-
-ads1299_status_t ads1299_set_channel(ads1299_t *dev,
-                                     uint8_t channel_1_to_8,
-                                     uint8_t gain_code,
-                                     uint8_t mux_code,
-                                     int srb2,
-                                     int power_down) {
-    if (!dev || channel_1_to_8 < 1u ||
-        channel_1_to_8 > active_channel_count(dev) ||
-        !valid_gain_code(gain_code) || mux_code > ADS1299_MUX_BIAS_DRN) {
-        return ADS1299_EINVAL;
-    }
-
-    uint8_t value = (uint8_t)(gain_code | mux_code);
-    if (srb2) value |= ADS1299_CH_SRB2;
-    if (power_down) value |= ADS1299_CH_POWER_DOWN;
-
-    return ads1299_write_register(
-        dev, (uint8_t)(ADS1299_REG_CH1SET + channel_1_to_8 - 1u), value);
 }
 
 int32_t ads1299_sign_extend24(uint32_t value24) {
