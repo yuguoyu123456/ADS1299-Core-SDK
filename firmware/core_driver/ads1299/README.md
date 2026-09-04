@@ -1,42 +1,23 @@
-# Common ADS1299 driver
+# ADS1299 portable core driver
 
-This directory is intentionally platform-independent. MCU/FPGA-specific GPIO, SPI, interrupts and delays belong in `ports/` or complete board projects under `projects/`.
+This directory contains the controller-independent C core for the Texas Instruments ADS1299, ADS1299-6 and ADS1299-4 family. The normative device specification is the TI ADS1299-x datasheet SBAS499C (Rev. C). OpenBCI/HackEEG and other public implementations are useful implementation cross-checks, but they are not specification authorities.
 
-## Driver contract
+## Register completeness
 
-The port provides:
+`ads1299_regs.h` defines the complete user-visible register address map from `ID` (0x00) through `CONFIG4` (0x17), command opcodes, field masks/codes, and fixed reset values. `ads1299_register_model.[ch]` is the machine-readable safety model for all 24 addresses: reset value/known state, writable mask, prescribed reserved-one/reserved-zero bits, read-only classification, and ADS1299-4/-6/8 register/channel availability.
 
-- full-duplex SPI transfer
-- chip-select control
-- optional RESET control
-- optional START control
-- optional DRDY read
-- microsecond delay
+The safe mutation API in `ads1299_runtime.[ch]` validates and sanitizes requested writes against that model before SPI is touched. `ads1299_safe_write_registers()` validates an entire consecutive write first, so an invalid/read-only/unavailable register makes the whole operation side-effect-free. `ads1299_safe_update_register_bits()` rejects masks that include reserved or read-only bits.
 
-The ADS1299 data frame is 216 bits = 24-bit status + 8 x 24-bit channel samples.
+## Functional API completeness
 
-For `RREG` and `WREG`, the common driver keeps `CS` low across the complete command/data transaction but sends the two command bytes as separate SPI transfers with a conservative decode delay between them and before register data. This makes the driver obey the TI `4 tCLK` multi-byte command-decode requirement without relying on a slow controller SPI bitrate. Ports must therefore implement `delay_us` accurately enough for microsecond-scale command timing.
+The public core covers all meaningful writable functions described by the register map: CONFIG1 data rate, clock output and daisy/multiple-readback mode; CONFIG2 external/internal calibration source, amplitude and frequency; CONFIG3 reference/BIAS controls and BIAS sense masks/status; LOFF threshold/current/frequency, sense masks, current flip and comparator enable; every CHnSET field (power, PGA gain, SRB2 and all eight mux selections); SRB1; GPIO data/direction; CONFIG4 continuous/single-shot and lead-off comparator power; raw RREG/WREG plus safe register access; and the full SPI command set.
 
-## Multi-device project policy
+The runtime layer also separates START-pin control from the START/STOP opcodes, supports PWDN and DRDY polling, enforces the TI STANDBY rule that only WAKEUP is valid until exit, and deterministically establishes command mode with SDATAC before register/RDATA transactions because RDATAC is the power-up default.
 
-The primary multi-ADS1299 architecture in this repository is **standard/cascaded SPI with one independent CS per ADS1299**.
+Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count in the handle. Channel-oriented high-level APIs then reject unavailable channels and mask BIAS/lead-off channel bits to the detected device. Before ID probing, the API preserves backward compatibility by assuming the maximum eight-channel surface.
 
-For multiple converters, projects should normally:
+`ads1299_frame.[ch]` provides variant-aware 15/21/27-byte frame decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The older fixed-27-byte acquisition helpers remain for existing ADS1299 8-channel callers.
 
-- share `SCLK`;
-- share `DIN/MOSI`;
-- share `DOUT/MISO` where the board follows the TI cascaded topology;
-- allocate one `CS` per ADS1299;
-- use a common clock and synchronized START strategy for simultaneous sampling;
-- keep per-device `DRDY` available during bring-up when GPIO permits;
-- instantiate one `ads1299_t` handle per physical converter.
+## Validation language
 
-This gives independent register access and easier fault isolation while preserving a common SPI peripheral. TI describes this cascaded configuration as suitable for the majority of applications.
-
-Daisy-chain mode remains a supported ADS1299 chip feature, but it is **optional** and is not the default architecture for this project's 16/32/64-channel reference systems.
-
-See [`../../docs/MULTI_ADS1299_SPI_ARCHITECTURE.md`](../../docs/MULTI_ADS1299_SPI_ARCHITECTURE.md).
-
-## Important
-
-This code is currently **code-reviewed / pre-hardware**. It must not be labeled `Bench-tested` until it passes the repository acceptance procedure on real hardware. SPI mode, timing, synchronization, bus bandwidth and power-up sequencing must be checked against the TI ADS1299 datasheet for the target board.
+Passing host unit tests and GitHub CI supports a **CI-verified software** claim only. It does not establish `Bench-tested` or `24h-tested`. Hardware timing claims require the exact target board/device to be exercised and measured.
