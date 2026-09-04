@@ -61,12 +61,25 @@ static void test_math_and_config(void) {
     assert(ads1299_make_internal_test_config2(0,ADS1299_TEST_FREQ_FCLK_2_21)==0xD0u);
     assert(ads1299_make_internal_test_config2(1,ADS1299_TEST_FREQ_FCLK_2_20)==0xD5u);
     assert(ads1299_make_internal_test_config2(0,ADS1299_TEST_FREQ_DC)==0xD3u);
+    const ads1299_test_signal_config_t ext = {
+        .use_internal_source = 0u,
+        .amplitude_x2 = 1u,
+        .frequency_code = ADS1299_TEST_FREQ_DC,
+    };
+    assert(ads1299_make_test_config2(&ext) == 0xC7u);
+    const ads1299_test_signal_config_t in = {
+        .use_internal_source = 1u,
+        .amplitude_x2 = 0u,
+        .frequency_code = ADS1299_TEST_FREQ_FCLK_2_20,
+    };
+    assert(ads1299_make_test_config2(&in) == 0xD1u);
 }
 
 static void test_init_contract(void) {
     mock_port_t mock={0}; ads1299_port_t port=make_port(&mock); ads1299_t dev;
     assert(ads1299_init(&dev,&port)==ADS1299_OK);
     assert(mock.cs_calls==1u&&mock.cs_levels[0]==1); assert(mock.start_level==0); assert(mock.reset_level==1);
+    assert(dev.continuous_mode==0u && dev.standby_mode==0u && dev.channel_count==0u);
 }
 
 static void test_wreg_always_establishes_command_mode(void) {
@@ -117,5 +130,5 @@ int main(void) {
     test_math_and_config(); test_init_contract(); test_wreg_always_establishes_command_mode();
     test_rreg_always_establishes_command_mode(); test_stale_stream_flag_cannot_break_register_access();
     test_rdata_always_establishes_command_mode(); test_invalid_register_write_is_side_effect_free();
-    puts("ADS1299 deterministic command-mode tests passed"); return 0;
+    puts("ADS1299 deterministic command-mode and CONFIG2 tests passed"); return 0;
 }
