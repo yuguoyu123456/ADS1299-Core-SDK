@@ -1,0 +1,1 @@
+{"vendor":"STMicroelectronics","family":"STM32H7","mcu":"STM32H743ZIT6","board":"NUCLEO-H743ZI2","sdk":"STM32CubeH7 HAL","status":"reference-source-build-pending","shared_app":"../../common/reference_app","profile":"250sps-gain24-internal-test"}

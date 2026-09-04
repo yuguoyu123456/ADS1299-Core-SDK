@@ -20,5 +20,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate 23-project MCU catalog
+      - name: Validate MCU catalog
         run: python tests/validate_mcu_catalog.py
