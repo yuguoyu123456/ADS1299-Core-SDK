@@ -11,8 +11,10 @@ sources=[*(root/'firmware/core_driver/ads1299').glob('*.c'),*(t/'ads1299_port').
          t/'mcux_adapter/ads1299_lpc55_hal.c',t/'examples/main_ads1299.c',sdk/'drivers/flexcomm/spi/fsl_spi.c']
 with tempfile.TemporaryDirectory(prefix='.verify-',dir=t/'tests') as tmp:
     for i,src in enumerate(sources):
+        # SDK 2.16's GetCount has an unused base argument; keep its warning visible.
+        vendor_flags=['-Wno-error=unused-parameter'] if src==sdk/'drivers/flexcomm/spi/fsl_spi.c' else []
         subprocess.run([str(a.cc.resolve()),'-mcpu=cortex-m33','-mthumb','-std=c11',
             '-DCPU_LPC55S69JBD100_cm33_core0','-DSPI_RETRY_TIMES=100000',
-            '-Wall','-Wextra','-Werror',*[f'-I{x}' for x in inc],
+            '-Wall','-Wextra','-Werror',*vendor_flags,*[f'-I{x}' for x in inc],
             '-c',str(src),'-o',str(Path(tmp)/f'{i}.o')],check=True)
 print(f'PASS: {len(sources)} genuine-header objects; no full link, behavior or hardware claim.')
