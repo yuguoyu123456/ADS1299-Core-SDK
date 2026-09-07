@@ -657,6 +657,8 @@ def render_validation(t: Target) -> str:
         evidence = "Actual ESP-IDF 5.4.0 C6 bootloader/application images built on 2026-09-07. Mock queue/lifetime tests passed separately. See build.md; no flashing or hardware acquisition claimed."
     elif t.path == "02_Espressif/ESP32":
         evidence = "Actual ESP-IDF 5.4.0 classic ESP32 bootloader/application images built on 2026-09-07. Mock queue/lifetime and GPIO direction tests passed separately. See build.md; no hardware execution claimed."
+    elif t.path == "03_NXP/LPC55S69":
+        evidence = "Complete 17-source Core0 ELF linked with MCUX_2.16.000 on 2026-09-07, vectors at zero and no unresolved symbols. Adapter API-double and real vendor SPI / modeled FIFO tests passed. See build.md. Provisional control pins and untested boot/hardware keep status Reference."
     else:
         evidence = "No clean vendor-toolchain build is claimed."
     return f"""# Validation\n\nCurrent status: **{t.status}**\n\nAllowed lifecycle states: `Planned`, `Reference`, `Example`, `Compatible`,\n`Compiles`, `Bench-tested`, `24h-tested`.\n\n{evidence}\n\nTo advance status, attach exact SDK/compiler versions, the clean command and\nlog. `Bench-tested` additionally requires a real ADS1299 ID read, internal-test\nwaveform and packet integrity evidence. `24h-tested` requires loss/CRC/error\ncounts from a continuous 24-hour run.\n"""
@@ -848,6 +850,12 @@ LPSPI example. Generate GPIO and LPSPI mux code in the consuming SDK project.
 
 
 def target_appendix(t: Target, document: str) -> str:
+    if t.path == "03_NXP/LPC55S69":
+        return {
+            "readme": "\n## Maintained LPC55 reference\n\nUse mcux_adapter/ with shared Core and the standard Port. The cold-boot Core0 binding uses SPI7 at 1 MHz from FRO12. Control pins are provisional and a wiring interlock prevents automatic acquisition. See board/reference_image.md and build.md for complete link evidence and limitations.\n",
+            "integration": "\n## Concrete MCUX binding\n\nAdd mcux_adapter/ and compile the real fsl_spi.c with finite SPI_RETRY_TIMES=100000. Use either board/reference_image.c or your own board binding, not both. The reference owns GPIO ports 0/1 and Flexcomm7 exclusively at cold boot. It must not run as a nonsecure child image; do not alter security fuses. Follow board/reference_image.md before enabling the wiring interlock.\n",
+            "version": "\n2026-09-07: LPC55 adapter 0.1.0; MCUX_2.16.000 full reference link and modeled SPI fault tests verified. No physical board qualification.\n",
+        }.get(document, "")
     if t.path == "02_Espressif/ESP32":
         return {
             "readme": "\n## Maintained ESP32 reference\n\nOriginal IDF queued binding and DevKitC V4 WROOM board profile use SPI3, 1 MHz, GPIO18/23/19 with controls 21/22/25/26/27. Actual bootloader/application build and mock fault tests passed. See board/reference_image.md and build.md. Hardware qualification remains separate.\n",
@@ -910,6 +918,13 @@ def target_appendix(t: Target, document: str) -> str:
 
 
 def generate_target(t: Target) -> dict[str, object]:
+    if t.path == "03_NXP/LPC55S69":
+        t = replace(t, sdk_version="MCUX_2.16.000 / 6f3fd257; Core0 reference ELF verified",
+                    compiler="GCC Arm Embedded 9.2.1; MCUXpresso IDE not run",
+                    spi="SPI7 Mode 1; FRO12 / 12 = 1 MHz",
+                    pins=("PIO0_21 / P17-14", "PIO0_20 / P17-10", "PIO0_19 / P17-12",
+                          "PIO1_31 (provisional)", "PIO1_7 (provisional)", "PIO0_26 (provisional)",
+                          "PIO0_27 (provisional)", "PIO1_6 (provisional)", "Debugger snapshot only"))
     if t.path == "02_Espressif/ESP32":
         t = replace(t, mcu="ESP32-WROOM-32", board="ESP32-DevKitC V4 / 4 MB WROOM reference",
                     sdk_version="IDF 5.4.0; bootloader/application build verified 2026-09-07",
@@ -948,7 +963,7 @@ def generate_target(t: Target) -> dict[str, object]:
     write(base / "ads1299_port" / "ads1299_drdy.h", PORT_DRDY_H)
     write(base / "ads1299_port" / "ads1299_drdy.c", PORT_DRDY_C)
     example = EXAMPLE_C
-    if t.path in ("03_NXP/MIMXRT1170", "03_NXP/MIMXRT1062", "04_TexasInstruments/MSPM0G3507", "07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32"):
+    if t.path in ("03_NXP/MIMXRT1170", "03_NXP/MIMXRT1062", "04_TexasInstruments/MSPM0G3507", "07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32", "03_NXP/LPC55S69"):
         example = example.replace(
             'extern int board_ads1299_hal(ads1299_platform_hal_t *hal);',
             'extern int board_ads1299_hal(ads1299_platform_hal_t *hal);\n\n'
@@ -959,7 +974,7 @@ def generate_target(t: Target) -> dict[str, object]:
             "/* Send frame through the application's UART/USB/BLE/Ethernet path. */",
             '++ads1299_frame_sequence;\n            ads1299_latest_frame = frame;\n'
             '            ++ads1299_frame_sequence;')
-    if t.path in ("07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32"):
+    if t.path in ("07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32", "03_NXP/LPC55S69"):
         example = example.replace('if (port.drdy_read(port.user) == 0) {',
             'int ready = port.drdy_read(port.user);\n        if (ready < 0) return 11;\n'
             '        if (ready == 0) {')

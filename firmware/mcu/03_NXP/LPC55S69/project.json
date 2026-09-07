@@ -3,7 +3,7 @@
   "rank": 15,
   "path": "03_NXP/LPC55S69",
   "vendor": "NXP",
-  "family": "LPC55",
+  "family": "LPC55S6x",
   "mcu": "LPC55S69JBD100",
   "board": "LPCXpresso55S69",
   "architecture": "dual Arm Cortex-M33",

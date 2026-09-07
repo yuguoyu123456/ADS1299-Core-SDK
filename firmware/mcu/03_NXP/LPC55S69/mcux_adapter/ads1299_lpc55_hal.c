@@ -19,6 +19,7 @@ static int transfer(void *user,const uint8_t *tx,uint8_t *rx,size_t len)
         while (!(ctx->spi->STAT&SPI_STAT_MSTIDLE_MASK)) {
             if (fifo_error(ctx) || !--count) return fail(ctx);
         }
+        if (fifo_error(ctx)) return fail(ctx);
         if (tx) tx+=part;
         if (rx) rx+=part;
         len-=part;

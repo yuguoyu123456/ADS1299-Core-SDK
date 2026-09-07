@@ -1,5 +1,10 @@
 # ADS1299 MCU Port Ecosystem
 
+Linux compute-board planning is maintained separately in
+[Linux compute boards](../linux_compute/README.md), initially covering
+six Rockchip SoC families. These Planned extensions are outside ranks 1–100
+and are not included in the 85 ranked packages or validated-support counts.
+
 This tree is the hardware-adaptation layer between the controller-independent
 ADS1299 Core and a user's official MCU SDK project. It is not a vendor-SDK
 mirror and does not contain product firmware.

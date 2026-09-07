@@ -5,11 +5,11 @@ Global ecosystem rank: **15**. Status: **Reference**. Tier A. Hardware validatio
 ## Platform
 
 - Vendor: NXP
-- Family / MCU: LPC55 / LPC55S69JBD100
+- Family / MCU: LPC55S6x / LPC55S69JBD100
 - Architecture: dual Arm Cortex-M33
 - Reference board: LPCXpresso55S69
 - Official environment: MCUXpresso SDK
-- Compiler: arm-none-eabi-gcc / MCUXpresso
+- Compiler: GCC Arm Embedded 9.2.1; MCUXpresso IDE not run
 
 ## ADS1299 connection
 
@@ -30,3 +30,7 @@ The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
 provides a millisecond helper without changing the stable Core port contract.
 It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
 in `firmware/transport/` and must not block a DRDY handler.
+
+## Maintained LPC55 reference
+
+Use mcux_adapter/ with shared Core and the standard Port. The cold-boot Core0 binding uses SPI7 at 1 MHz from FRO12. Control pins are provisional and a wiring interlock prevents automatic acquisition. See board/reference_image.md and build.md for complete link evidence and limitations.

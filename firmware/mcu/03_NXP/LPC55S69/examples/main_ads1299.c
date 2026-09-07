@@ -5,6 +5,10 @@
 
 extern int board_ads1299_hal(ads1299_platform_hal_t *hal);
 
+/* Debugger snapshot only, not lossless transport. Odd sequence means writing. */
+volatile ads1299_frame_t ads1299_latest_frame;
+volatile uint32_t ads1299_frame_sequence;
+
 int main(void) {
     ads1299_platform_hal_t hal;
     ads1299_mcu_port_t mcu;
@@ -27,10 +31,14 @@ int main(void) {
     if (ads1299_start(&device) != ADS1299_OK) return 9;
 
     for (;;) {
-        if (port.drdy_read(port.user) == 0) {
+        int ready = port.drdy_read(port.user);
+        if (ready < 0) return 11;
+        if (ready == 0) {
             if (ads1299_read_frame_continuous(&device, &frame) != ADS1299_OK)
                 return 10;
-            /* Send frame through the application's UART/USB/BLE/Ethernet path. */
+            ++ads1299_frame_sequence;
+            ads1299_latest_frame = frame;
+            ++ads1299_frame_sequence;
         }
     }
 }

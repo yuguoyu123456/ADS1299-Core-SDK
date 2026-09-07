@@ -1,0 +1,14 @@
+vendor: Rockchip
+family: RK3588
+soc: RK3588
+platform_class: Linux_application_processor
+board: TBD
+hardware_revision: TBD
+operating_system: Linux
+kernel_version: TBD
+official_sdk: Board_vendor_BSP_to_be_selected
+sdk_version: TBD
+compiler: TBD
+debugger: TBD
+status: Planned
+rank: null

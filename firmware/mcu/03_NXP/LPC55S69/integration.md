@@ -19,5 +19,9 @@ and must not be toggled inside `spi_transfer`.
 
 Vendor startup, linker scripts, CMSIS/HAL, generated configuration and middleware
 stay in the user's official SDK project. This repository owns only the thin
-callback adapter and ADS1299-independent tests. Pin `pin in the consuming project` in the
+callback adapter and ADS1299-independent tests. Pin `MCUX_2.16.000 / 6f3fd257; Core0 reference ELF verified` in the
 consumer project and record any API change in `version.md`.
+
+## Concrete MCUX binding
+
+Add mcux_adapter/ and compile the real fsl_spi.c with finite SPI_RETRY_TIMES=100000. Use either board/reference_image.c or your own board binding, not both. The reference owns GPIO ports 0/1 and Flexcomm7 exclusively at cold boot. It must not run as a nonsecure child image; do not alter security fuses. Follow board/reference_image.md before enabling the wiring interlock.

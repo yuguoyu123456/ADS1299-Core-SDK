@@ -5,7 +5,7 @@
 | CPU | up to 150 MHz |
 | RAM | 320 KiB SRAM |
 | Flash | 640 KiB Flash |
-| SPI | Flexcomm SPI Mode 1 |
+| SPI | SPI7 Mode 1; FRO12 / 12 = 1 MHz |
 | DMA | Yes |
 | USB | USB HS/FS |
 | BLE | No |
