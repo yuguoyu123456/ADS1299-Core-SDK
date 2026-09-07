@@ -1,0 +1,13 @@
+schema: 1
+rank: 68
+vendor: "Allwinner"
+family: "R series"
+mcu: "R series"
+architecture: "Arm/RISC-V by device"
+board: "Select an official R series evaluation board"
+official_sdk: "official BSP required"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

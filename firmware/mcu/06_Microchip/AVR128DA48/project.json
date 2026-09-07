@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 52,
+  "path": "06_Microchip/AVR128DA48",
+  "vendor": "Microchip",
+  "family": "AVR DA",
+  "mcu": "AVR128DA48",
+  "board": "AVR128DA48 Curiosity Nano",
+  "architecture": "8-bit AVR",
+  "sdk": "MPLAB XC8 / AVR Dx device pack",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

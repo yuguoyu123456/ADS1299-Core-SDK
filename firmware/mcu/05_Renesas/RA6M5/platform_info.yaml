@@ -1,0 +1,13 @@
+schema: 1
+rank: 8
+vendor: "Renesas"
+family: "RA6"
+mcu: "R7FA6M5BH3CFC"
+architecture: "Arm Cortex-M33"
+board: "EK-RA6M5"
+official_sdk: "Renesas FSP"
+sdk_version: "5.6.0 reference ELF verified; 6.5.0 API tested only"
+compiler: "Arm GNU 13.2 recommended by FSP; adapter test GCC 9.2.1"
+debugger: "J-Link"
+tier: "A"
+status: "Reference"

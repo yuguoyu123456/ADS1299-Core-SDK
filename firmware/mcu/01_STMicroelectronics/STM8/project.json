@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 58,
+  "path": "01_STMicroelectronics/STM8",
+  "vendor": "STMicroelectronics",
+  "family": "STM8",
+  "mcu": "STM8",
+  "board": "Select an official STM8 evaluation board",
+  "architecture": "8-bit STM8",
+  "sdk": "STM8 Standard Peripheral Library",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

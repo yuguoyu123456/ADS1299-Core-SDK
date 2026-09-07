@@ -1,0 +1,13 @@
+schema: 1
+rank: 40
+vendor: "Nuvoton"
+family: "M480"
+mcu: "M487JIDAE"
+architecture: "Arm Cortex-M4F"
+board: "NuMaker-M487"
+official_sdk: "NuMicro M480 BSP"
+sdk_version: "pin in consuming project"
+compiler: "arm-none-eabi-gcc / Arm Compiler"
+debugger: "Nu-Link"
+tier: "B"
+status: "Reference"

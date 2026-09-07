@@ -1,0 +1,13 @@
+schema: 1
+rank: 39
+vendor: "Nationstech"
+family: "N32G455"
+mcu: "N32G455VEL7"
+architecture: "Arm Cortex-M4F"
+board: "N32G455 evaluation board"
+official_sdk: "N32G45x Firmware Library"
+sdk_version: "pin in consuming project"
+compiler: "arm-none-eabi-gcc"
+debugger: "J-Link"
+tier: "B"
+status: "Reference"

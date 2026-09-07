@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 92,
+  "path": "25_Other/Atmel_ATtiny",
+  "vendor": "Atmel Legacy",
+  "family": "ATtiny",
+  "mcu": "ATtiny",
+  "board": "Select an official ATtiny evaluation board",
+  "architecture": "8-bit AVR",
+  "sdk": "avr-libc / Microchip device pack",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

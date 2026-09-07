@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 17,
+  "path": "04_TexasInstruments/TMS320F28379D",
+  "vendor": "Texas Instruments",
+  "family": "C2000",
+  "mcu": "TMS320F28379D",
+  "board": "LAUNCHXL-F28379D",
+  "architecture": "dual C28x + dual CLA",
+  "sdk": "C2000Ware DriverLib",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

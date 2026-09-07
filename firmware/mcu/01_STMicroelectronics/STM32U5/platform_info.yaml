@@ -1,0 +1,13 @@
+schema: 1
+rank: 12
+vendor: "STMicroelectronics"
+family: "STM32U5"
+mcu: "STM32U575ZI"
+architecture: "Arm Cortex-M33"
+board: "NUCLEO-U575ZI-Q; provisional control GPIOs"
+official_sdk: "STM32CubeU5"
+sdk_version: "CubeU5 1.1.0 linker; CMSIS device 624374fa; GNU reference verified"
+compiler: "GCC Arm Embedded 9.2.1; CubeIDE/Keil not run"
+debugger: "ST-LINK / SWD"
+tier: "A"
+status: "Reference"

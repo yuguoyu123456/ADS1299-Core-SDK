@@ -1,0 +1,13 @@
+schema: 1
+rank: 9
+vendor: "Microchip"
+family: "SAME5x"
+mcu: "ATSAME54P20A"
+architecture: "Arm Cortex-M4F"
+board: "SAME54 Xplained Pro"
+official_sdk: "MPLAB Harmony 3"
+sdk_version: "CSP examples 3.6.1; GNU reference link verified; XC32 not run"
+compiler: "XC32 / arm-none-eabi-gcc"
+debugger: "EDBG"
+tier: "A"
+status: "Reference"

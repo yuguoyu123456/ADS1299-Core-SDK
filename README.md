@@ -1,7 +1,7 @@
 # ADS1299-Core-SDK
 
 > ## Aiming to build the world's #1 open ADS1299 ecosystem
-> **From ADS1299 registers and complete MCU/FPGA projects to 8–64 channel systems, phones, computers, smart watches, earbuds, smart glasses/XR, smart-home hubs, Python/MATLAB/R EEG analysis, and BCI workflows — in one coherent repository.**
+> **From ADS1299 registers and portable MCU/FPGA interfaces to 8–64 channel systems, host tools, EEG analysis and BCI workflows — in one coherent repository.**
 
 **ADS1299-Core-SDK** is an open engineering, research and learning ecosystem for the **Texas Instruments ADS1299** family of biopotential front ends.
 
@@ -25,6 +25,8 @@ You do not need to understand the repository architecture first. Choose what you
 | Use STM32 / ESP32 / RP2040 / another MCU | [`firmware/mcu/`](firmware/mcu/) |
 | Study or reuse the common ADS1299 C driver | [`firmware/core_driver/ads1299/`](firmware/core_driver/ads1299/) |
 | Use FPGA | [`firmware/fpga/`](firmware/fpga/) |
+| Browse the ranked 1–100 ecosystem | [`firmware/ECOSYSTEM_100.md`](firmware/ECOSYSTEM_100.md) |
+| Stream packets over UART/USB/BLE/network/LSL bridge | [`firmware/transport/`](firmware/transport/) |
 | Receive, record or plot data on a PC | [`pc_tools/`](pc_tools/) |
 | Connect ADS1299 to Android / Apple / Linux / wearables / XR / smart home | [`integrations/`](integrations/) |
 | Learn EEG filtering, PSD, ERP or features | [`eeg_analysis/`](eeg_analysis/) |
@@ -114,8 +116,9 @@ ADS1299-Core-SDK/
 ├── firmware/                 # all embedded acquisition code
 │   ├── core_driver/          # controller-independent ADS1299 driver
 │   ├── common/               # shared embedded utilities / packet encoder
+│   ├── transport/            # host-link boundary; never ADS1299 register logic
 │   ├── mcu/                  # complete MCU reference projects
-│   └── fpga/                 # FPGA RTL and complete reference projects
+│   └── fpga/                 # FPGA RTL interface reference packages
 │
 ├── pc_tools/                 # host packet decoding, recording and visualization
 │
@@ -137,19 +140,23 @@ ADS1299-Core-SDK/
 └── .github/                  # CI, issue templates and project automation
 ```
 
-### One MCU = one real project
+### One MCU family = one maintained port package
 
-The repository does not treat a small `port.c` file or an empty example folder as a complete platform.
+MCU support is organized by global ecosystem priority under
+[`firmware/mcu/`](firmware/mcu/). Every visible target contains platform
+metadata, capabilities, a hardware-only SPI/GPIO/DRDY adapter, a minimal Core
+API example, pin map, integration guide, version record, tests and an honest
+validation state. Vendor SDKs, startup files, linker scripts and generated IDE
+content remain external dependencies.
 
-A visible MCU reference project should contain the board entry point, build system, GPIO/SPI/DRDY integration, local ADS1299 port layer, wiring notes, exact toolchain information, bring-up procedure and expected output.
+Reference entry points:
 
-Current complete-project track:
-
-- **STMicroelectronics** → `firmware/mcu/st/stm32f407_black/`
-- **Espressif** → `firmware/mcu/espressif/esp32s3_devkitc/`
-- **Raspberry Pi** → `firmware/mcu/raspberry_pi/rp2040_pico/`
-
-Additional MCU families are added as complete, reproducible projects rather than placeholder directories.
+- **STMicroelectronics** → `firmware/mcu/01_STMicroelectronics/STM32F407/`
+- **Espressif** → `firmware/mcu/02_Espressif/ESP32S3/`
+- **NXP** → `firmware/mcu/03_NXP/MIMXRT1062/`
+- **Texas Instruments** → `firmware/mcu/04_TexasInstruments/MSPM0G3507/`
+- **Nordic** → `firmware/mcu/07_Nordic/nRF52840/`
+- **Raspberry Pi** → `firmware/mcu/10_RaspberryPi/RP2040/`
 
 ---
 
@@ -207,7 +214,11 @@ The controller ecosystem targets representative projects for major global platfo
 
 **STM32 · GD32 · CH32 · ESP32 · nRF52/nRF53 · RP2040/RP2350 · NXP · Renesas · TI MCU · Infineon/PSoC · Silicon Labs · Microchip · HC32 · AT32 · MM32 · N32 · PY32 · APM32 · STC · AVR**
 
-FPGA is a separate track for **AMD/Xilinx, Intel/Altera and Lattice** families.
+FPGA is a separate rank-71–85 track covering **AMD/Xilinx, Intel FPGA,
+Lattice, Microchip PolarFire, Gowin, Tang, Anlogic and Efinix** families.
+Each track now provides the same vendor-neutral SPI transaction and 4/6/8-channel
+frame RTL, a self-checking testbench, platform constraint template and explicit
+validation record. These are `Reference` packages, not claimed board projects.
 
 The roadmap is intentionally broad, but the repository distinguishes **roadmap coverage** from **verified support**.
 

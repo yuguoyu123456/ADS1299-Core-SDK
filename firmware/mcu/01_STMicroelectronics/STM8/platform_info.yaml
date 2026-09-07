@@ -1,0 +1,13 @@
+schema: 1
+rank: 58
+vendor: "STMicroelectronics"
+family: "STM8"
+mcu: "STM8"
+architecture: "8-bit STM8"
+board: "Select an official STM8 evaluation board"
+official_sdk: "STM8 Standard Peripheral Library"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

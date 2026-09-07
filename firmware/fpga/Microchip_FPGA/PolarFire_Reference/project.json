@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 80,
+  "domain": "fpga",
+  "path": "Microchip_FPGA/PolarFire_Reference",
+  "vendor": "Microchip FPGA",
+  "family": "PolarFire",
+  "tool": "Libero SoC",
+  "constraint": "constraints/pins.pdc",
+  "status": "Reference"
+}

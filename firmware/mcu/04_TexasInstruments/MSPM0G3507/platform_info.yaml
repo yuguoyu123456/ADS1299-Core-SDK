@@ -1,0 +1,13 @@
+schema: 1
+rank: 6
+vendor: "Texas Instruments"
+family: "MSPM0"
+mcu: "MSPM0G3507SPM"
+architecture: "Arm Cortex-M0+"
+board: "LP-MSPM0G3507"
+official_sdk: "MSPM0 SDK DriverLib"
+sdk_version: "2.11.00.07 reference"
+compiler: "TI Arm Clang / arm-none-eabi-gcc"
+debugger: "on-board XDS110"
+tier: "A"
+status: "Reference"

@@ -3,15 +3,15 @@ name: nrf52-reference
 on:
   push:
     paths:
-      - 'firmware/mcu/nordic/nrf52840_dk/**'
-      - 'firmware/mcu/common/reference_app/**'
+      - 'firmware/mcu/07_Nordic/nRF52840/**'
+      - 'firmware/mcu/_shared/reference_app/**'
       - 'firmware/core_driver/ads1299/**'
       - 'firmware/common/data_packet/**'
       - '.github/workflows/nrf52-reference.yml'
   pull_request:
     paths:
-      - 'firmware/mcu/nordic/nrf52840_dk/**'
-      - 'firmware/mcu/common/reference_app/**'
+      - 'firmware/mcu/07_Nordic/nRF52840/**'
+      - 'firmware/mcu/_shared/reference_app/**'
       - 'firmware/core_driver/ads1299/**'
       - 'firmware/common/data_packet/**'
       - '.github/workflows/nrf52-reference.yml'
@@ -35,4 +35,4 @@ jobs:
       - name: Clean build nRF52840 DK reference
         run: |
           cd /tmp/ncs
-          west build -p always --no-sysbuild -b nrf52840dk/nrf52840 "$GITHUB_WORKSPACE/firmware/mcu/nordic/nrf52840_dk"
+          west build -p always --no-sysbuild -b nrf52840dk/nrf52840 "$GITHUB_WORKSPACE/firmware/mcu/07_Nordic/nRF52840"

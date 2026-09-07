@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 87,
+  "path": "25_Other/Kendryte_K210",
+  "vendor": "Kendryte",
+  "family": "K210",
+  "mcu": "K210",
+  "board": "Select an official K210 evaluation board",
+  "architecture": "dual RV64GC",
+  "sdk": "Kendryte standalone SDK",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

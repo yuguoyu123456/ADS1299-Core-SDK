@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 27,
+  "path": "01_STMicroelectronics/STM32WB",
+  "vendor": "STMicroelectronics",
+  "family": "STM32WB",
+  "mcu": "STM32WB",
+  "board": "Select an official STM32WB evaluation board",
+  "architecture": "dual Arm Cortex-M4/M0+",
+  "sdk": "STM32CubeWB",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

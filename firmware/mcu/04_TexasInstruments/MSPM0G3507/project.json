@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 6,
+  "path": "04_TexasInstruments/MSPM0G3507",
+  "vendor": "Texas Instruments",
+  "family": "MSPM0",
+  "mcu": "MSPM0G3507SPM",
+  "board": "LP-MSPM0G3507",
+  "architecture": "Arm Cortex-M0+",
+  "sdk": "MSPM0 SDK DriverLib",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

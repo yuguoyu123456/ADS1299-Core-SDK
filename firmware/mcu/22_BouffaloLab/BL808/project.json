@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 44,
+  "path": "22_BouffaloLab/BL808",
+  "vendor": "Bouffalo Lab",
+  "family": "BL808",
+  "mcu": "BL808",
+  "board": "Select an official BL808 evaluation board",
+  "architecture": "multi-core RISC-V",
+  "sdk": "Bouffalo SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

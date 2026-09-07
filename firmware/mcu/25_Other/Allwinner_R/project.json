@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 68,
+  "path": "25_Other/Allwinner_R",
+  "vendor": "Allwinner",
+  "family": "R series",
+  "mcu": "R series",
+  "board": "Select an official R series evaluation board",
+  "architecture": "Arm/RISC-V by device",
+  "sdk": "official BSP required",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

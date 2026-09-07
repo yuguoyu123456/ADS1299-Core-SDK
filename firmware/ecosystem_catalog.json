@@ -1,0 +1,806 @@
+{
+  "schema": 1,
+  "policy": "Ranks 1-70 and 86-100 are MCU/SoC/DSP ports; 71-85 are FPGA interfaces.",
+  "entries": [
+    {
+      "rank": 1,
+      "domain": "mcu",
+      "vendor": "STMicroelectronics",
+      "family": "STM32H7",
+      "path": "mcu/01_STMicroelectronics/STM32H743",
+      "status": "Compiles"
+    },
+    {
+      "rank": 2,
+      "domain": "mcu",
+      "vendor": "STMicroelectronics",
+      "family": "STM32F4",
+      "path": "mcu/01_STMicroelectronics/STM32F407",
+      "status": "Compiles"
+    },
+    {
+      "rank": 3,
+      "domain": "mcu",
+      "vendor": "Espressif",
+      "family": "ESP32-S3",
+      "path": "mcu/02_Espressif/ESP32S3",
+      "status": "Compiles"
+    },
+    {
+      "rank": 4,
+      "domain": "mcu",
+      "vendor": "NXP",
+      "family": "i.MX RT1170",
+      "path": "mcu/03_NXP/MIMXRT1170",
+      "status": "Reference"
+    },
+    {
+      "rank": 5,
+      "domain": "mcu",
+      "vendor": "NXP",
+      "family": "i.MX RT1060",
+      "path": "mcu/03_NXP/MIMXRT1062",
+      "status": "Reference"
+    },
+    {
+      "rank": 6,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "MSPM0",
+      "path": "mcu/04_TexasInstruments/MSPM0G3507",
+      "status": "Reference"
+    },
+    {
+      "rank": 7,
+      "domain": "mcu",
+      "vendor": "Nordic Semiconductor",
+      "family": "nRF5340",
+      "path": "mcu/07_Nordic/nRF5340",
+      "status": "Compiles"
+    },
+    {
+      "rank": 8,
+      "domain": "mcu",
+      "vendor": "Renesas",
+      "family": "RA6",
+      "path": "mcu/05_Renesas/RA6M5",
+      "status": "Reference"
+    },
+    {
+      "rank": 9,
+      "domain": "mcu",
+      "vendor": "Microchip",
+      "family": "SAME5x",
+      "path": "mcu/06_Microchip/SAME54",
+      "status": "Reference"
+    },
+    {
+      "rank": 10,
+      "domain": "mcu",
+      "vendor": "Infineon",
+      "family": "PSoC6",
+      "path": "mcu/08_Infineon/PSoC6",
+      "status": "Reference"
+    },
+    {
+      "rank": 11,
+      "domain": "mcu",
+      "vendor": "STMicroelectronics",
+      "family": "STM32G4",
+      "path": "mcu/01_STMicroelectronics/STM32G4",
+      "status": "Reference"
+    },
+    {
+      "rank": 12,
+      "domain": "mcu",
+      "vendor": "STMicroelectronics",
+      "family": "STM32U5",
+      "path": "mcu/01_STMicroelectronics/STM32U5",
+      "status": "Reference"
+    },
+    {
+      "rank": 13,
+      "domain": "mcu",
+      "vendor": "Espressif",
+      "family": "ESP32-C6",
+      "path": "mcu/02_Espressif/ESP32C6",
+      "status": "Reference"
+    },
+    {
+      "rank": 14,
+      "domain": "mcu",
+      "vendor": "Espressif",
+      "family": "ESP32",
+      "path": "mcu/02_Espressif/ESP32",
+      "status": "Reference"
+    },
+    {
+      "rank": 15,
+      "domain": "mcu",
+      "vendor": "NXP",
+      "family": "LPC55",
+      "path": "mcu/03_NXP/LPC55S69",
+      "status": "Reference"
+    },
+    {
+      "rank": 16,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "TM4C129",
+      "path": "mcu/04_TexasInstruments/TM4C1294",
+      "status": "Reference"
+    },
+    {
+      "rank": 17,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "C2000",
+      "path": "mcu/04_TexasInstruments/TMS320F28379D",
+      "status": "Reference"
+    },
+    {
+      "rank": 18,
+      "domain": "mcu",
+      "vendor": "Renesas",
+      "family": "RX72",
+      "path": "mcu/05_Renesas/RX72N",
+      "status": "Reference"
+    },
+    {
+      "rank": 19,
+      "domain": "mcu",
+      "vendor": "Microchip",
+      "family": "SAMD51",
+      "path": "mcu/06_Microchip/SAMD51",
+      "status": "Reference"
+    },
+    {
+      "rank": 20,
+      "domain": "mcu",
+      "vendor": "Silicon Labs",
+      "family": "EFR32",
+      "path": "mcu/09_SiliconLabs/EFR32MG24",
+      "status": "Reference"
+    },
+    {
+      "rank": 21,
+      "domain": "mcu",
+      "vendor": "Nordic Semiconductor",
+      "family": "nRF52840",
+      "path": "mcu/07_Nordic/nRF52840",
+      "status": "Compiles"
+    },
+    {
+      "rank": 22,
+      "domain": "mcu",
+      "vendor": "Nordic Semiconductor",
+      "family": "nRF54",
+      "path": "mcu/07_Nordic/nRF54",
+      "status": "Reference"
+    },
+    {
+      "rank": 23,
+      "domain": "mcu",
+      "vendor": "Raspberry Pi",
+      "family": "RP2350",
+      "path": "mcu/10_RaspberryPi/RP2350",
+      "status": "Compiles"
+    },
+    {
+      "rank": 24,
+      "domain": "mcu",
+      "vendor": "Raspberry Pi",
+      "family": "RP2040",
+      "path": "mcu/10_RaspberryPi/RP2040",
+      "status": "Compiles"
+    },
+    {
+      "rank": 25,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "CC2640/CC26xx",
+      "path": "mcu/04_TexasInstruments/CC26xx",
+      "status": "Reference"
+    },
+    {
+      "rank": 26,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "CC1352",
+      "path": "mcu/04_TexasInstruments/CC1352",
+      "status": "Reference"
+    },
+    {
+      "rank": 27,
+      "domain": "mcu",
+      "vendor": "STMicroelectronics",
+      "family": "STM32WB",
+      "path": "mcu/01_STMicroelectronics/STM32WB",
+      "status": "Reference"
+    },
+    {
+      "rank": 28,
+      "domain": "mcu",
+      "vendor": "STMicroelectronics",
+      "family": "STM32WL",
+      "path": "mcu/01_STMicroelectronics/STM32WL",
+      "status": "Reference"
+    },
+    {
+      "rank": 29,
+      "domain": "mcu",
+      "vendor": "Realtek",
+      "family": "RTL8720",
+      "path": "mcu/23_Realtek/RTL8720",
+      "status": "Reference"
+    },
+    {
+      "rank": 30,
+      "domain": "mcu",
+      "vendor": "Telink",
+      "family": "TLSR825x",
+      "path": "mcu/25_Other/Telink_TLSR825x",
+      "status": "Reference"
+    },
+    {
+      "rank": 31,
+      "domain": "mcu",
+      "vendor": "GigaDevice",
+      "family": "GD32F4",
+      "path": "mcu/11_GigaDevice/GD32F450",
+      "status": "Compiles"
+    },
+    {
+      "rank": 32,
+      "domain": "mcu",
+      "vendor": "GigaDevice",
+      "family": "GD32H7",
+      "path": "mcu/11_GigaDevice/GD32H7",
+      "status": "Reference"
+    },
+    {
+      "rank": 33,
+      "domain": "mcu",
+      "vendor": "WCH",
+      "family": "CH32V307",
+      "path": "mcu/12_WCH/CH32V307",
+      "status": "Compiles"
+    },
+    {
+      "rank": 34,
+      "domain": "mcu",
+      "vendor": "WCH",
+      "family": "CH32V203",
+      "path": "mcu/12_WCH/CH32V203",
+      "status": "Reference"
+    },
+    {
+      "rank": 35,
+      "domain": "mcu",
+      "vendor": "Artery",
+      "family": "AT32F435",
+      "path": "mcu/13_Artery/AT32F435",
+      "status": "Reference"
+    },
+    {
+      "rank": 36,
+      "domain": "mcu",
+      "vendor": "Geehy",
+      "family": "APM32F407",
+      "path": "mcu/14_Geehy/APM32F407",
+      "status": "Reference"
+    },
+    {
+      "rank": 37,
+      "domain": "mcu",
+      "vendor": "HDSC",
+      "family": "HC32F460",
+      "path": "mcu/15_HDSC/HC32F460",
+      "status": "Reference"
+    },
+    {
+      "rank": 38,
+      "domain": "mcu",
+      "vendor": "MindMotion",
+      "family": "MM32F327",
+      "path": "mcu/16_MindMotion/MM32F3277",
+      "status": "Reference"
+    },
+    {
+      "rank": 39,
+      "domain": "mcu",
+      "vendor": "Nationstech",
+      "family": "N32G455",
+      "path": "mcu/17_Nationstech/N32G455",
+      "status": "Reference"
+    },
+    {
+      "rank": 40,
+      "domain": "mcu",
+      "vendor": "Nuvoton",
+      "family": "M480",
+      "path": "mcu/18_Nuvoton/M487",
+      "status": "Reference"
+    },
+    {
+      "rank": 41,
+      "domain": "mcu",
+      "vendor": "Puya",
+      "family": "PY32",
+      "path": "mcu/19_Puya/PY32F403",
+      "status": "Reference"
+    },
+    {
+      "rank": 42,
+      "domain": "mcu",
+      "vendor": "STC",
+      "family": "STC32",
+      "path": "mcu/20_STC/STC32G12K128",
+      "status": "Reference"
+    },
+    {
+      "rank": 43,
+      "domain": "mcu",
+      "vendor": "Bouffalo Lab",
+      "family": "BL616",
+      "path": "mcu/22_BouffaloLab/BL616",
+      "status": "Reference"
+    },
+    {
+      "rank": 44,
+      "domain": "mcu",
+      "vendor": "Bouffalo Lab",
+      "family": "BL808",
+      "path": "mcu/22_BouffaloLab/BL808",
+      "status": "Reference"
+    },
+    {
+      "rank": 45,
+      "domain": "mcu",
+      "vendor": "Xiaomi",
+      "family": "Pine RISC-V IoT",
+      "path": "mcu/25_Other/Xiaomi_Pine_RISCV",
+      "status": "Planned"
+    },
+    {
+      "rank": 46,
+      "domain": "mcu",
+      "vendor": "Nations",
+      "family": "M4 series",
+      "path": "mcu/25_Other/Nations_M4",
+      "status": "Planned"
+    },
+    {
+      "rank": 47,
+      "domain": "mcu",
+      "vendor": "Geehy",
+      "family": "APM32M",
+      "path": "mcu/14_Geehy/APM32M",
+      "status": "Reference"
+    },
+    {
+      "rank": 48,
+      "domain": "mcu",
+      "vendor": "MindMotion",
+      "family": "MM32W",
+      "path": "mcu/16_MindMotion/MM32W",
+      "status": "Reference"
+    },
+    {
+      "rank": 49,
+      "domain": "mcu",
+      "vendor": "Nuvoton",
+      "family": "M55M1",
+      "path": "mcu/18_Nuvoton/M55M1",
+      "status": "Reference"
+    },
+    {
+      "rank": 50,
+      "domain": "mcu",
+      "vendor": "T-Head",
+      "family": "XuanTie RISC-V",
+      "path": "mcu/25_Other/THead_XuanTie",
+      "status": "Planned"
+    },
+    {
+      "rank": 51,
+      "domain": "mcu",
+      "vendor": "Microchip",
+      "family": "PIC32",
+      "path": "mcu/06_Microchip/PIC32",
+      "status": "Reference"
+    },
+    {
+      "rank": 52,
+      "domain": "mcu",
+      "vendor": "Microchip",
+      "family": "AVR DA",
+      "path": "mcu/06_Microchip/AVR128DA48",
+      "status": "Reference"
+    },
+    {
+      "rank": 53,
+      "domain": "mcu",
+      "vendor": "Microchip",
+      "family": "AVR Classic",
+      "path": "mcu/06_Microchip/AVR_Classic",
+      "status": "Reference"
+    },
+    {
+      "rank": 54,
+      "domain": "mcu",
+      "vendor": "Microchip",
+      "family": "PIC16/PIC18",
+      "path": "mcu/06_Microchip/PIC16_PIC18",
+      "status": "Reference"
+    },
+    {
+      "rank": 55,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "MSP430",
+      "path": "mcu/04_TexasInstruments/MSP430",
+      "status": "Reference"
+    },
+    {
+      "rank": 56,
+      "domain": "mcu",
+      "vendor": "Renesas",
+      "family": "RL78",
+      "path": "mcu/05_Renesas/RL78",
+      "status": "Reference"
+    },
+    {
+      "rank": 57,
+      "domain": "mcu",
+      "vendor": "Renesas",
+      "family": "Synergy",
+      "path": "mcu/05_Renesas/Synergy",
+      "status": "Planned"
+    },
+    {
+      "rank": 58,
+      "domain": "mcu",
+      "vendor": "STMicroelectronics",
+      "family": "STM8",
+      "path": "mcu/01_STMicroelectronics/STM8",
+      "status": "Reference"
+    },
+    {
+      "rank": 59,
+      "domain": "mcu",
+      "vendor": "Toshiba",
+      "family": "TXZ",
+      "path": "mcu/24_Toshiba/TXZ",
+      "status": "Reference"
+    },
+    {
+      "rank": 60,
+      "domain": "mcu",
+      "vendor": "Samsung",
+      "family": "ARTIK",
+      "path": "mcu/25_Other/Samsung_ARTIK",
+      "status": "Planned"
+    },
+    {
+      "rank": 61,
+      "domain": "mcu",
+      "vendor": "Ambiq",
+      "family": "Apollo4",
+      "path": "mcu/21_Ambiq/Apollo4",
+      "status": "Reference"
+    },
+    {
+      "rank": 62,
+      "domain": "mcu",
+      "vendor": "Ambiq",
+      "family": "Apollo3",
+      "path": "mcu/21_Ambiq/Apollo3",
+      "status": "Reference"
+    },
+    {
+      "rank": 63,
+      "domain": "mcu",
+      "vendor": "Dialog/Renesas",
+      "family": "DA1469x",
+      "path": "mcu/05_Renesas/DA1469x",
+      "status": "Reference"
+    },
+    {
+      "rank": 64,
+      "domain": "mcu",
+      "vendor": "Silicon Labs",
+      "family": "EFM32",
+      "path": "mcu/09_SiliconLabs/EFM32",
+      "status": "Reference"
+    },
+    {
+      "rank": 65,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "CC32xx",
+      "path": "mcu/04_TexasInstruments/CC32xx",
+      "status": "Reference"
+    },
+    {
+      "rank": 66,
+      "domain": "mcu",
+      "vendor": "Realtek",
+      "family": "RTL87xx",
+      "path": "mcu/23_Realtek/RTL87xx",
+      "status": "Planned"
+    },
+    {
+      "rank": 67,
+      "domain": "mcu",
+      "vendor": "Actions Semiconductor",
+      "family": "ATS",
+      "path": "mcu/25_Other/Actions_ATS",
+      "status": "Planned"
+    },
+    {
+      "rank": 68,
+      "domain": "mcu",
+      "vendor": "Allwinner",
+      "family": "R series",
+      "path": "mcu/25_Other/Allwinner_R",
+      "status": "Planned"
+    },
+    {
+      "rank": 69,
+      "domain": "mcu",
+      "vendor": "Amlogic",
+      "family": "IoT family unspecified",
+      "path": "mcu/25_Other/Amlogic_IoT",
+      "status": "Planned"
+    },
+    {
+      "rank": 70,
+      "domain": "mcu",
+      "vendor": "Rockchip",
+      "family": "MCU/IoT family unspecified",
+      "path": "mcu/25_Other/Rockchip_MCU_IoT",
+      "status": "Planned"
+    },
+    {
+      "rank": 71,
+      "domain": "fpga",
+      "vendor": "AMD Xilinx",
+      "family": "Zynq-7000",
+      "path": "fpga/AMD_Xilinx/Zynq7000_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 72,
+      "domain": "fpga",
+      "vendor": "AMD Xilinx",
+      "family": "Zynq UltraScale+",
+      "path": "fpga/AMD_Xilinx/ZynqUltraScalePlus_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 73,
+      "domain": "fpga",
+      "vendor": "AMD Xilinx",
+      "family": "Artix-7",
+      "path": "fpga/AMD_Xilinx/Artix7_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 74,
+      "domain": "fpga",
+      "vendor": "AMD Xilinx",
+      "family": "Kintex-7",
+      "path": "fpga/AMD_Xilinx/Kintex7_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 75,
+      "domain": "fpga",
+      "vendor": "Intel FPGA",
+      "family": "Cyclone V",
+      "path": "fpga/Intel_Altera/CycloneV_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 76,
+      "domain": "fpga",
+      "vendor": "Intel FPGA",
+      "family": "Cyclone IV",
+      "path": "fpga/Intel_Altera/CycloneIV_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 77,
+      "domain": "fpga",
+      "vendor": "Intel FPGA",
+      "family": "MAX 10",
+      "path": "fpga/Intel_Altera/MAX10_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 78,
+      "domain": "fpga",
+      "vendor": "Lattice",
+      "family": "ECP5",
+      "path": "fpga/Lattice/ECP5_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 79,
+      "domain": "fpga",
+      "vendor": "Lattice",
+      "family": "Certus-NX",
+      "path": "fpga/Lattice/CertusNX_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 80,
+      "domain": "fpga",
+      "vendor": "Microchip FPGA",
+      "family": "PolarFire",
+      "path": "fpga/Microchip_FPGA/PolarFire_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 81,
+      "domain": "fpga",
+      "vendor": "Gowin",
+      "family": "GW1N",
+      "path": "fpga/Gowin/GW1N_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 82,
+      "domain": "fpga",
+      "vendor": "Gowin",
+      "family": "GW2A",
+      "path": "fpga/Gowin/GW2A_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 83,
+      "domain": "fpga",
+      "vendor": "Anlogic",
+      "family": "EG4",
+      "path": "fpga/Anlogic/EG4_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 84,
+      "domain": "fpga",
+      "vendor": "Tang FPGA",
+      "family": "GW series",
+      "path": "fpga/Tang_FPGA/GW_Series_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 85,
+      "domain": "fpga",
+      "vendor": "Efinix",
+      "family": "Titanium",
+      "path": "fpga/Efinix/Titanium_Reference",
+      "status": "Reference"
+    },
+    {
+      "rank": 86,
+      "domain": "mcu",
+      "vendor": "Sipeed",
+      "family": "Maix/RISC-V",
+      "path": "mcu/25_Other/Sipeed_Maix_RISCV",
+      "status": "Reference"
+    },
+    {
+      "rank": 87,
+      "domain": "mcu",
+      "vendor": "Kendryte",
+      "family": "K210",
+      "path": "mcu/25_Other/Kendryte_K210",
+      "status": "Reference"
+    },
+    {
+      "rank": 88,
+      "domain": "mcu",
+      "vendor": "SiFive",
+      "family": "Freedom",
+      "path": "mcu/25_Other/SiFive_Freedom",
+      "status": "Reference"
+    },
+    {
+      "rank": 89,
+      "domain": "mcu",
+      "vendor": "Nuclei",
+      "family": "RISC-V",
+      "path": "mcu/25_Other/Nuclei_RISCV",
+      "status": "Reference"
+    },
+    {
+      "rank": 90,
+      "domain": "mcu",
+      "vendor": "OpenHW Group",
+      "family": "CV32",
+      "path": "mcu/25_Other/OpenHW_CV32",
+      "status": "Reference"
+    },
+    {
+      "rank": 91,
+      "domain": "mcu",
+      "vendor": "Atmel Legacy",
+      "family": "ATmega328",
+      "path": "mcu/25_Other/Atmel_ATmega328",
+      "status": "Reference"
+    },
+    {
+      "rank": 92,
+      "domain": "mcu",
+      "vendor": "Atmel Legacy",
+      "family": "ATtiny",
+      "path": "mcu/25_Other/Atmel_ATtiny",
+      "status": "Reference"
+    },
+    {
+      "rank": 93,
+      "domain": "mcu",
+      "vendor": "ARM Generic",
+      "family": "Cortex-M0+",
+      "path": "mcu/25_Other/ARM_CortexM0Plus_Generic",
+      "status": "Reference"
+    },
+    {
+      "rank": 94,
+      "domain": "mcu",
+      "vendor": "ARM Generic",
+      "family": "Cortex-M3",
+      "path": "mcu/25_Other/ARM_CortexM3_Generic",
+      "status": "Reference"
+    },
+    {
+      "rank": 95,
+      "domain": "mcu",
+      "vendor": "ARM Generic",
+      "family": "Cortex-M4",
+      "path": "mcu/25_Other/ARM_CortexM4_Generic",
+      "status": "Reference"
+    },
+    {
+      "rank": 96,
+      "domain": "mcu",
+      "vendor": "ARM Generic",
+      "family": "Cortex-M7",
+      "path": "mcu/25_Other/ARM_CortexM7_Generic",
+      "status": "Reference"
+    },
+    {
+      "rank": 97,
+      "domain": "mcu",
+      "vendor": "RISC-V Generic",
+      "family": "RV32",
+      "path": "mcu/25_Other/RISCV_RV32_Generic",
+      "status": "Reference"
+    },
+    {
+      "rank": 98,
+      "domain": "mcu",
+      "vendor": "Texas Instruments",
+      "family": "C6000 DSP",
+      "path": "mcu/25_Other/DSP_TI_C6000",
+      "status": "Reference"
+    },
+    {
+      "rank": 99,
+      "domain": "mcu",
+      "vendor": "Analog Devices",
+      "family": "SHARC",
+      "path": "mcu/25_Other/DSP_ADI_SHARC",
+      "status": "Reference"
+    },
+    {
+      "rank": 100,
+      "domain": "mcu",
+      "vendor": "Cadence",
+      "family": "Tensilica DSP",
+      "path": "mcu/25_Other/DSP_Cadence_Tensilica",
+      "status": "Planned"
+    }
+  ]
+}

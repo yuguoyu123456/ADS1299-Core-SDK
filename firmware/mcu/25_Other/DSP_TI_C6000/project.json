@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 98,
+  "path": "25_Other/DSP_TI_C6000",
+  "vendor": "Texas Instruments",
+  "family": "C6000 DSP",
+  "mcu": "C6000 DSP",
+  "board": "Select an official C6000 DSP evaluation board",
+  "architecture": "TI C6000 DSP",
+  "sdk": "Processor SDK / Code Composer Studio",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

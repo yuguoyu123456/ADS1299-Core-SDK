@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "ads1299_semantics.h"
+#include "ads1299_model.h"
 
 static int near(double a, double b, double tol) {
     const double d = (a >= b) ? (a - b) : (b - a);
@@ -131,7 +131,7 @@ static void test_context_aware_descriptors(void) {
     assert(ads1299_describe_field_code(ADS1299_FIELD_LOFF_FREQ, 3u,
                                        ADS1299_VARIANT_8CH, &ctx, &d) ==
            ADS1299_SEMANTIC_OK);
-    assert(d.primary_valid && near(d.primary, 62.5, 1e-12));
+    assert(d.primary_valid && near(d.primary, 250.0 / 450.0, 1e-12));
 
     assert(ads1299_describe_field_code(ADS1299_FIELD_CH_GAIN, 6u,
                                        ADS1299_VARIANT_8CH, &ctx, &d) ==

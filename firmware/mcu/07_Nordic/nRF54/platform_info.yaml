@@ -1,0 +1,13 @@
+schema: 1
+rank: 22
+vendor: "Nordic Semiconductor"
+family: "nRF54"
+mcu: "nRF54"
+architecture: "Arm Cortex-M33"
+board: "Select an official nRF54 evaluation board"
+official_sdk: "nRF Connect SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

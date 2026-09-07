@@ -1,0 +1,13 @@
+schema: 1
+rank: 3
+vendor: "Espressif"
+family: "ESP32-S3"
+mcu: "ESP32-S3"
+architecture: "Xtensa LX7 dual-core"
+board: "ESP32-S3-DevKitC-1-N8"
+official_sdk: "ESP-IDF"
+sdk_version: "5.4.0"
+compiler: "xtensa-esp-elf-gcc 14.2.0"
+debugger: "USB Serial/JTAG"
+tier: "A"
+status: "Compiles"

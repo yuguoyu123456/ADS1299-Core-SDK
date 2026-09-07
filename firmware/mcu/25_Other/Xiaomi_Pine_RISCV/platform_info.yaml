@@ -1,0 +1,13 @@
+schema: 1
+rank: 45
+vendor: "Xiaomi"
+family: "Pine RISC-V IoT"
+mcu: "Pine RISC-V IoT"
+architecture: "RISC-V"
+board: "Select an official Pine RISC-V IoT evaluation board"
+official_sdk: "official SDK required"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Planned"

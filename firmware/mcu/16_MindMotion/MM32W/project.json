@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 48,
+  "path": "16_MindMotion/MM32W",
+  "vendor": "MindMotion",
+  "family": "MM32W",
+  "mcu": "MM32W",
+  "board": "Select an official MM32W evaluation board",
+  "architecture": "Arm Cortex-M class",
+  "sdk": "MM32 SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

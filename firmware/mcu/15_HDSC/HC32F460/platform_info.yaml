@@ -1,0 +1,13 @@
+schema: 1
+rank: 37
+vendor: "HDSC"
+family: "HC32F460"
+mcu: "HC32F460PETB"
+architecture: "Arm Cortex-M4F"
+board: "HC32F460 evaluation board"
+official_sdk: "HDSC DDL"
+sdk_version: "pin in consuming project"
+compiler: "arm-none-eabi-gcc"
+debugger: "J-Link"
+tier: "B"
+status: "Reference"

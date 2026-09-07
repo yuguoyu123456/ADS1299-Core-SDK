@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 83,
+  "domain": "fpga",
+  "path": "Anlogic/EG4_Reference",
+  "vendor": "Anlogic",
+  "family": "EG4",
+  "tool": "Tang Dynasty",
+  "constraint": "constraints/pins.adc",
+  "status": "Reference"
+}

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ads1299_runtime.h"
+#include "ads1299.h"
 
 typedef struct {
     uint8_t tx_log[64];
@@ -68,7 +68,7 @@ int main(void) {
     assert(ads1299_wakeup(&dev) == ADS1299_OK);
     assert(dev.standby_mode == 0u);
     assert(m.tx_log[before] == ADS1299_CMD_WAKEUP);
-    assert(m.delay_total >= delay_before + 4u);
+    assert(m.delay_total >= delay_before + 32u);
 
     assert(ads1299_start_pin(&dev) == ADS1299_OK);
     assert(m.start_level == 1);
@@ -81,6 +81,7 @@ int main(void) {
     assert(dev.continuous_mode == 0u);
     assert(ads1299_set_power_down(&dev, 0) == ADS1299_OK);
     assert(m.pwdn_level == 1);
+    assert(m.delay_total >= delay_before + 150032u);
 
     assert(ads1299_wait_drdy(&dev, 5u, 2u) == ADS1299_ETIMEOUT);
     m.drdy_level = 0;
@@ -124,7 +125,7 @@ int main(void) {
 
     /* Strict mode never fixes caller mistakes. TI Rev. C's application example
      * contains LOFF=0x13 for "dc lead-off" even though bit4 is reserved=0 and
-     * FLEAD_OFF=11 selects fDR/4. Strict mode catches the byte before SPI. */
+     * FLEAD_OFF=11 selects fDR/450. Strict mode catches the byte before SPI. */
     before = m.spi_calls;
     assert(ads1299_strict_write_register(&dev, ADS1299_REG_LOFF, 0x13u,
                                          ADS1299_VARIANT_8CH) == ADS1299_EINVAL);

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 82,
+  "domain": "fpga",
+  "path": "Gowin/GW2A_Reference",
+  "vendor": "Gowin",
+  "family": "GW2A",
+  "tool": "Gowin EDA",
+  "constraint": "constraints/pins.cst",
+  "status": "Reference"
+}

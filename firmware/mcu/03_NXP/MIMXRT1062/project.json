@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 5,
+  "path": "03_NXP/MIMXRT1062",
+  "vendor": "NXP",
+  "family": "i.MX RT1060",
+  "mcu": "MIMXRT1062DVL6B",
+  "board": "MIMXRT1060-EVKB",
+  "architecture": "Arm Cortex-M7F",
+  "sdk": "MCUXpresso SDK",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

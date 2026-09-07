@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 21,
+  "path": "07_Nordic/nRF52840",
+  "vendor": "Nordic Semiconductor",
+  "family": "nRF52840",
+  "mcu": "nRF52840",
+  "board": "nRF52840 DK",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "nRF Connect SDK / Zephyr",
+  "tier": "B",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

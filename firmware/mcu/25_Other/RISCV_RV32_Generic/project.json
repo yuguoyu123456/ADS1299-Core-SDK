@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 97,
+  "path": "25_Other/RISCV_RV32_Generic",
+  "vendor": "RISC-V Generic",
+  "family": "RV32",
+  "mcu": "RV32",
+  "board": "Select an official RV32 evaluation board",
+  "architecture": "RV32",
+  "sdk": "vendor BSP required",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

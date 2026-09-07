@@ -1,0 +1,13 @@
+schema: 1
+rank: 19
+vendor: "Microchip"
+family: "SAMD51"
+mcu: "ATSAMD51J20A"
+architecture: "Arm Cortex-M4F"
+board: "SAM D51 Xplained Pro"
+official_sdk: "MPLAB Harmony 3"
+sdk_version: "pin in MPLAB project"
+compiler: "XC32 / arm-none-eabi-gcc"
+debugger: "EDBG"
+tier: "A"
+status: "Reference"

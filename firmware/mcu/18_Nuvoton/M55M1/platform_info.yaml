@@ -1,0 +1,13 @@
+schema: 1
+rank: 49
+vendor: "Nuvoton"
+family: "M55M1"
+mcu: "M55M1"
+architecture: "Arm Cortex-M55"
+board: "Select an official M55M1 evaluation board"
+official_sdk: "NuMicro BSP"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

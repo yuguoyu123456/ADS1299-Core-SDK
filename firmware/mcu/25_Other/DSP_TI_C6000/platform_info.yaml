@@ -1,0 +1,13 @@
+schema: 1
+rank: 98
+vendor: "Texas Instruments"
+family: "C6000 DSP"
+mcu: "C6000 DSP"
+architecture: "TI C6000 DSP"
+board: "Select an official C6000 DSP evaluation board"
+official_sdk: "Processor SDK / Code Composer Studio"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

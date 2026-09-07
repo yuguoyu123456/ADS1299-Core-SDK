@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 43,
+  "path": "22_BouffaloLab/BL616",
+  "vendor": "Bouffalo Lab",
+  "family": "BL616",
+  "mcu": "BL616",
+  "board": "Select an official BL616 evaluation board",
+  "architecture": "32-bit RISC-V",
+  "sdk": "Bouffalo SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

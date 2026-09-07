@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 32,
+  "path": "11_GigaDevice/GD32H7",
+  "vendor": "GigaDevice",
+  "family": "GD32H7",
+  "mcu": "GD32H7",
+  "board": "Select an official GD32H7 evaluation board",
+  "architecture": "Arm Cortex-M7",
+  "sdk": "GD32H7xx Firmware Library",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

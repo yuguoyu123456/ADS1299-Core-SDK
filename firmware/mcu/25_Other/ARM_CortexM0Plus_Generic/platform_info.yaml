@@ -1,0 +1,13 @@
+schema: 1
+rank: 93
+vendor: "ARM Generic"
+family: "Cortex-M0+"
+mcu: "Cortex-M0+"
+architecture: "Arm Cortex-M0+"
+board: "Select an official Cortex-M0+ evaluation board"
+official_sdk: "CMSIS device pack supplied by silicon vendor"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

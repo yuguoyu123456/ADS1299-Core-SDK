@@ -1,0 +1,13 @@
+schema: 1
+rank: 41
+vendor: "Puya"
+family: "PY32"
+mcu: "PY32F403"
+architecture: "Arm Cortex-M class"
+board: "PY32F403 evaluation board"
+official_sdk: "PY32 HAL"
+sdk_version: "pin in consuming project"
+compiler: "arm-none-eabi-gcc"
+debugger: "CMSIS-DAP/J-Link"
+tier: "B"
+status: "Reference"

@@ -1,0 +1,13 @@
+schema: 1
+rank: 100
+vendor: "Cadence"
+family: "Tensilica DSP"
+mcu: "Tensilica DSP"
+architecture: "configurable Xtensa/Tensilica"
+board: "Select an official Tensilica DSP evaluation board"
+official_sdk: "vendor SoC SDK required"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

@@ -1,0 +1,13 @@
+schema: 1
+rank: 42
+vendor: "STC"
+family: "STC32"
+mcu: "STC32G12K128"
+architecture: "enhanced 8051"
+board: "STC32G12K128 development board"
+official_sdk: "STC-ISP device support"
+sdk_version: "pin in Keil/SDCC project"
+compiler: "Keil C51 / SDCC"
+debugger: "STC-ISP"
+tier: "B"
+status: "Reference"

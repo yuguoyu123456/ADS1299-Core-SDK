@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 73,
+  "domain": "fpga",
+  "path": "AMD_Xilinx/Artix7_Reference",
+  "vendor": "AMD Xilinx",
+  "family": "Artix-7",
+  "tool": "Vivado",
+  "constraint": "constraints/pins.xdc",
+  "status": "Reference"
+}

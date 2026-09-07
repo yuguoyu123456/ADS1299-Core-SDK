@@ -1,0 +1,6 @@
+{
+  "name": "ADS1299-MCU-Port",
+  "version": "1.2.0",
+  "description": "Hardware-only ADS1299 MCU callback adapter",
+  "build": { "srcDir": ".", "includeDir": "." }
+}

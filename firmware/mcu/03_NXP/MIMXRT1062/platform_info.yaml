@@ -1,0 +1,13 @@
+schema: 1
+rank: 5
+vendor: "NXP"
+family: "i.MX RT1060"
+mcu: "MIMXRT1062DVL6B"
+architecture: "Arm Cortex-M7F"
+board: "MIMXRT1060-EVKB"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "25.06.00 reference"
+compiler: "arm-none-eabi-gcc / MCUXpresso IDE"
+debugger: "on-board OpenSDA/CMSIS-DAP"
+tier: "A"
+status: "Reference"

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 7,
+  "path": "07_Nordic/nRF5340",
+  "vendor": "Nordic Semiconductor",
+  "family": "nRF5340",
+  "mcu": "nRF5340 application core",
+  "board": "nRF5340 DK",
+  "architecture": "dual Arm Cortex-M33",
+  "sdk": "nRF Connect SDK / Zephyr",
+  "tier": "A",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

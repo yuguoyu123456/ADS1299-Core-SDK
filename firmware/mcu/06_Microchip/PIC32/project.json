@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 51,
+  "path": "06_Microchip/PIC32",
+  "vendor": "Microchip",
+  "family": "PIC32",
+  "mcu": "PIC32",
+  "board": "Select an official PIC32 evaluation board",
+  "architecture": "MIPS32 or Arm by family",
+  "sdk": "MPLAB Harmony 3",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

@@ -1,0 +1,13 @@
+schema: 1
+rank: 90
+vendor: "OpenHW Group"
+family: "CV32"
+mcu: "CV32"
+architecture: "RISC-V"
+board: "Select an official CV32 evaluation board"
+official_sdk: "CORE-V SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

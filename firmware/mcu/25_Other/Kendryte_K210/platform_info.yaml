@@ -1,0 +1,13 @@
+schema: 1
+rank: 87
+vendor: "Kendryte"
+family: "K210"
+mcu: "K210"
+architecture: "dual RV64GC"
+board: "Select an official K210 evaluation board"
+official_sdk: "Kendryte standalone SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

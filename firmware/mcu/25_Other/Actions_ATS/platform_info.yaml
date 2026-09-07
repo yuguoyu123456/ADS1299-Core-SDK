@@ -1,0 +1,13 @@
+schema: 1
+rank: 67
+vendor: "Actions Semiconductor"
+family: "ATS"
+mcu: "ATS"
+architecture: "proprietary/Arm by device"
+board: "Select an official ATS evaluation board"
+official_sdk: "official SDK required"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

@@ -1,0 +1,13 @@
+schema: 1
+rank: 27
+vendor: "STMicroelectronics"
+family: "STM32WB"
+mcu: "STM32WB"
+architecture: "dual Arm Cortex-M4/M0+"
+board: "Select an official STM32WB evaluation board"
+official_sdk: "STM32CubeWB"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

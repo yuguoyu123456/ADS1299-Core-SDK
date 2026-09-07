@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 53,
+  "path": "06_Microchip/AVR_Classic",
+  "vendor": "Microchip",
+  "family": "AVR Classic",
+  "mcu": "AVR Classic",
+  "board": "Select an official AVR Classic evaluation board",
+  "architecture": "8-bit AVR",
+  "sdk": "MPLAB device packs",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

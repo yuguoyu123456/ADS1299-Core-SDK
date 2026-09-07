@@ -1,0 +1,13 @@
+schema: 1
+rank: 17
+vendor: "Texas Instruments"
+family: "C2000"
+mcu: "TMS320F28379D"
+architecture: "dual C28x + dual CLA"
+board: "LAUNCHXL-F28379D"
+official_sdk: "C2000Ware DriverLib"
+sdk_version: "pin in CCS project"
+compiler: "TI C2000 compiler"
+debugger: "XDS100v2"
+tier: "A"
+status: "Reference"

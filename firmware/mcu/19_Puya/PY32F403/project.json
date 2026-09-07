@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 41,
+  "path": "19_Puya/PY32F403",
+  "vendor": "Puya",
+  "family": "PY32",
+  "mcu": "PY32F403",
+  "board": "PY32F403 evaluation board",
+  "architecture": "Arm Cortex-M class",
+  "sdk": "PY32 HAL",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

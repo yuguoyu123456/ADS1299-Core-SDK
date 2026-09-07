@@ -1,0 +1,13 @@
+schema: 1
+rank: 51
+vendor: "Microchip"
+family: "PIC32"
+mcu: "PIC32"
+architecture: "MIPS32 or Arm by family"
+board: "Select an official PIC32 evaluation board"
+official_sdk: "MPLAB Harmony 3"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 29,
+  "path": "23_Realtek/RTL8720",
+  "vendor": "Realtek",
+  "family": "RTL8720",
+  "mcu": "RTL8720",
+  "board": "Select an official RTL8720 evaluation board",
+  "architecture": "Arm Cortex-M class",
+  "sdk": "Ameba SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

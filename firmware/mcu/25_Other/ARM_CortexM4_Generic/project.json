@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 95,
+  "path": "25_Other/ARM_CortexM4_Generic",
+  "vendor": "ARM Generic",
+  "family": "Cortex-M4",
+  "mcu": "Cortex-M4",
+  "board": "Select an official Cortex-M4 evaluation board",
+  "architecture": "Arm Cortex-M4",
+  "sdk": "CMSIS device pack supplied by silicon vendor",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

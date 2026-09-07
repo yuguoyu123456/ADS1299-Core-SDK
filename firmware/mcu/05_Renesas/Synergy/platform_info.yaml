@@ -1,0 +1,13 @@
+schema: 1
+rank: 57
+vendor: "Renesas"
+family: "Synergy"
+mcu: "Synergy"
+architecture: "Arm Cortex-M"
+board: "Select an official Synergy evaluation board"
+official_sdk: "Synergy Software Package"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Planned"

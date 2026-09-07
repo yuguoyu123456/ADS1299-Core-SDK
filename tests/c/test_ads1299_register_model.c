@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "ads1299_register_model.h"
+#include "ads1299_model.h"
 
 static const ads1299_variant_t k_variants[] = {
     ADS1299_VARIANT_4CH, ADS1299_VARIANT_6CH, ADS1299_VARIANT_8CH

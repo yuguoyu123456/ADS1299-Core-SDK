@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 37,
+  "path": "15_HDSC/HC32F460",
+  "vendor": "HDSC",
+  "family": "HC32F460",
+  "mcu": "HC32F460PETB",
+  "board": "HC32F460 evaluation board",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "HDSC DDL",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

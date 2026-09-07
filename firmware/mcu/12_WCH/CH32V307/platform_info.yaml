@@ -1,0 +1,13 @@
+schema: 1
+rank: 33
+vendor: "WCH"
+family: "CH32V307"
+mcu: "CH32V307VCT6"
+architecture: "QingKe V4F RISC-V"
+board: "CH32V307 EVT"
+official_sdk: "WCH NoneOS SDK"
+sdk_version: "pinned PlatformIO package reference"
+compiler: "riscv-none-embed-gcc"
+debugger: "WCH-Link"
+tier: "B"
+status: "Compiles"

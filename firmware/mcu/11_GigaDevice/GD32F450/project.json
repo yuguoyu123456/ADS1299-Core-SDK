@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 31,
+  "path": "11_GigaDevice/GD32F450",
+  "vendor": "GigaDevice",
+  "family": "GD32F4",
+  "mcu": "GD32F450ZKT6",
+  "board": "GD32F450Z-EVAL",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "GD32F4xx Firmware Library",
+  "tier": "B",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

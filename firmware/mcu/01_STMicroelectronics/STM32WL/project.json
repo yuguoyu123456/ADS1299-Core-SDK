@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 28,
+  "path": "01_STMicroelectronics/STM32WL",
+  "vendor": "STMicroelectronics",
+  "family": "STM32WL",
+  "mcu": "STM32WL",
+  "board": "Select an official STM32WL evaluation board",
+  "architecture": "Arm Cortex-M4",
+  "sdk": "STM32CubeWL",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

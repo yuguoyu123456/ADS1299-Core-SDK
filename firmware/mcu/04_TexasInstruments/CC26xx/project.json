@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 25,
+  "path": "04_TexasInstruments/CC26xx",
+  "vendor": "Texas Instruments",
+  "family": "CC2640/CC26xx",
+  "mcu": "CC2640/CC26xx",
+  "board": "Select an official CC2640/CC26xx evaluation board",
+  "architecture": "Arm Cortex-M3",
+  "sdk": "SimpleLink CC13xx/CC26xx SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

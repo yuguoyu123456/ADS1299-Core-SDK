@@ -6,10 +6,15 @@
 
 #include "ads1299_port.h"
 #include "ads1299_regs.h"
+#include "ads1299_model.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define ADS1299_CORE_VERSION_MAJOR 2u
+#define ADS1299_CORE_VERSION_MINOR 0u
+#define ADS1299_CORE_VERSION_PATCH 0u
 
 /**
  * @file ads1299.h
@@ -50,6 +55,12 @@ typedef struct {
 typedef struct {
     uint8_t value[ADS1299_REGISTER_COUNT];
 } ads1299_register_dump_t;
+
+/** Restorable configuration image. Read-only status bytes are retained for
+ * diagnostics but ignored by ads1299_apply_configuration(). */
+typedef struct {
+    uint8_t value[ADS1299_REGISTER_COUNT];
+} ads1299_configuration_t;
 
 /** Complete CONFIG2 test-signal generator configuration. */
 typedef struct {
@@ -111,7 +122,7 @@ ads1299_status_t ads1299_rdatac(ads1299_t *dev);
 ads1299_status_t ads1299_sdatac(ads1299_t *dev);
 
 /* Raw/expert register access. These functions intentionally do not normalize
- * reserved bits or field semantics. Prefer ads1299_runtime.h safe/strict field
+ * reserved bits or field semantics. Prefer the safe/strict field
  * and register APIs for application configuration. */
 ads1299_status_t ads1299_read_register(ads1299_t *dev, uint8_t address, uint8_t *value);
 ads1299_status_t ads1299_write_register(ads1299_t *dev, uint8_t address, uint8_t value);
@@ -128,6 +139,11 @@ ads1299_status_t ads1299_verify_register(ads1299_t *dev, uint8_t address,
 ads1299_status_t ads1299_read_device_id(ads1299_t *dev, ads1299_device_id_t *id);
 ads1299_status_t ads1299_read_register_dump(ads1299_t *dev,
                                             ads1299_register_dump_t *dump);
+ads1299_status_t ads1299_read_configuration(ads1299_t *dev,
+                                            ads1299_configuration_t *configuration);
+ads1299_status_t ads1299_apply_configuration(ads1299_t *dev,
+                                             const ads1299_configuration_t *configuration,
+                                             int verify_after_write);
 
 /* Global clock / sampling / topology */
 ads1299_status_t ads1299_set_data_rate(ads1299_t *dev, uint8_t dr_code);
@@ -185,8 +201,8 @@ ads1299_status_t ads1299_gpio_configure(ads1299_t *dev, uint8_t direction_mask,
 ads1299_status_t ads1299_gpio_write(ads1299_t *dev, uint8_t output_value_mask);
 ads1299_status_t ads1299_gpio_read(ads1299_t *dev, uint8_t *pin_state_mask);
 
-/* Legacy fixed-8-channel acquisition helpers. Variant-aware frame helpers are
- * provided by ads1299_frame.h for ADS1299-4/-6/8. */
+/* Variant-aware acquisition. The cached ID selects 15/21/27 bytes for
+ * ADS1299-4/-6/-8; before ID probing the compatibility default is 8 channels. */
 ads1299_status_t ads1299_read_frame_continuous(ads1299_t *dev,
                                                ads1299_frame_t *frame);
 ads1299_status_t ads1299_read_frame_rdata(ads1299_t *dev,
@@ -212,6 +228,181 @@ double ads1299_code_to_volts_positive_fs(int32_t code,
 double ads1299_code_to_volts(int32_t code, double vref_volts, double gain);
 double ads1299_code_to_microvolts(int32_t code, double vref_volts, double gain);
 
+/* Multi-device topology. Cascaded devices retain independent CS lines. A
+ * daisy-chain conversion frame is ordered device 1 first, as specified by TI. */
+#define ADS1299_MAX_CHAIN_DEVICES 8u
+
+typedef struct {
+    ads1299_t **devices;
+    size_t count;
+} ads1299_group_t;
+
+typedef struct {
+    ads1299_variant_t variant;
+    ads1299_frame_t frame;
+} ads1299_chain_frame_t;
+
+ads1299_status_t ads1299_group_init(ads1299_group_t *group,
+                                    ads1299_t **devices,
+                                    size_t count);
+ads1299_status_t ads1299_group_command(ads1299_group_t *group, uint8_t command);
+ads1299_status_t ads1299_group_apply_configuration(
+    ads1299_group_t *group,
+    const ads1299_configuration_t *configuration,
+    int verify_after_write);
+size_t ads1299_daisy_frame_bytes(const ads1299_variant_t *variants, size_t count);
+ads1299_status_t ads1299_decode_daisy_frame(
+    const uint8_t *raw,
+    size_t raw_len,
+    const ads1299_variant_t *variants,
+    size_t count,
+    ads1299_chain_frame_t *frames);
+ads1299_status_t ads1299_read_daisy_frame_continuous(
+    ads1299_t *head,
+    const ads1299_variant_t *variants,
+    size_t count,
+    ads1299_chain_frame_t *frames);
+
+/* Runtime and validated register API. */
+ads1299_status_t ads1299_wakeup(ads1299_t *dev);
+ads1299_status_t ads1299_standby(ads1299_t *dev);
+ads1299_status_t ads1299_set_power_down(ads1299_t *dev, int power_down);
+ads1299_status_t ads1299_start_pin(ads1299_t *dev);
+ads1299_status_t ads1299_stop_pin(ads1299_t *dev);
+ads1299_status_t ads1299_wait_drdy(ads1299_t *dev,
+                                   uint32_t timeout_us,
+                                   uint32_t poll_interval_us);
+
+/**
+ * Variant used by device-oriented high-level APIs. After ID probing this is
+ * the detected ADS1299-4/-6/-8 variant. Before ID probing the historical
+ * eight-channel surface is preserved by returning ADS1299_VARIANT_8CH.
+ */
+ads1299_variant_t ads1299_effective_variant(const ads1299_t *dev);
+
+/**
+ * Read and decode one machine-readable field. Forbidden/reserved field states
+ * are reported as ADS1299_EVERIFY instead of being silently accepted.
+ */
+ads1299_status_t ads1299_read_field(ads1299_t *dev,
+                                    ads1299_field_id_t field,
+                                    uint8_t channel_1_to_8,
+                                    ads1299_variant_t variant,
+                                    uint8_t *code);
+
+/**
+ * Normalizing safe write. The requested byte is sanitized through the TI
+ * register model before WREG: prescribed reserved bits and variant masks are
+ * normalized, while read-only/unavailable registers and forbidden semantic
+ * encodings are rejected. `written_value` returns the actual WREG byte.
+ */
+ads1299_status_t ads1299_safe_write_register(ads1299_t *dev,
+                                             uint8_t address,
+                                             uint8_t requested,
+                                             ads1299_variant_t variant,
+                                             uint8_t *written_value);
+ads1299_status_t ads1299_safe_write_registers(ads1299_t *dev,
+                                              uint8_t address,
+                                              const uint8_t *requested,
+                                              size_t count,
+                                              ads1299_variant_t variant,
+                                              uint8_t *written_values);
+
+/**
+ * Strict write: the caller-provided byte must already be exactly datasheet
+ * valid. Nothing is normalized. Any wrong reserved bit, unavailable variant
+ * bit, read-only register, or TI do-not-use encoding rejects the complete call
+ * before SPI I/O. Use this when configuration errors must never be hidden.
+ */
+ads1299_status_t ads1299_strict_write_register(ads1299_t *dev,
+                                               uint8_t address,
+                                               uint8_t value,
+                                               ads1299_variant_t variant);
+ads1299_status_t ads1299_strict_write_registers(ads1299_t *dev,
+                                                uint8_t address,
+                                                const uint8_t *values,
+                                                size_t count,
+                                                ads1299_variant_t variant);
+
+ads1299_status_t ads1299_safe_update_register_bits(ads1299_t *dev,
+                                                   uint8_t address,
+                                                   uint8_t mask,
+                                                   uint8_t value,
+                                                   ads1299_variant_t variant,
+                                                   uint8_t *written_value);
+
+ads1299_status_t ads1299_safe_write_field(ads1299_t *dev,
+                                          ads1299_field_id_t field,
+                                          uint8_t channel_1_to_8,
+                                          uint8_t code,
+                                          ads1299_variant_t variant,
+                                          uint8_t *written_register_value);
+
+/* Variant-aware frame API. */
+typedef struct {
+    uint8_t header_nibble;      /* Must be 0xC for a valid ADS1299 status word. */
+    uint8_t loff_statp;         /* Positive lead-off status bits, CH1 = bit0. */
+    uint8_t loff_statn;         /* Negative lead-off status bits, CH1 = bit0. */
+    uint8_t gpio_data;          /* GPIO1..GPIO4 state in bits0..3. */
+    uint8_t header_valid;
+} ads1299_frame_status_t;
+
+/** Return the expected byte count for one conversion frame of a 4/6/8-ch part. */
+size_t ads1299_frame_bytes_for_variant(ads1299_variant_t variant);
+
+/** Decode the TI 24-bit status field: 1100 + LOFF_STATP + LOFF_STATN + GPIO[7:4]. */
+ads1299_status_t ads1299_decode_frame_status(const uint8_t raw_status[ADS1299_STATUS_BYTES],
+                                             ads1299_variant_t variant,
+                                             ads1299_frame_status_t *status);
+
+/**
+ * Decode a complete conversion frame for the selected ADS1299-x variant.
+ * The destination always has room for eight channels; unused channels are zeroed.
+ */
+ads1299_status_t ads1299_decode_frame_variant(const uint8_t *raw,
+                                              size_t raw_len,
+                                              ads1299_variant_t variant,
+                                              ads1299_frame_t *frame,
+                                              ads1299_frame_status_t *status);
+
+/* Diagnostic API. */
+/* TI SBAS499C Equation 3 temperature-sensor transfer constants. */
+#define ADS1299_TEMP_SENSOR_25C_UV       145300.0
+#define ADS1299_TEMP_SENSOR_UV_PER_C     490.0
+#define ADS1299_TEMP_SENSOR_REFERENCE_C  25.0
+
+/**
+ * Convert the input-referred differential temperature-sensor reading, already
+ * scaled to microvolts, to degrees Celsius using SBAS499C Equation 3.
+ * Note: TI states that device self-heating can make this exceed PCB ambient.
+ */
+ads1299_status_t ads1299_temperature_c_from_microvolts(double sensor_uv,
+                                                        double *temperature_c);
+
+/**
+ * Return the differential voltage presented to the ADC when MUX=MVDD.
+ * SBAS499C: channels 1,2,5,6,7,8 -> 0.5*(AVDD+AVSS); channels 3,4 -> DVDD/4.
+ * This is the internal MUX stimulus, not a generic reconstruction of a rail.
+ */
+ads1299_status_t ads1299_mvdd_mux_input_volts(uint8_t channel_1_to_8,
+                                               double avdd_v,
+                                               double avss_v,
+                                               double dvdd_v,
+                                               double *mux_input_v);
+
+/** Configure one channel to the on-chip temperature sensor MUX. */
+ads1299_status_t ads1299_configure_temperature_measurement(
+    ads1299_t *dev,
+    uint8_t channel_1_to_8,
+    uint8_t gain_code);
+
+/**
+ * Configure one channel to the on-chip MVDD supply-measurement MUX at gain=1,
+ * matching TI's recommendation to avoid PGA saturation during supply checks.
+ */
+ads1299_status_t ads1299_configure_supply_measurement(
+    ads1299_t *dev,
+    uint8_t channel_1_to_8);
 #ifdef __cplusplus
 }
 #endif

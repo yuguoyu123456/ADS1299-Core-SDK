@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 66,
+  "path": "23_Realtek/RTL87xx",
+  "vendor": "Realtek",
+  "family": "RTL87xx",
+  "mcu": "RTL87xx",
+  "board": "Select an official RTL87xx evaluation board",
+  "architecture": "Arm Cortex-M class",
+  "sdk": "Realtek SDK",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

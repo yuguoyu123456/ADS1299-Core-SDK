@@ -10,105 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build C core test
+      - name: Build and run ADS1299 core tests
         run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299.c \
-            firmware/core_driver/ads1299/ads1299_bringup.c \
-            firmware/core_driver/ads1299/ads1299_control.c \
-            firmware/core_driver/ads1299/ads1299_conversion.c \
-            firmware/core_driver/ads1299/ads1299_diagnostics.c \
-            firmware/core_driver/ads1299/ads1299_field_model.c \
-            firmware/core_driver/ads1299/ads1299_frame.c \
-            firmware/core_driver/ads1299/ads1299_register_model.c \
-            firmware/core_driver/ads1299/ads1299_runtime.c \
-            firmware/core_driver/ads1299/ads1299_semantics.c \
-            tests/c/test_ads1299.c \
-            -o /tmp/test_ads1299
-      - name: Run C core test
-        run: /tmp/test_ads1299
-      - name: Build ADS1299 ADC-conversion test
-        run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299.c \
-            firmware/core_driver/ads1299/ads1299_conversion.c \
-            tests/c/test_ads1299_conversion.c \
-            -o /tmp/test_ads1299_conversion
-      - name: Run ADS1299 ADC-conversion test
-        run: /tmp/test_ads1299_conversion
-      - name: Build ADS1299 diagnostic-measurement test
-        run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299.c \
-            firmware/core_driver/ads1299/ads1299_control.c \
-            firmware/core_driver/ads1299/ads1299_diagnostics.c \
-            firmware/core_driver/ads1299/ads1299_field_model.c \
-            firmware/core_driver/ads1299/ads1299_register_model.c \
-            firmware/core_driver/ads1299/ads1299_runtime.c \
-            tests/c/test_ads1299_diagnostics.c \
-            -o /tmp/test_ads1299_diagnostics
-      - name: Run ADS1299 diagnostic-measurement test
-        run: /tmp/test_ads1299_diagnostics
-      - name: Build ADS1299 register-model test
-        run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299_register_model.c \
-            tests/c/test_ads1299_register_model.c \
-            -o /tmp/test_ads1299_register_model
-      - name: Run ADS1299 register-model test
-        run: /tmp/test_ads1299_register_model
-      - name: Build ADS1299 field-model test
-        run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299.c \
-            firmware/core_driver/ads1299/ads1299_field_model.c \
-            firmware/core_driver/ads1299/ads1299_register_model.c \
-            firmware/core_driver/ads1299/ads1299_runtime.c \
-            tests/c/test_ads1299_field_model.c \
-            -o /tmp/test_ads1299_field_model
-      - name: Run ADS1299 field-model test
-        run: /tmp/test_ads1299_field_model
-      - name: Build ADS1299 semantic-value test
-        run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299_field_model.c \
-            firmware/core_driver/ads1299/ads1299_register_model.c \
-            firmware/core_driver/ads1299/ads1299_semantics.c \
-            tests/c/test_ads1299_semantics.c \
-            -o /tmp/test_ads1299_semantics
-      - name: Run ADS1299 semantic-value test
-        run: /tmp/test_ads1299_semantics
-      - name: Build ADS1299 runtime-control test
-        run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299.c \
-            firmware/core_driver/ads1299/ads1299_bringup.c \
-            firmware/core_driver/ads1299/ads1299_control.c \
-            firmware/core_driver/ads1299/ads1299_field_model.c \
-            firmware/core_driver/ads1299/ads1299_register_model.c \
-            firmware/core_driver/ads1299/ads1299_runtime.c \
-            tests/c/test_ads1299_runtime.c \
-            -o /tmp/test_ads1299_runtime
-      - name: Run ADS1299 runtime-control test
-        run: /tmp/test_ads1299_runtime
-      - name: Build ADS1299 variant frame/status test
-        run: |
-          gcc -std=c11 -Wall -Wextra -Werror \
-            -Ifirmware/core_driver/ads1299 \
-            firmware/core_driver/ads1299/ads1299.c \
-            firmware/core_driver/ads1299/ads1299_frame.c \
-            firmware/core_driver/ads1299/ads1299_register_model.c \
-            tests/c/test_ads1299_frame.c \
-            -o /tmp/test_ads1299_frame
-      - name: Run ADS1299 variant frame/status test
-        run: /tmp/test_ads1299_frame
+          core_sources="firmware/core_driver/ads1299/ads1299.c firmware/core_driver/ads1299/ads1299_frame.c firmware/core_driver/ads1299/ads1299_model.c firmware/core_driver/ads1299/ads1299_multi.c"
+          for test_source in tests/c/test_ads1299*.c; do
+            if [ "$test_source" = "tests/c/test_ads1299_packet.c" ]; then continue; fi
+            test_name="$(basename "$test_source" .c)"
+            gcc -std=c11 -Wall -Wextra -Werror -Ifirmware/core_driver/ads1299 \
+              $core_sources "$test_source" -o "/tmp/$test_name"
+            "/tmp/$test_name"
+          done
       - name: Build host packet golden-vector test
         run: |
           gcc -std=c11 -Wall -Wextra -Werror \
@@ -118,6 +29,34 @@ jobs:
             -o /tmp/test_ads1299_packet
       - name: Run host packet golden-vector test
         run: /tmp/test_ads1299_packet
+      - name: Build and run transport contract test
+        run: |
+          python tests/validate_transport_layer.py
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/common/data_packet -Ifirmware/transport \
+            firmware/common/data_packet/ads1299_packet.c \
+            firmware/transport/ads1299_transport.c \
+            tests/c/test_ads1299_transport.c \
+            -o /tmp/test_ads1299_transport
+          /tmp/test_ads1299_transport
+      - name: Compile every standardized MCU port package
+        run: |
+          python tests/validate_mcu_catalog.py
+          python tests/validate_stm32h743.py
+          python tests/validate_stm32f407.py
+          python tests/validate_esp32s3.py
+          python tests/validate_mimxrt1170.py
+          python tests/validate_mimxrt1062.py
+          python tests/validate_mspm0g3507.py
+          python tests/validate_ecosystem_100.py
+          find firmware/mcu -type d -name ads1299_port -print0 | while IFS= read -r -d '' port_dir; do
+            target_dir="$(dirname "$port_dir")"
+            for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
+              gcc -std=c11 -Wall -Wextra -Werror \
+                -Ifirmware/core_driver/ads1299 -I"$port_dir" \
+                -c "$source" -o /tmp/ads1299_port_check.o
+            done
+          done
 
   python-smoke:
     runs-on: ubuntu-latest
@@ -145,7 +84,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Icarus Verilog
         run: sudo apt-get update && sudo apt-get install -y iverilog
-      - name: Compile and run frame-unpack testbench
+      - name: Validate FPGA package structure
+        run: python tests/validate_fpga_ecosystem.py
+      - name: Compile and run all FPGA reference testbenches
         run: |
-          iverilog -g2012 -o /tmp/tb_unpack firmware/fpga/rtl/ads1299_frame_unpack.v firmware/fpga/tb/tb_ads1299_frame_unpack.v
-          vvp /tmp/tb_unpack
+          find firmware/fpga -name project.json -print0 | while IFS= read -r -d '' manifest; do
+            package="$(dirname "$manifest")"
+            name="$(basename "$package")"
+            iverilog -g2012 -o "/tmp/$name" \
+              "$package/rtl/ads1299_spi_master.v" \
+              "$package/rtl/ads1299_controller.v" \
+              "$package/rtl/frame_parser.v" \
+              "$package/tb/simulation_tb.v"
+            vvp "/tmp/$name"
+          done

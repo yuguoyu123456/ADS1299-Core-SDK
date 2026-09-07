@@ -1,0 +1,13 @@
+schema: 1
+rank: 10
+vendor: "Infineon"
+family: "PSoC6"
+mcu: "CY8C624ABZI-S2D44"
+architecture: "Arm Cortex-M4F + Cortex-M0+"
+board: "CY8CKIT-062S2-43012"
+official_sdk: "ModusToolbox HAL"
+sdk_version: "PDL 3.17.0 / BSP 5.0.1 / core-lib 1.4.4; GNU reference link verified"
+compiler: "GCC Arm Embedded"
+debugger: "KitProg3"
+tier: "A"
+status: "Reference"

@@ -1,0 +1,13 @@
+schema: 1
+rank: 15
+vendor: "NXP"
+family: "LPC55"
+mcu: "LPC55S69JBD100"
+architecture: "dual Arm Cortex-M33"
+board: "LPCXpresso55S69"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "pin in the consuming project"
+compiler: "arm-none-eabi-gcc / MCUXpresso"
+debugger: "CMSIS-DAP"
+tier: "A"
+status: "Reference"

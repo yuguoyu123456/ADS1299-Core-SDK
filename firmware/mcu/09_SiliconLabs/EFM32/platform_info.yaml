@@ -1,0 +1,13 @@
+schema: 1
+rank: 64
+vendor: "Silicon Labs"
+family: "EFM32"
+mcu: "EFM32"
+architecture: "Arm Cortex-M"
+board: "Select an official EFM32 evaluation board"
+official_sdk: "Gecko SDK / emlib"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

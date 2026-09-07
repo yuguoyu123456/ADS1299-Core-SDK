@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 54,
+  "path": "06_Microchip/PIC16_PIC18",
+  "vendor": "Microchip",
+  "family": "PIC16/PIC18",
+  "mcu": "PIC16/PIC18",
+  "board": "Select an official PIC16/PIC18 evaluation board",
+  "architecture": "8-bit PIC",
+  "sdk": "MPLAB XC8",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

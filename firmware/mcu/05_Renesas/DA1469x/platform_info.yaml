@@ -1,0 +1,13 @@
+schema: 1
+rank: 63
+vendor: "Dialog/Renesas"
+family: "DA1469x"
+mcu: "DA1469x"
+architecture: "Arm Cortex-M33"
+board: "Select an official DA1469x evaluation board"
+official_sdk: "SmartSnippets SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

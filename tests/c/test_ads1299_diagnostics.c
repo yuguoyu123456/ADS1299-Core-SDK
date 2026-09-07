@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ads1299_diagnostics.h"
+#include "ads1299.h"
 
 static int near(double a, double b, double tol) {
     const double d = (a >= b) ? (a - b) : (b - a);

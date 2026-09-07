@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 93,
+  "path": "25_Other/ARM_CortexM0Plus_Generic",
+  "vendor": "ARM Generic",
+  "family": "Cortex-M0+",
+  "mcu": "Cortex-M0+",
+  "board": "Select an official Cortex-M0+ evaluation board",
+  "architecture": "Arm Cortex-M0+",
+  "sdk": "CMSIS device pack supplied by silicon vendor",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

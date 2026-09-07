@@ -1,56 +1,57 @@
-# MCU Reference Projects
+# ADS1299 MCU Port Ecosystem
 
-`firmware/mcu/` is organized first by MCU vendor, then by exact board/MCU project. The repository now tracks **30 representative MCU/DSP projects** spanning major global ecosystems. Eight currently have clean CI build evidence; twenty-two have a concrete reference-source profile and BSP contract and remain `Reference source / build-pending` until a real vendor-toolchain clean build succeeds.
+This tree is the hardware-adaptation layer between the controller-independent
+ADS1299 Core and a user's official MCU SDK project. It is not a vendor-SDK
+mirror and does not contain product firmware.
 
-The catalog is deliberately broad, but it does **not** claim that all 30 platforms are verified support. Presence, compilation evidence and hardware evidence are separate concepts.
+## Three-layer boundary
 
-## Validation vocabulary
+1. `firmware/core_driver/ads1299/` owns commands, registers, fields,
+   configuration, channel/BIAS/SRB/lead-off behavior, frames and conversion.
+2. Each MCU `ads1299_port/` owns only SPI, GPIO, CS, DRDY, RESET, PWDN, START
+   and delay callbacks. Host transports remain outside the ADS1299 logic.
+3. Each `examples/main_ads1299.c` shows only the minimum Core call sequence.
 
-- **Compiles** — clean build verified with the documented toolchain.
-- **Reference source / build-pending** — project directory, target manifest, shared ADS1299 application path and MCU BSP contract exist, but vendor-SDK build evidence is not complete.
-- **Bench-tested** — exact board + ADS1299 hardware exercised.
-- **24h-tested** — long-duration acquisition evidence exists.
+Port source must never define or rewrite ADS1299 register bits. The structural
+validator enforces this rule.
 
-## Compiles
+## Ranked coverage and quality tiers
 
-- STMicroelectronics — `st/stm32f407_black/`
-- Espressif — `espressif/esp32s3_devkitc/`
-- GigaDevice — `gigadevice/gd32f450z_eval/`
-- Nordic — `nordic/nrf52840_dk/`
-- Nordic — `nordic/nrf5340_dk/`
-- Raspberry Pi — `raspberry_pi/rp2040_pico/`
-- Raspberry Pi — `raspberry_pi/rp2350_pico2/`
-- WCH — `wch/ch32v307_evt/`
+- Ranks 1-20: Tier A core platforms; prioritize complete ports, examples, tests and capability analysis.
+- Ranks 21-60: Tier B important ecosystems; maintain ports, examples and integration documentation.
+- Ranks 61-70 and 86-100: Tier C extensions; maintain honest templates and architecture notes.
+- Ranks 71-85 are FPGA/CPLD and therefore live under `firmware/fpga/`.
 
-## Reference source / build-pending
+This directory contains 85 maintained MCU/SoC/DSP packages. Concrete but
+uncompiled ports are `Reference`; entries without a sufficiently identified
+public SDK/device remain `Planned`.
 
-- STMicroelectronics — `st/stm32h743_nucleo/` — STM32H7
-- Espressif — `espressif/esp32c6_devkitc/` — ESP32-C6
-- NXP — `nxp/mimxrt1060_evk/` — i.MX RT1062
-- NXP — `nxp/lpc55s69_evk/` — LPC55S69
-- Renesas — `renesas/ek_ra6m5/` — RA6M5
-- Renesas — `renesas/rx72n_envision/` — RX72N
-- Texas Instruments — `ti/mspm0g3507_launchpad/` — MSPM0G3507
-- Texas Instruments — `ti/c2000_f28379d_launchpad/` — C2000 F28379D DSP
-- Texas Instruments — `ti/tm4c1294_launchpad/` — TM4C1294
-- Infineon/Cypress — `infineon/cy8ckit_062s2_43012/` — PSoC 6
-- Silicon Labs — `silicon_labs/efr32mg24_explorer/` — EFR32MG24
-- Microchip — `microchip/same54_xplained_pro/` — SAME54
-- Microchip — `microchip/samd51_xplained_pro/` — SAMD51
-- Microchip — `microchip/atmega4809_curiosity_nano/` — megaAVR 0-series
-- Nuvoton — `nuvoton/numaker_m487/` — NuMicro M480
-- HDSC — `hdsc/hc32f460_eval/` — HC32F460
-- Artery — `artery/at32f435_start/` — AT32F435
-- MindMotion — `mindmotion/mm32f3277_eval/` — MM32F3277
-- Nationstech — `nationstech/n32g455_eval/` — N32G455
-- Puya — `puya/py32f403_eval/` — PY32F403
-- Geehy — `geehy/apm32f407_mini/` — APM32F407
-- STC — `stc/stc32g12k128_dev/` — STC32G12
+Every maintained MCU target contains:
 
-## Shared first-bring-up firmware
+```text
+README.md                  platform_info.yaml
+capability.md              integration.md
+version.md                 validation.md
+ads1299_port/              examples/main_ads1299.c
+board/pinmap.md            tests/
+```
 
-`common/reference_app/` contains the reusable ADS1299 acquisition path for build-pending projects. It owns reset, ID read, 250 SPS, gain 24, internal test signal, RDATAC/START, DRDY handling, frame decode and the common 49-byte packet. Each shared-style MCU project supplies only the MCU/board-specific BSP contract. This prevents 30 divergent copies of ADS1299 logic.
+## Vendor SDK policy
 
-## Catalog policy
+Do not commit full SDKs, CMSIS/HAL trees, startup code, linker scripts, IDE
+caches or middleware. Install the official SDK externally, add Core plus the
+small target port, and implement `board_ads1299_hal()` with that SDK. Reference
+sources and licenses must be recorded before importing any third-party code.
 
-The framework target is now fixed at 30 representative projects. Future MCU work should normally **graduate existing projects** from `Reference source / build-pending` to `Compiles` rather than keep adding names. A platform may move to `Compiles` only after a documented clean build with its real toolchain/SDK.
+## Validation
+
+Allowed states are `Planned`, `Reference`, `Example`, `Compatible`, `Compiles`,
+`Bench-tested` and `24h-tested`. No state implies a higher one.
+
+```bash
+python tests/validate_mcu_catalog.py
+```
+
+The generated maintenance packages are reproducible with
+`python tools/maintain_ads1299_ecosystem.py`; edit that source of truth when a
+cross-platform schema change is required.

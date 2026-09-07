@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 20,
+  "path": "09_SiliconLabs/EFR32MG24",
+  "vendor": "Silicon Labs",
+  "family": "EFR32",
+  "mcu": "EFR32MG24",
+  "board": "xG24 Explorer Kit",
+  "architecture": "Arm Cortex-M33",
+  "sdk": "Gecko SDK / emlib",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

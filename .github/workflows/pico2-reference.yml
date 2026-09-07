@@ -3,13 +3,13 @@ name: pico2-reference
 on:
   push:
     paths:
-      - 'firmware/mcu/raspberry_pi/rp2350_pico2/**'
+      - 'firmware/mcu/10_RaspberryPi/RP2350/**'
       - 'firmware/core_driver/ads1299/**'
       - 'firmware/common/data_packet/**'
       - '.github/workflows/pico2-reference.yml'
   pull_request:
     paths:
-      - 'firmware/mcu/raspberry_pi/rp2350_pico2/**'
+      - 'firmware/mcu/10_RaspberryPi/RP2350/**'
       - 'firmware/core_driver/ads1299/**'
       - 'firmware/common/data_packet/**'
       - '.github/workflows/pico2-reference.yml'
@@ -28,6 +28,6 @@ jobs:
           git clone --depth 1 --branch 2.3.0 https://github.com/raspberrypi/pico-sdk.git /tmp/pico-sdk
           git -C /tmp/pico-sdk submodule update --init --depth 1
       - name: Configure RP2350 Pico 2 project
-        run: cmake -S firmware/mcu/raspberry_pi/rp2350_pico2 -B /tmp/rp2350-build -DPICO_SDK_PATH=/tmp/pico-sdk -DPICO_BOARD=pico2 -G Ninja
+        run: cmake -S firmware/mcu/10_RaspberryPi/RP2350 -B /tmp/rp2350-build -DPICO_SDK_PATH=/tmp/pico-sdk -DPICO_BOARD=pico2 -G Ninja
       - name: Build RP2350 Pico 2 project
         run: cmake --build /tmp/rp2350-build -j 2

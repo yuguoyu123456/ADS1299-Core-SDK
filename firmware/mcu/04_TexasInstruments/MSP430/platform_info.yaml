@@ -1,0 +1,13 @@
+schema: 1
+rank: 55
+vendor: "Texas Instruments"
+family: "MSP430"
+mcu: "MSP430"
+architecture: "16-bit MSP430"
+board: "Select an official MSP430 evaluation board"
+official_sdk: "MSP430Ware"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

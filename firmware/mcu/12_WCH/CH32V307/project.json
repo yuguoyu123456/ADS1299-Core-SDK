@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 33,
+  "path": "12_WCH/CH32V307",
+  "vendor": "WCH",
+  "family": "CH32V307",
+  "mcu": "CH32V307VCT6",
+  "board": "CH32V307 EVT",
+  "architecture": "QingKe V4F RISC-V",
+  "sdk": "WCH NoneOS SDK",
+  "tier": "B",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

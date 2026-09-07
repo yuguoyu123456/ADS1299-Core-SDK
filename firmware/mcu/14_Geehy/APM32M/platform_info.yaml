@@ -1,0 +1,13 @@
+schema: 1
+rank: 47
+vendor: "Geehy"
+family: "APM32M"
+mcu: "APM32M"
+architecture: "Arm Cortex-M class"
+board: "Select an official APM32M evaluation board"
+official_sdk: "APM32 SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

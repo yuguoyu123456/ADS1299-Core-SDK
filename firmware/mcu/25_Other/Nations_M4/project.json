@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 46,
+  "path": "25_Other/Nations_M4",
+  "vendor": "Nations",
+  "family": "M4 series",
+  "mcu": "M4 series",
+  "board": "Select an official M4 series evaluation board",
+  "architecture": "Arm Cortex-M4",
+  "sdk": "official Nations SDK",
+  "tier": "B",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

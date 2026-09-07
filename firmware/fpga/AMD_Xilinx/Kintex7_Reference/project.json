@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 74,
+  "domain": "fpga",
+  "path": "AMD_Xilinx/Kintex7_Reference",
+  "vendor": "AMD Xilinx",
+  "family": "Kintex-7",
+  "tool": "Vivado",
+  "constraint": "constraints/pins.xdc",
+  "status": "Reference"
+}

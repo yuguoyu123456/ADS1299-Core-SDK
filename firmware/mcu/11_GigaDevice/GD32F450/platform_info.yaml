@@ -1,0 +1,13 @@
+schema: 1
+rank: 31
+vendor: "GigaDevice"
+family: "GD32F4"
+mcu: "GD32F450ZKT6"
+architecture: "Arm Cortex-M4F"
+board: "GD32F450Z-EVAL"
+official_sdk: "GD32F4xx Firmware Library"
+sdk_version: "pinned PlatformIO package reference"
+compiler: "arm-none-eabi-gcc"
+debugger: "ST-LINK/J-Link"
+tier: "B"
+status: "Compiles"

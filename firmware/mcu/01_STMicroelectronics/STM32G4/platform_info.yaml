@@ -1,0 +1,13 @@
+schema: 1
+rank: 11
+vendor: "STMicroelectronics"
+family: "STM32G4"
+mcu: "STM32G474RE"
+architecture: "Arm Cortex-M4F"
+board: "NUCLEO-G474RE; provisional control GPIO profile"
+official_sdk: "STM32CubeG4"
+sdk_version: "CubeG4 1.5.2 linker; CMSIS device 626ee412; GNU reference verified"
+compiler: "GCC Arm Embedded 9.2.1; CubeIDE/Keil not run"
+debugger: "ST-LINK / SWD"
+tier: "A"
+status: "Reference"

@@ -1,0 +1,13 @@
+schema: 1
+rank: 4
+vendor: "NXP"
+family: "i.MX RT1170"
+mcu: "MIMXRT1176DVMAA"
+architecture: "dual Arm Cortex-M7/M4"
+board: "MIMXRT1170-EVKB"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "25.06.00 reference"
+compiler: "arm-none-eabi-gcc / MCUXpresso IDE"
+debugger: "on-board MCU-Link (CMSIS-DAP)"
+tier: "A"
+status: "Reference"

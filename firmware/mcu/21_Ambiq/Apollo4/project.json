@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 61,
+  "path": "21_Ambiq/Apollo4",
+  "vendor": "Ambiq",
+  "family": "Apollo4",
+  "mcu": "Apollo4",
+  "board": "Select an official Apollo4 evaluation board",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "AmbiqSuite SDK",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

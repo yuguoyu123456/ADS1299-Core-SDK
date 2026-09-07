@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 12,
+  "path": "01_STMicroelectronics/STM32U5",
+  "vendor": "STMicroelectronics",
+  "family": "STM32U5",
+  "mcu": "STM32U575ZI",
+  "board": "NUCLEO-U575ZI-Q; provisional control GPIOs",
+  "architecture": "Arm Cortex-M33",
+  "sdk": "STM32CubeU5",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

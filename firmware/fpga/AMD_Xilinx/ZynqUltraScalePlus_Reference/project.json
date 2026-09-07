@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 72,
+  "domain": "fpga",
+  "path": "AMD_Xilinx/ZynqUltraScalePlus_Reference",
+  "vendor": "AMD Xilinx",
+  "family": "Zynq UltraScale+",
+  "tool": "Vivado",
+  "constraint": "constraints/pins.xdc",
+  "status": "Reference"
+}

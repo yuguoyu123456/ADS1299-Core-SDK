@@ -3,7 +3,24 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ads1299_frame.h"
+#include "ads1299.h"
+
+typedef struct {
+    size_t data_length;
+} frame_mock_t;
+
+static int frame_spi(void *user, const uint8_t *tx, uint8_t *rx, size_t len) {
+    frame_mock_t *mock = (frame_mock_t *)user;
+    (void)tx;
+    if (len > 1u) {
+        mock->data_length = len;
+        memset(rx, 0, len);
+        rx[0] = 0xC0u;
+    }
+    return 0;
+}
+static void frame_gpio(void *user, int level) { (void)user; (void)level; }
+static void frame_delay(void *user, uint32_t us) { (void)user; (void)us; }
 
 static void test_lengths(void) {
     assert(ads1299_frame_bytes_for_variant(ADS1299_VARIANT_4CH) == 15u);
@@ -60,11 +77,37 @@ static void test_variant_frame_decode(void) {
                                         &frame, &status) == ADS1299_EINVAL);
 }
 
+static void test_device_acquisition_uses_detected_length(void) {
+    frame_mock_t mock = {0};
+    ads1299_port_t port = {
+        .user = &mock,
+        .spi_transfer = frame_spi,
+        .cs_write = frame_gpio,
+        .reset_write = frame_gpio,
+        .start_write = frame_gpio,
+        .delay_us = frame_delay,
+    };
+    ads1299_t dev;
+    ads1299_frame_t frame;
+    assert(ads1299_init(&dev, &port) == ADS1299_OK);
+    dev.channel_count = 4u;
+    dev.continuous_mode = 1u;
+    assert(ads1299_read_frame_continuous(&dev, &frame) == ADS1299_OK);
+    assert(mock.data_length == 15u);
+    for (size_t i = 4u; i < 8u; ++i) assert(frame.channel[i] == 0);
+
+    mock.data_length = 0u;
+    dev.channel_count = 6u;
+    assert(ads1299_read_frame_rdata(&dev, &frame) == ADS1299_OK);
+    assert(mock.data_length == 21u);
+}
+
 int main(void) {
     test_lengths();
     test_status_decode();
     test_bad_header();
     test_variant_frame_decode();
+    test_device_acquisition_uses_detected_length();
     puts("ADS1299 variant frame/status tests passed");
     return 0;
 }

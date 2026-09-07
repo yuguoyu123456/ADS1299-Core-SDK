@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 10,
+  "path": "08_Infineon/PSoC6",
+  "vendor": "Infineon",
+  "family": "PSoC6",
+  "mcu": "CY8C624ABZI-S2D44",
+  "board": "CY8CKIT-062S2-43012",
+  "architecture": "Arm Cortex-M4F + Cortex-M0+",
+  "sdk": "ModusToolbox HAL",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

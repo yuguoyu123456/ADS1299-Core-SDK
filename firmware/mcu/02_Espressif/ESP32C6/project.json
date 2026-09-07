@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 13,
+  "path": "02_Espressif/ESP32C6",
+  "vendor": "Espressif",
+  "family": "ESP32-C6",
+  "mcu": "ESP32-C6",
+  "board": "ESP32-C6-DevKitC-1",
+  "architecture": "32-bit RISC-V",
+  "sdk": "ESP-IDF",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

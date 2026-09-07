@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 35,
+  "path": "13_Artery/AT32F435",
+  "vendor": "Artery",
+  "family": "AT32F435",
+  "mcu": "AT32F435ZMT7",
+  "board": "AT-START-F435",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "AT32F435/437 Firmware Library",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

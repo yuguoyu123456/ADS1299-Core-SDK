@@ -1,0 +1,21 @@
+name: stm32h7-reference
+
+on:
+  push:
+    branches: [ main, production-sdk-v1, repo-architecture-v1 ]
+  pull_request:
+
+jobs:
+  nucleo-h743zi2-cube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned PlatformIO Core
+        run: pip install platformio==6.1.19
+      - name: Validate rank-1 package boundary
+        run: python tests/validate_stm32h743.py
+      - name: Build ADS1299 STM32CubeH7 reference
+        run: platformio run -d firmware/mcu/01_STMicroelectronics/STM32H743

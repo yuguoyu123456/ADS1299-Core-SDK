@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 38,
+  "path": "16_MindMotion/MM32F3277",
+  "vendor": "MindMotion",
+  "family": "MM32F327",
+  "mcu": "MM32F3277G9P",
+  "board": "MM32F3277 evaluation board",
+  "architecture": "Arm Cortex-M3",
+  "sdk": "MM32 HAL/SPL",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

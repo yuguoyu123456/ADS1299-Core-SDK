@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 9,
+  "path": "06_Microchip/SAME54",
+  "vendor": "Microchip",
+  "family": "SAME5x",
+  "mcu": "ATSAME54P20A",
+  "board": "SAME54 Xplained Pro",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "MPLAB Harmony 3",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

@@ -1,0 +1,13 @@
+schema: 1
+rank: 66
+vendor: "Realtek"
+family: "RTL87xx"
+mcu: "RTL87xx"
+architecture: "Arm Cortex-M class"
+board: "Select an official RTL87xx evaluation board"
+official_sdk: "Realtek SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 2,
+  "path": "01_STMicroelectronics/STM32F407",
+  "vendor": "STMicroelectronics",
+  "family": "STM32F4",
+  "mcu": "STM32F407VGT6",
+  "board": "STM32F407G-DISC1 (MB997)",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "STM32CubeF4",
+  "tier": "A",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

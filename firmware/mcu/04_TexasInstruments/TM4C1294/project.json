@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 16,
+  "path": "04_TexasInstruments/TM4C1294",
+  "vendor": "Texas Instruments",
+  "family": "TM4C129",
+  "mcu": "TM4C1294NCPDT",
+  "board": "EK-TM4C1294XL",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "TivaWare",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

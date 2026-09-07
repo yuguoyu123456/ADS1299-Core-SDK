@@ -1,0 +1,13 @@
+schema: 1
+rank: 70
+vendor: "Rockchip"
+family: "MCU/IoT family unspecified"
+mcu: "MCU/IoT family unspecified"
+architecture: "device not selected"
+board: "Select an official MCU/IoT family unspecified evaluation board"
+official_sdk: "official SDK required"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

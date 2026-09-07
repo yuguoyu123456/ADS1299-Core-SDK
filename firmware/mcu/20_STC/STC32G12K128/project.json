@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 42,
+  "path": "20_STC/STC32G12K128",
+  "vendor": "STC",
+  "family": "STC32",
+  "mcu": "STC32G12K128",
+  "board": "STC32G12K128 development board",
+  "architecture": "enhanced 8051",
+  "sdk": "STC-ISP device support",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

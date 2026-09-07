@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 8,
+  "path": "05_Renesas/RA6M5",
+  "vendor": "Renesas",
+  "family": "RA6",
+  "mcu": "R7FA6M5BH3CFC",
+  "board": "EK-RA6M5",
+  "architecture": "Arm Cortex-M33",
+  "sdk": "Renesas FSP",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

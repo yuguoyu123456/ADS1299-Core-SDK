@@ -1,0 +1,13 @@
+schema: 1
+rank: 36
+vendor: "Geehy"
+family: "APM32F407"
+mcu: "APM32F407VGT6"
+architecture: "Arm Cortex-M4F"
+board: "APM32F407 development board"
+official_sdk: "APM32F4xx DAL"
+sdk_version: "pin in consuming project"
+compiler: "arm-none-eabi-gcc"
+debugger: "J-Link"
+tier: "B"
+status: "Reference"

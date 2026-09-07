@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate rank-3 structure
+        run: python tests/validate_esp32s3.py
       - name: Build ESP32-S3 native ESP-IDF project
         uses: espressif/esp-idf-ci-action@v1
         with:
-          esp_idf_version: v5.4
+          esp_idf_version: v5.4.0
           target: esp32s3
-          path: firmware/mcu/espressif/esp32s3_devkitc
+          path: firmware/mcu/02_Espressif/ESP32S3

@@ -1,21 +1,30 @@
 # ADS1299 portable core driver
 
-This directory contains the controller-independent C core for the Texas Instruments ADS1299, ADS1299-6 and ADS1299-4 family. The normative specification is the TI ADS1299-x datasheet SBAS499C (Rev. C). OpenBCI, HackEEG and other public implementations are implementation cross-checks only; they are not specification authorities.
+This directory contains the controller-independent C core for the Texas Instruments ADS1299, ADS1299-6 and ADS1299-4 family. The sole normative device specification is TI's official [ADS1299-x datasheet SBAS499C (Rev. C)](https://www.ti.com/lit/ds/symlink/ads1299.pdf). OpenBCI, HackEEG and other public implementations are implementation cross-checks only; they are not specification authorities.
+
+The maintained library surface is deliberately small:
+
+- `ads1299.h` / `ads1299.c`: lifecycle, commands, safe configuration, channels, BIAS, lead-off, diagnostics and conversion.
+- `ads1299_model.h` / `ads1299_model.c`: register/field metadata and physical semantics.
+- `ads1299_frame.c`: ADS1299-4/-6/-8 frame and status decoding.
+- `ads1299_multi.c`: configuration snapshots and cascaded/daisy-chain management.
+- `ads1299_regs.h`: TI-derived opcodes, addresses, masks and encoded constants.
+- `ads1299_port.h`: the only MCU-facing callback contract.
 
 ## Register layer
 
-`ads1299_regs.h` defines the complete user-visible address map from `ID` (0x00) through `CONFIG4` (0x17), every SPI command opcode, semantic field masks/codes, fixed datasheet reset values, and explicit constants for encodings that TI marks Reserved or Do not use. `ads1299_register_model.[ch]` is the machine-readable safety model for all 24 addresses: reset value/known state, writable mask, prescribed reserved-one/reserved-zero bits, read-only classification, ADS1299-4/-6/8 availability, and field-semantic legality.
+`ads1299_regs.h` defines the complete user-visible address map from `ID` (0x00) through `CONFIG4` (0x17), every SPI command opcode, semantic field masks/codes, fixed datasheet reset values, and explicit constants for encodings that TI marks Reserved or Do not use. `ads1299_model.[ch]` is the consolidated machine-readable register, field and physical-semantics model.
 
-`ads1299_field_model.[ch]` adds a field-level specification layer. Each meaningful datasheet field has a stable field ID and machine-readable name, register location, mask, shift, reset code/known state, writable/read-only state, channel-relative behavior, variant-channel-mask behavior, and legal encoded-value set. Generic helpers resolve `CHnSET` fields to physical channel registers, decode fields, validate codes, encode fields through the register safety model, safely write them through `ads1299_safe_write_field()`, and read them through the symmetric `ads1299_read_field()` API.
+The field model gives each meaningful datasheet field a stable ID, register location, mask, shift, reset state, access policy, variant behavior and legal encoded-value set. Generic helpers resolve `CHnSET`, decode, validate and encode fields through the same safety model.
 
-`ads1299_semantics.[ch]` adds the physical-meaning layer above encoded fields. A valid field code can be described with a stable short name, concise meaning, quantity class, unit, optional physical value, and explicit missing-context requirements. Clock/reference-dependent values are calculated from caller-supplied context rather than being hard-coded to the nominal device setup. Examples include data rate from `fCLK`, internal test amplitude from `VREFP-VREFN`, test/lead-off frequency from `fCLK` or `fDR`, internal BIASREF from `(AVDD+AVSS)/2`, lead-off threshold/current, and PGA gain. This lets host tools, configuration inspectors and future generated bindings explain what a register configuration physically means without duplicating datasheet formulas.
+The semantic layer describes valid codes with physical units and explicit context requirements. Clock/reference-dependent values are calculated from caller-supplied `fCLK`, `fDR`, reference span and supply values instead of hidden nominal assumptions.
 
-`ads1299_runtime.[ch]` intentionally exposes two validated whole-register write policies:
+`ads1299.[ch]` exposes two validated whole-register write policies:
 
 - `ads1299_strict_write_register(s)` accepts only bytes that are already exactly TI-valid. It never repairs the caller's request. Wrong reserved bits, unavailable variant bits, read-only registers, or TI do-not-use encodings reject the whole call before SPI I/O.
 - `ads1299_safe_write_register(s)` is a normalizing API. It reconstructs the actual WREG byte from the TI model, reports that byte to the caller, and still rejects forbidden semantic encodings. This is useful when deliberate normalization is desired.
 
-The distinction is intentional. For example, SBAS499C section 10.1.2.1 contains an inconsistent DC lead-off pseudo-code value `LOFF=0x13`: register Table 16 requires bit4=0 and defines `FLEAD_OFF=11` as `fDR/4`, whereas DC lead-off uses `FLEAD_OFF=00`. Strict mode rejects `0x13`; normalizing mode produces `0x03` and returns that changed byte, so applications can detect that normalization changed the requested configuration.
+The distinction is intentional. For example, SBAS499C section 10.1.2.1 contains an inconsistent DC lead-off pseudo-code value `LOFF=0x13`: register Table 16 requires bit4=0 and defines `FLEAD_OFF=11` as `fDR/450`, whereas DC lead-off uses `FLEAD_OFF=00`. Strict mode rejects `0x13`; normalizing mode produces `0x03` and returns that changed byte, so applications can detect that normalization changed the requested configuration.
 
 Raw RREG/WREG/RMW remain available as explicit expert escape hatches. Application-facing high-level configuration now consumes the same register/field safety model rather than maintaining a second set of hand-written bit rules.
 
@@ -31,9 +40,13 @@ Calling `ads1299_read_device_id()` caches the physical 4/6/8-channel count. `ads
 
 CHnSET PGA constants intentionally distinguish two representations: `ADS1299_GAIN_BITS_*` are shifted register-byte encodings, while `ADS1299_GAIN_CODE_*` are unshifted generic-field codes. Historical `ADS1299_GAIN_*` names remain aliases of the shifted representation for source compatibility. CONFIG1 data-rate and AC lead-off frequency constants likewise expose clock-independent `fMOD`/`fCLK` divisor aliases in addition to historical nominal-frequency names.
 
-`ads1299_frame.[ch]` provides variant-aware 15/21/27-byte decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The older fixed-27-byte acquisition helpers remain for existing eight-channel callers.
+`ads1299_frame.c` provides variant-aware 15/21/27-byte acquisition and decoding and parses the 24-bit status word (`1100`, LOFF_STATP, LOFF_STATN and GPIO). The public declarations are in `ads1299.h`.
 
-`ads1299_diagnostics.[ch]` makes TI's built-in diagnostic MUX functions directly usable instead of leaving them as bare MUX codes. It provides named temperature- and supply-measurement channel profiles, implements the SBAS499C Equation-3 temperature conversion from input-referred microvolts, and exposes the channel-dependent MVDD differential stimulus (`0.5*(AVDD+AVSS)` for channels 1,2,5,6,7,8; `DVDD/4` for channels 3,4). Supply measurement is configured at gain=1 as TI recommends to reduce saturation risk. The temperature helper deliberately starts from microvolts so callers must make their ADC code-scaling convention explicit first.
+The diagnostics section in `ads1299.c` makes TI's built-in temperature and MVDD MUX functions directly usable. It implements the SBAS499C Equation-3 temperature conversion and channel-dependent MVDD stimulus without duplicating register definitions.
+
+## Multi-device and configuration management
+
+`ads1299_multi.c` provides configuration snapshot/apply/optional verification, independent-CS group commands, shared configuration across a group, and mixed 4/6/8-channel daisy-frame length, acquisition and decoding. Cascaded command dispatch is sequential; applications needing sample-level synchronization must wire the devices to a shared START signal as TI recommends.
 
 ## ADC code-to-voltage conventions
 

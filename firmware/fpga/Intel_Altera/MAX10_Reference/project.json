@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 77,
+  "domain": "fpga",
+  "path": "Intel_Altera/MAX10_Reference",
+  "vendor": "Intel FPGA",
+  "family": "MAX 10",
+  "tool": "Quartus Prime",
+  "constraint": "constraints/pins.qsf",
+  "status": "Reference"
+}

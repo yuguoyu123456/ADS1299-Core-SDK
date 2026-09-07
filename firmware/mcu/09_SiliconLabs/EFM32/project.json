@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 64,
+  "path": "09_SiliconLabs/EFM32",
+  "vendor": "Silicon Labs",
+  "family": "EFM32",
+  "mcu": "EFM32",
+  "board": "Select an official EFM32 evaluation board",
+  "architecture": "Arm Cortex-M",
+  "sdk": "Gecko SDK / emlib",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

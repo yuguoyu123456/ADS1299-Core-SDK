@@ -1,0 +1,13 @@
+schema: 1
+rank: 38
+vendor: "MindMotion"
+family: "MM32F327"
+mcu: "MM32F3277G9P"
+architecture: "Arm Cortex-M3"
+board: "MM32F3277 evaluation board"
+official_sdk: "MM32 HAL/SPL"
+sdk_version: "pin in consuming project"
+compiler: "arm-none-eabi-gcc"
+debugger: "J-Link"
+tier: "B"
+status: "Reference"

@@ -1,0 +1,34 @@
+/* Physical pin levels: Core handles active-low chip control semantics. */
+/ {
+    zephyr,user {
+        cs-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+        drdy-gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+        reset-gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+        pwdn-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+        start-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+    };
+};
+&pinctrl {
+    ads1299_spi_default: ads1299_spi_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 4)>,
+                    <NRF_PSEL(SPIM_MOSI, 1, 6)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 5)>;
+        };
+    };
+    ads1299_spi_sleep: ads1299_spi_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 4)>,
+                    <NRF_PSEL(SPIM_MOSI, 1, 6)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 5)>;
+            low-power-enable;
+        };
+    };
+};
+&spi4 {
+    status = "okay";
+    /delete-property/ cs-gpios;
+    pinctrl-0 = <&ads1299_spi_default>;
+    pinctrl-1 = <&ads1299_spi_sleep>;
+    pinctrl-names = "default", "sleep";
+};

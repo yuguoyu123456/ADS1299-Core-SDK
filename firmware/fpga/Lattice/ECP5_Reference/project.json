@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 78,
+  "domain": "fpga",
+  "path": "Lattice/ECP5_Reference",
+  "vendor": "Lattice",
+  "family": "ECP5",
+  "tool": "Radiant or open-source ECP5 flow",
+  "constraint": "constraints/pins.lpf",
+  "status": "Reference"
+}

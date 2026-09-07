@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 59,
+  "path": "24_Toshiba/TXZ",
+  "vendor": "Toshiba",
+  "family": "TXZ",
+  "mcu": "TXZ",
+  "board": "Select an official TXZ evaluation board",
+  "architecture": "Arm Cortex-M",
+  "sdk": "TXZ+ Peripheral Drivers",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

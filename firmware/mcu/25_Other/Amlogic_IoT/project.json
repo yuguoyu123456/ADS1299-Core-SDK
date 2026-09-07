@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 69,
+  "path": "25_Other/Amlogic_IoT",
+  "vendor": "Amlogic",
+  "family": "IoT family unspecified",
+  "mcu": "IoT family unspecified",
+  "board": "Select an official IoT family unspecified evaluation board",
+  "architecture": "device not selected",
+  "sdk": "official SDK required",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

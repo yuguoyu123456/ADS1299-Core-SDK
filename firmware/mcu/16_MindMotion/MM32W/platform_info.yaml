@@ -1,0 +1,13 @@
+schema: 1
+rank: 48
+vendor: "MindMotion"
+family: "MM32W"
+mcu: "MM32W"
+architecture: "Arm Cortex-M class"
+board: "Select an official MM32W evaluation board"
+official_sdk: "MM32 SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

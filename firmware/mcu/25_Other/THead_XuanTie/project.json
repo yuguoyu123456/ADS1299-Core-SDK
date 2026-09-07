@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 50,
+  "path": "25_Other/THead_XuanTie",
+  "vendor": "T-Head",
+  "family": "XuanTie RISC-V",
+  "mcu": "XuanTie RISC-V",
+  "board": "Select an official XuanTie RISC-V evaluation board",
+  "architecture": "RISC-V",
+  "sdk": "T-Head/Xuantie SDK",
+  "tier": "B",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

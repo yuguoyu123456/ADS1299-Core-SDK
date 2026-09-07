@@ -1,0 +1,13 @@
+schema: 1
+rank: 50
+vendor: "T-Head"
+family: "XuanTie RISC-V"
+mcu: "XuanTie RISC-V"
+architecture: "RISC-V"
+board: "Select an official XuanTie RISC-V evaluation board"
+official_sdk: "T-Head/Xuantie SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Planned"

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 24,
+  "path": "10_RaspberryPi/RP2040",
+  "vendor": "Raspberry Pi",
+  "family": "RP2040",
+  "mcu": "RP2040",
+  "board": "Raspberry Pi Pico",
+  "architecture": "dual Arm Cortex-M0+",
+  "sdk": "Pico SDK",
+  "tier": "B",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

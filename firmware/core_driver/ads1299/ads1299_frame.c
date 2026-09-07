@@ -1,4 +1,4 @@
-#include "ads1299_frame.h"
+#include "ads1299.h"
 
 #include <string.h>
 

@@ -3,15 +3,15 @@ name: nrf53-reference
 on:
   push:
     paths:
-      - 'firmware/mcu/nordic/nrf5340_dk/**'
-      - 'firmware/mcu/common/reference_app/**'
+      - 'firmware/mcu/07_Nordic/nRF5340/**'
+      - 'firmware/mcu/_shared/reference_app/**'
       - 'firmware/core_driver/ads1299/**'
       - 'firmware/common/data_packet/**'
       - '.github/workflows/nrf53-reference.yml'
   pull_request:
     paths:
-      - 'firmware/mcu/nordic/nrf5340_dk/**'
-      - 'firmware/mcu/common/reference_app/**'
+      - 'firmware/mcu/07_Nordic/nRF5340/**'
+      - 'firmware/mcu/_shared/reference_app/**'
       - 'firmware/core_driver/ads1299/**'
       - 'firmware/common/data_packet/**'
       - '.github/workflows/nrf53-reference.yml'
@@ -35,4 +35,4 @@ jobs:
       - name: Clean build nRF5340 DK application-core reference
         run: |
           cd /tmp/ncs
-          west build -p always --no-sysbuild -b nrf5340dk/nrf5340/cpuapp "$GITHUB_WORKSPACE/firmware/mcu/nordic/nrf5340_dk"
+          west build -p always --no-sysbuild -b nrf5340dk/nrf5340/cpuapp "$GITHUB_WORKSPACE/firmware/mcu/07_Nordic/nRF5340"

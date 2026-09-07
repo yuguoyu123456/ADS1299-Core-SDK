@@ -1,0 +1,13 @@
+schema: 1
+rank: 30
+vendor: "Telink"
+family: "TLSR825x"
+mcu: "TLSR825x"
+architecture: "32-bit proprietary/RISC core"
+board: "Select an official TLSR825x evaluation board"
+official_sdk: "Telink BLE SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

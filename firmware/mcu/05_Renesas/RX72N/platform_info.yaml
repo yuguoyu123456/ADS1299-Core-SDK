@@ -1,0 +1,13 @@
+schema: 1
+rank: 18
+vendor: "Renesas"
+family: "RX72"
+mcu: "R5F572NNHDFB"
+architecture: "Renesas RXv3"
+board: "RX72N Envision Kit"
+official_sdk: "RX Driver Package / FIT"
+sdk_version: "pin in e2 studio project"
+compiler: "CC-RX / GCC for RX"
+debugger: "E2 Lite"
+tier: "A"
+status: "Reference"

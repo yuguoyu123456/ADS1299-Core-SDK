@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 71,
+  "domain": "fpga",
+  "path": "AMD_Xilinx/Zynq7000_Reference",
+  "vendor": "AMD Xilinx",
+  "family": "Zynq-7000",
+  "tool": "Vivado",
+  "constraint": "constraints/pins.xdc",
+  "status": "Reference"
+}

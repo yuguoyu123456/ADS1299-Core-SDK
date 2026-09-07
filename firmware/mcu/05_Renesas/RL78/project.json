@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 56,
+  "path": "05_Renesas/RL78",
+  "vendor": "Renesas",
+  "family": "RL78",
+  "mcu": "RL78",
+  "board": "Select an official RL78 evaluation board",
+  "architecture": "16-bit RL78",
+  "sdk": "RL78 Smart Configurator",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

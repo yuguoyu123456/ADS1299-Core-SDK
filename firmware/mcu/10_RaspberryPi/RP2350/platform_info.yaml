@@ -1,0 +1,13 @@
+schema: 1
+rank: 23
+vendor: "Raspberry Pi"
+family: "RP2350"
+mcu: "RP2350"
+architecture: "dual Arm Cortex-M33 or Hazard3 RISC-V"
+board: "Raspberry Pi Pico 2"
+official_sdk: "Pico SDK"
+sdk_version: "2.3.0 reference"
+compiler: "arm-none-eabi-gcc"
+debugger: "SWD / debug probe"
+tier: "B"
+status: "Compiles"

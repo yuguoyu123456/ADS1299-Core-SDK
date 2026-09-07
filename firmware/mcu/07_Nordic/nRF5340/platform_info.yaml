@@ -1,0 +1,13 @@
+schema: 1
+rank: 7
+vendor: "Nordic Semiconductor"
+family: "nRF5340"
+mcu: "nRF5340 application core"
+architecture: "dual Arm Cortex-M33"
+board: "nRF5340 DK"
+official_sdk: "nRF Connect SDK / Zephyr"
+sdk_version: "Zephyr 3.7.1 verified; NCS 3.4.0 CI not run"
+compiler: "arm-none-eabi-gcc 9.2.1"
+debugger: "J-Link"
+tier: "A"
+status: "Compiles"

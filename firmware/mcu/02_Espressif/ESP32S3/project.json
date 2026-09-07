@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 3,
+  "path": "02_Espressif/ESP32S3",
+  "vendor": "Espressif",
+  "family": "ESP32-S3",
+  "mcu": "ESP32-S3",
+  "board": "ESP32-S3-DevKitC-1-N8",
+  "architecture": "Xtensa LX7 dual-core",
+  "sdk": "ESP-IDF",
+  "tier": "A",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

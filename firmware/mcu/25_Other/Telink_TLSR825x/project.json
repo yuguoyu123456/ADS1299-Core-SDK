@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 30,
+  "path": "25_Other/Telink_TLSR825x",
+  "vendor": "Telink",
+  "family": "TLSR825x",
+  "mcu": "TLSR825x",
+  "board": "Select an official TLSR825x evaluation board",
+  "architecture": "32-bit proprietary/RISC core",
+  "sdk": "Telink BLE SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

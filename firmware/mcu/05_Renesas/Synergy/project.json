@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 57,
+  "path": "05_Renesas/Synergy",
+  "vendor": "Renesas",
+  "family": "Synergy",
+  "mcu": "Synergy",
+  "board": "Select an official Synergy evaluation board",
+  "architecture": "Arm Cortex-M",
+  "sdk": "Synergy Software Package",
+  "tier": "B",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

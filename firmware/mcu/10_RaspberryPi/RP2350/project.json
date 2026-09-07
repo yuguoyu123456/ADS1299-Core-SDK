@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 23,
+  "path": "10_RaspberryPi/RP2350",
+  "vendor": "Raspberry Pi",
+  "family": "RP2350",
+  "mcu": "RP2350",
+  "board": "Raspberry Pi Pico 2",
+  "architecture": "dual Arm Cortex-M33 or Hazard3 RISC-V",
+  "sdk": "Pico SDK",
+  "tier": "B",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

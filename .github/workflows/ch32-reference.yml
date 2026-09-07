@@ -4,13 +4,13 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'firmware/mcu/wch/**'
+      - 'firmware/mcu/12_WCH/**'
       - 'firmware/core_driver/**'
       - 'firmware/common/**'
       - '.github/workflows/ch32-reference.yml'
   pull_request:
     paths:
-      - 'firmware/mcu/wch/**'
+      - 'firmware/mcu/12_WCH/**'
       - 'firmware/core_driver/**'
       - 'firmware/common/**'
       - '.github/workflows/ch32-reference.yml'
@@ -27,4 +27,4 @@ jobs:
       - name: Install PlatformIO
         run: pip install platformio
       - name: Build CH32V307 reference project
-        run: pio run -d firmware/mcu/wch/ch32v307_evt
+        run: pio run -d firmware/mcu/12_WCH/CH32V307

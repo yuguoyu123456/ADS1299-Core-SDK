@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 1,
+  "path": "01_STMicroelectronics/STM32H743",
+  "vendor": "STMicroelectronics",
+  "family": "STM32H7",
+  "mcu": "STM32H743ZIT6",
+  "board": "NUCLEO-H743ZI2 (MB1364)",
+  "architecture": "Arm Cortex-M7F",
+  "sdk": "STM32CubeH7",
+  "tier": "A",
+  "status": "Compiles",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

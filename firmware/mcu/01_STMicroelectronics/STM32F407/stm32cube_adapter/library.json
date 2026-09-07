@@ -1,0 +1,10 @@
+{
+  "name": "ADS1299-STM32F4-Cube-Adapter",
+  "version": "1.0.0",
+  "description": "STM32CubeF4 HAL binding for the hardware-only ADS1299 MCU port",
+  "build": {
+    "srcDir": ".",
+    "includeDir": ".",
+    "flags": ["-Wall", "-Wextra", "-Werror"]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "ADS1299-STM32H7-Cube-Adapter",
+  "version": "1.0.0",
+  "description": "STM32CubeH7 HAL binding for the hardware-only ADS1299 MCU port",
+  "build": { "srcDir": ".", "includeDir": "." }
+}

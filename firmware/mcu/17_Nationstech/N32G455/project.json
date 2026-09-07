@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 39,
+  "path": "17_Nationstech/N32G455",
+  "vendor": "Nationstech",
+  "family": "N32G455",
+  "mcu": "N32G455VEL7",
+  "board": "N32G455 evaluation board",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "N32G45x Firmware Library",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 85,
+  "domain": "fpga",
+  "path": "Efinix/Titanium_Reference",
+  "vendor": "Efinix",
+  "family": "Titanium",
+  "tool": "Efinity",
+  "constraint": "constraints/pins.sdc",
+  "status": "Reference"
+}

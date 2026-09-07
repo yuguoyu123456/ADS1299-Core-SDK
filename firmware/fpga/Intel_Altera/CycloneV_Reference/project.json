@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 75,
+  "domain": "fpga",
+  "path": "Intel_Altera/CycloneV_Reference",
+  "vendor": "Intel FPGA",
+  "family": "Cyclone V",
+  "tool": "Quartus Prime",
+  "constraint": "constraints/pins.qsf",
+  "status": "Reference"
+}

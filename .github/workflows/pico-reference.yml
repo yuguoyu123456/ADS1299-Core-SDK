@@ -19,6 +19,6 @@ jobs:
           git clone --depth 1 --branch 2.3.0 https://github.com/raspberrypi/pico-sdk.git /tmp/pico-sdk
           git -C /tmp/pico-sdk submodule update --init --depth 1
       - name: Configure RP2040 project
-        run: cmake -S firmware/mcu/raspberry_pi/rp2040_pico -B /tmp/rp2040-build -DPICO_SDK_PATH=/tmp/pico-sdk -DPICO_BOARD=pico -G Ninja
+        run: cmake -S firmware/mcu/10_RaspberryPi/RP2040 -B /tmp/rp2040-build -DPICO_SDK_PATH=/tmp/pico-sdk -DPICO_BOARD=pico -G Ninja
       - name: Build RP2040 project
         run: cmake --build /tmp/rp2040-build -j 2

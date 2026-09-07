@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 4,
+  "path": "03_NXP/MIMXRT1170",
+  "vendor": "NXP",
+  "family": "i.MX RT1170",
+  "mcu": "MIMXRT1176DVMAA",
+  "board": "MIMXRT1170-EVKB",
+  "architecture": "dual Arm Cortex-M7/M4",
+  "sdk": "MCUXpresso SDK",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 15,
+  "path": "03_NXP/LPC55S69",
+  "vendor": "NXP",
+  "family": "LPC55",
+  "mcu": "LPC55S69JBD100",
+  "board": "LPCXpresso55S69",
+  "architecture": "dual Arm Cortex-M33",
+  "sdk": "MCUXpresso SDK",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

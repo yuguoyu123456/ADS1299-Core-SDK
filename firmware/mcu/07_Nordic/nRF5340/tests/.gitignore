@@ -1,0 +1,5 @@
+# Local verification environment and disposable build products only.
+.tools/
+.uv-cache/
+.build/
+.verify-*/

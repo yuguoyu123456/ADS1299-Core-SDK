@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ads1299_field_model.h"
-#include "ads1299_runtime.h"
+#include "ads1299_model.h"
+#include "ads1299.h"
 
 static const ads1299_variant_t k_variants[] = {
     ADS1299_VARIANT_4CH, ADS1299_VARIANT_6CH, ADS1299_VARIANT_8CH

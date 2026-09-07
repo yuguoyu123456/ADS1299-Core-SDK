@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 86,
+  "path": "25_Other/Sipeed_Maix_RISCV",
+  "vendor": "Sipeed",
+  "family": "Maix/RISC-V",
+  "mcu": "Maix/RISC-V",
+  "board": "Select an official Maix/RISC-V evaluation board",
+  "architecture": "RISC-V",
+  "sdk": "board-specific SDK",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

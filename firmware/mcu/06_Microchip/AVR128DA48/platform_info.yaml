@@ -1,0 +1,13 @@
+schema: 1
+rank: 52
+vendor: "Microchip"
+family: "AVR DA"
+mcu: "AVR128DA48"
+architecture: "8-bit AVR"
+board: "AVR128DA48 Curiosity Nano"
+official_sdk: "MPLAB XC8 / AVR Dx device pack"
+sdk_version: "pin in MPLAB project"
+compiler: "avr-gcc / XC8"
+debugger: "nEDBG/UPDI"
+tier: "B"
+status: "Reference"

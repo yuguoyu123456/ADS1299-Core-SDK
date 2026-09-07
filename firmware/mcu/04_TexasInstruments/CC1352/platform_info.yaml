@@ -1,0 +1,13 @@
+schema: 1
+rank: 26
+vendor: "Texas Instruments"
+family: "CC1352"
+mcu: "CC1352"
+architecture: "Arm Cortex-M4F"
+board: "Select an official CC1352 evaluation board"
+official_sdk: "SimpleLink CC13xx/CC26xx SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

@@ -1,0 +1,13 @@
+schema: 1
+rank: 13
+vendor: "Espressif"
+family: "ESP32-C6"
+mcu: "ESP32-C6"
+architecture: "32-bit RISC-V"
+board: "ESP32-C6-DevKitC-1"
+official_sdk: "ESP-IDF"
+sdk_version: "5.4.0 reference; PlatformIO Espressif32 6.10.0"
+compiler: "riscv32-esp-elf-gcc"
+debugger: "USB Serial/JTAG"
+tier: "A"
+status: "Reference"

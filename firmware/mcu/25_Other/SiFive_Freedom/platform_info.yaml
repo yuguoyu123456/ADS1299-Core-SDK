@@ -1,0 +1,13 @@
+schema: 1
+rank: 88
+vendor: "SiFive"
+family: "Freedom"
+mcu: "Freedom"
+architecture: "RISC-V"
+board: "Select an official Freedom evaluation board"
+official_sdk: "Freedom E SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

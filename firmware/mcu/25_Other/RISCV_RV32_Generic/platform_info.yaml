@@ -1,0 +1,13 @@
+schema: 1
+rank: 97
+vendor: "RISC-V Generic"
+family: "RV32"
+mcu: "RV32"
+architecture: "RV32"
+board: "Select an official RV32 evaluation board"
+official_sdk: "vendor BSP required"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

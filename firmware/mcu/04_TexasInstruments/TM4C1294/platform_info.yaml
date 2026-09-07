@@ -1,0 +1,13 @@
+schema: 1
+rank: 16
+vendor: "Texas Instruments"
+family: "TM4C129"
+mcu: "TM4C1294NCPDT"
+architecture: "Arm Cortex-M4F"
+board: "EK-TM4C1294XL"
+official_sdk: "TivaWare"
+sdk_version: "pin in CCS project"
+compiler: "TI Arm Clang / arm-none-eabi-gcc"
+debugger: "ICDI"
+tier: "A"
+status: "Reference"

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 49,
+  "path": "18_Nuvoton/M55M1",
+  "vendor": "Nuvoton",
+  "family": "M55M1",
+  "mcu": "M55M1",
+  "board": "Select an official M55M1 evaluation board",
+  "architecture": "Arm Cortex-M55",
+  "sdk": "NuMicro BSP",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

@@ -1,0 +1,13 @@
+schema: 1
+rank: 34
+vendor: "WCH"
+family: "CH32V203"
+mcu: "CH32V203"
+architecture: "QingKe RISC-V"
+board: "Select an official CH32V203 evaluation board"
+official_sdk: "WCH EVT / NoneOS SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

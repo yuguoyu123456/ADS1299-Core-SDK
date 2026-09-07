@@ -1,0 +1,13 @@
+schema: 1
+rank: 21
+vendor: "Nordic Semiconductor"
+family: "nRF52840"
+mcu: "nRF52840"
+architecture: "Arm Cortex-M4F"
+board: "nRF52840 DK"
+official_sdk: "nRF Connect SDK / Zephyr"
+sdk_version: "v3.4.0 LTS reference"
+compiler: "arm-zephyr-eabi-gcc"
+debugger: "J-Link"
+tier: "B"
+status: "Compiles"

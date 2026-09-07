@@ -171,11 +171,12 @@
 #define ADS1299_LOFF_FREQ_DC             0x00u
 #define ADS1299_LOFF_FREQ_7_8HZ          0x01u /* nominal at fCLK=2.048 MHz */
 #define ADS1299_LOFF_FREQ_31_2HZ         0x02u /* nominal at fCLK=2.048 MHz */
-#define ADS1299_LOFF_FREQ_FDR_DIV_4      0x03u
+#define ADS1299_LOFF_FREQ_FDR_DIV_450    0x03u
 #define ADS1299_LOFF_FREQ_FCLK_DIV_2_18  ADS1299_LOFF_FREQ_7_8HZ
 #define ADS1299_LOFF_FREQ_FCLK_DIV_2_16  ADS1299_LOFF_FREQ_31_2HZ
-/* Historical typo retained only for source compatibility. */
-#define ADS1299_LOFF_FREQ_FDR_DIV_450    ADS1299_LOFF_FREQ_FDR_DIV_4
+/* Deprecated compatibility name from releases that misread SBAS499C.
+ * Code 11b is fDR/450, never fDR/4. */
+#define ADS1299_LOFF_FREQ_FDR_DIV_4      ADS1299_LOFF_FREQ_FDR_DIV_450
 
 /* CHnSET. ADS1299_GAIN_* values are register-bit encodings. Generic field APIs
  * consume the unshifted ADS1299_GAIN_CODE_* values instead. */

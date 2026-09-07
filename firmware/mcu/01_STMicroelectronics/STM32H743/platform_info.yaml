@@ -1,0 +1,13 @@
+schema: 1
+rank: 1
+vendor: "STMicroelectronics"
+family: "STM32H7"
+mcu: "STM32H743ZIT6"
+architecture: "Arm Cortex-M7F"
+board: "NUCLEO-H743ZI2 (MB1364)"
+official_sdk: "STM32CubeH7"
+sdk_version: "1.13.0"
+compiler: "GNU Arm Embedded via PlatformIO / STM32CubeIDE"
+debugger: "ST-LINK/V3E"
+tier: "A"
+status: "Compiles"

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 55,
+  "path": "04_TexasInstruments/MSP430",
+  "vendor": "Texas Instruments",
+  "family": "MSP430",
+  "mcu": "MSP430",
+  "board": "Select an official MSP430 evaluation board",
+  "architecture": "16-bit MSP430",
+  "sdk": "MSP430Ware",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

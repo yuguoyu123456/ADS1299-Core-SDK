@@ -1,0 +1,13 @@
+schema: 1
+rank: 99
+vendor: "Analog Devices"
+family: "SHARC"
+mcu: "SHARC"
+architecture: "ADI SHARC DSP"
+board: "Select an official SHARC evaluation board"
+official_sdk: "CrossCore Embedded Studio"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

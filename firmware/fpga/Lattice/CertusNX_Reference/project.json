@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 79,
+  "domain": "fpga",
+  "path": "Lattice/CertusNX_Reference",
+  "vendor": "Lattice",
+  "family": "Certus-NX",
+  "tool": "Radiant",
+  "constraint": "constraints/pins.lpf",
+  "status": "Reference"
+}

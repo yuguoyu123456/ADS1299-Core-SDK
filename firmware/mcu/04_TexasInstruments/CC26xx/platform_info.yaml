@@ -1,0 +1,13 @@
+schema: 1
+rank: 25
+vendor: "Texas Instruments"
+family: "CC2640/CC26xx"
+mcu: "CC2640/CC26xx"
+architecture: "Arm Cortex-M3"
+board: "Select an official CC2640/CC26xx evaluation board"
+official_sdk: "SimpleLink CC13xx/CC26xx SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Reference"

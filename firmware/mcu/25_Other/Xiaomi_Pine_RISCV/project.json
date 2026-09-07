@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 45,
+  "path": "25_Other/Xiaomi_Pine_RISCV",
+  "vendor": "Xiaomi",
+  "family": "Pine RISC-V IoT",
+  "mcu": "Pine RISC-V IoT",
+  "board": "Select an official Pine RISC-V IoT evaluation board",
+  "architecture": "RISC-V",
+  "sdk": "official SDK required",
+  "tier": "B",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

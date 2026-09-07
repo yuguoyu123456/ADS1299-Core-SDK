@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 60,
+  "path": "25_Other/Samsung_ARTIK",
+  "vendor": "Samsung",
+  "family": "ARTIK",
+  "mcu": "ARTIK",
+  "board": "Select an official ARTIK evaluation board",
+  "architecture": "Arm application/MCU class",
+  "sdk": "ARTIK SDK",
+  "tier": "B",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

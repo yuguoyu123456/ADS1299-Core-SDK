@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 47,
+  "path": "14_Geehy/APM32M",
+  "vendor": "Geehy",
+  "family": "APM32M",
+  "mcu": "APM32M",
+  "board": "Select an official APM32M evaluation board",
+  "architecture": "Arm Cortex-M class",
+  "sdk": "APM32 SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

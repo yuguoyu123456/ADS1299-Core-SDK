@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 36,
+  "path": "14_Geehy/APM32F407",
+  "vendor": "Geehy",
+  "family": "APM32F407",
+  "mcu": "APM32F407VGT6",
+  "board": "APM32F407 development board",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "APM32F4xx DAL",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

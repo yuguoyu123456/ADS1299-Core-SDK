@@ -1,6 +1,6 @@
 {
   "name": "ADS1299-Core-Driver",
-  "version": "0.1.0",
-  "description": "Portable ADS1299 driver used by ADS1299-Core-SDK reference projects",
+  "version": "2.0.0",
+  "description": "TI SBAS499C-derived portable ADS1299-4/6/8 core driver",
   "build": { "srcDir": ".", "includeDir": "." }
 }

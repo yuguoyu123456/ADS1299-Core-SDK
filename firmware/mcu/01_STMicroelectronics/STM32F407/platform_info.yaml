@@ -1,0 +1,13 @@
+schema: 1
+rank: 2
+vendor: "STMicroelectronics"
+family: "STM32F4"
+mcu: "STM32F407VGT6"
+architecture: "Arm Cortex-M4F"
+board: "STM32F407G-DISC1 (MB997)"
+official_sdk: "STM32CubeF4"
+sdk_version: "1.28.3"
+compiler: "GNU Arm Embedded via PlatformIO / STM32CubeIDE"
+debugger: "on-board ST-LINK/V2-A"
+tier: "A"
+status: "Compiles"

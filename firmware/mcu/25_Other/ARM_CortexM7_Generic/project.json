@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 96,
+  "path": "25_Other/ARM_CortexM7_Generic",
+  "vendor": "ARM Generic",
+  "family": "Cortex-M7",
+  "mcu": "Cortex-M7",
+  "board": "Select an official Cortex-M7 evaluation board",
+  "architecture": "Arm Cortex-M7",
+  "sdk": "CMSIS device pack supplied by silicon vendor",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

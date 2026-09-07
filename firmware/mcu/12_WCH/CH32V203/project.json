@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 34,
+  "path": "12_WCH/CH32V203",
+  "vendor": "WCH",
+  "family": "CH32V203",
+  "mcu": "CH32V203",
+  "board": "Select an official CH32V203 evaluation board",
+  "architecture": "QingKe RISC-V",
+  "sdk": "WCH EVT / NoneOS SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

@@ -1,0 +1,13 @@
+schema: 1
+rank: 46
+vendor: "Nations"
+family: "M4 series"
+mcu: "M4 series"
+architecture: "Arm Cortex-M4"
+board: "Select an official M4 series evaluation board"
+official_sdk: "official Nations SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "B"
+status: "Planned"

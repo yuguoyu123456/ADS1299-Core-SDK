@@ -1,0 +1,13 @@
+schema: 1
+rank: 35
+vendor: "Artery"
+family: "AT32F435"
+mcu: "AT32F435ZMT7"
+architecture: "Arm Cortex-M4F"
+board: "AT-START-F435"
+official_sdk: "AT32F435/437 Firmware Library"
+sdk_version: "pin in consuming project"
+compiler: "arm-none-eabi-gcc"
+debugger: "AT-LINK/J-Link"
+tier: "B"
+status: "Reference"

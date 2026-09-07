@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 91,
+  "path": "25_Other/Atmel_ATmega328",
+  "vendor": "Atmel Legacy",
+  "family": "ATmega328",
+  "mcu": "ATmega328",
+  "board": "Select an official ATmega328 evaluation board",
+  "architecture": "8-bit AVR",
+  "sdk": "avr-libc / Microchip device pack",
+  "tier": "C",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

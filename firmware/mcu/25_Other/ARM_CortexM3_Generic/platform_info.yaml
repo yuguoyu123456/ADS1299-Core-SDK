@@ -1,0 +1,13 @@
+schema: 1
+rank: 94
+vendor: "ARM Generic"
+family: "Cortex-M3"
+mcu: "Cortex-M3"
+architecture: "Arm Cortex-M3"
+board: "Select an official Cortex-M3 evaluation board"
+official_sdk: "CMSIS device pack supplied by silicon vendor"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

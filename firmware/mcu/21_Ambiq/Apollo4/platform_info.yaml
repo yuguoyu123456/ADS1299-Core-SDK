@@ -1,0 +1,13 @@
+schema: 1
+rank: 61
+vendor: "Ambiq"
+family: "Apollo4"
+mcu: "Apollo4"
+architecture: "Arm Cortex-M4F"
+board: "Select an official Apollo4 evaluation board"
+official_sdk: "AmbiqSuite SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Reference"

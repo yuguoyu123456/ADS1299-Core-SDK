@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rank": 84,
+  "domain": "fpga",
+  "path": "Tang_FPGA/GW_Series_Reference",
+  "vendor": "Tang FPGA",
+  "family": "GW series",
+  "tool": "Gowin EDA",
+  "constraint": "constraints/pins.cst",
+  "status": "Reference"
+}

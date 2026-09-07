@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 11,
+  "path": "01_STMicroelectronics/STM32G4",
+  "vendor": "STMicroelectronics",
+  "family": "STM32G4",
+  "mcu": "STM32G474RE",
+  "board": "NUCLEO-G474RE; provisional control GPIO profile",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "STM32CubeG4",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

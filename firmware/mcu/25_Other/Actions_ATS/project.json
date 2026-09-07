@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 67,
+  "path": "25_Other/Actions_ATS",
+  "vendor": "Actions Semiconductor",
+  "family": "ATS",
+  "mcu": "ATS",
+  "board": "Select an official ATS evaluation board",
+  "architecture": "proprietary/Arm by device",
+  "sdk": "official SDK required",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

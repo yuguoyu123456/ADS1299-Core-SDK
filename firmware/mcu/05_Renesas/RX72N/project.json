@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 18,
+  "path": "05_Renesas/RX72N",
+  "vendor": "Renesas",
+  "family": "RX72",
+  "mcu": "R5F572NNHDFB",
+  "board": "RX72N Envision Kit",
+  "architecture": "Renesas RXv3",
+  "sdk": "RX Driver Package / FIT",
+  "tier": "A",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}

@@ -1,0 +1,16 @@
+{
+  "schema": 2,
+  "rank": 26,
+  "path": "04_TexasInstruments/CC1352",
+  "vendor": "Texas Instruments",
+  "family": "CC1352",
+  "mcu": "CC1352",
+  "board": "Select an official CC1352 evaluation board",
+  "architecture": "Arm Cortex-M4F",
+  "sdk": "SimpleLink CC13xx/CC26xx SDK",
+  "tier": "B",
+  "status": "Reference",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c"
+}
