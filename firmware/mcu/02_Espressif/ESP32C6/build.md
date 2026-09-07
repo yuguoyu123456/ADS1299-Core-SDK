@@ -49,3 +49,8 @@ also passed. RAM 10728 / 327680 bytes; application flash 198881 / 1048576 bytes.
 Module flash configuration is 8 MB; 1 MB above is the application partition.
 Repository main/Port/adapter compile with -Werror against actual IDF headers.
 No test fixture is in that build. No board was flashed or EEG frame observed.
+
+`esptool.py --chip esp32c6 image_info firmware.bin` passed both checksum and
+embedded validation hash. This checks image integrity, not execution on hardware.
+Observed final application file SHA256:
+`7696bcf64cb83e652aedf38317d8714a9119b5cca93ab5e390386979fd7fb725`.

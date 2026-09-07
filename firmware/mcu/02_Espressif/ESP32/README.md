@@ -31,6 +31,6 @@ provides a millisecond helper without changing the stable Core port contract.
 It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
 in `firmware/transport/` and must not block a DRDY handler.
 
-## Rank 14 reference in progress
+## Maintained ESP32 reference
 
-Original IDF queued binding and DevKitC V4 WROOM board profile use SPI3, 1 MHz, GPIO18/23/19 with controls 21/22/25/26/27. See board/reference_image.md and build.md. Build evidence remains separate from hardware qualification.
+Original IDF queued binding and DevKitC V4 WROOM board profile use SPI3, 1 MHz, GPIO18/23/19 with controls 21/22/25/26/27. Actual bootloader/application build and mock fault tests passed. See board/reference_image.md and build.md. Hardware qualification remains separate.

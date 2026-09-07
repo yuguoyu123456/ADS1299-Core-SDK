@@ -655,6 +655,8 @@ def render_validation(t: Target) -> str:
         evidence = "STM32U575 TrustZoneDisabled reference linked with actual startup and CubeU5 1.1.0 linker on 2026-09-06; zero unresolved symbols. Modeled faults, EOT delay and 65535+1 split passed. See build.md; no hardware or TrustZoneEnabled execution claimed."
     elif t.path == "02_Espressif/ESP32C6":
         evidence = "Actual ESP-IDF 5.4.0 C6 bootloader/application images built on 2026-09-07. Mock queue/lifetime tests passed separately. See build.md; no flashing or hardware acquisition claimed."
+    elif t.path == "02_Espressif/ESP32":
+        evidence = "Actual ESP-IDF 5.4.0 classic ESP32 bootloader/application images built on 2026-09-07. Mock queue/lifetime and GPIO direction tests passed separately. See build.md; no hardware execution claimed."
     else:
         evidence = "No clean vendor-toolchain build is claimed."
     return f"""# Validation\n\nCurrent status: **{t.status}**\n\nAllowed lifecycle states: `Planned`, `Reference`, `Example`, `Compatible`,\n`Compiles`, `Bench-tested`, `24h-tested`.\n\n{evidence}\n\nTo advance status, attach exact SDK/compiler versions, the clean command and\nlog. `Bench-tested` additionally requires a real ADS1299 ID read, internal-test\nwaveform and packet integrity evidence. `24h-tested` requires loss/CRC/error\ncounts from a continuous 24-hour run.\n"""
@@ -848,7 +850,7 @@ LPSPI example. Generate GPIO and LPSPI mux code in the consuming SDK project.
 def target_appendix(t: Target, document: str) -> str:
     if t.path == "02_Espressif/ESP32":
         return {
-            "readme": "\n## Rank 14 reference in progress\n\nOriginal IDF queued binding and DevKitC V4 WROOM board profile use SPI3, 1 MHz, GPIO18/23/19 with controls 21/22/25/26/27. See board/reference_image.md and build.md. Build evidence remains separate from hardware qualification.\n",
+            "readme": "\n## Maintained ESP32 reference\n\nOriginal IDF queued binding and DevKitC V4 WROOM board profile use SPI3, 1 MHz, GPIO18/23/19 with controls 21/22/25/26/27. Actual bootloader/application build and mock fault tests passed. See board/reference_image.md and build.md. Hardware qualification remains separate.\n",
             "integration": "\n## Concrete IDF binding\n\nUse this directory's CMake/platformio.ini entry, esp_idf_adapter/ and board/esp_idf_board.c. Never add tests/fixtures to production headers. Static context, one owning task and dedicated SPI3 only; do not reuse a timed-out descriptor until returned by IDF. No automatic bus recovery is implemented.\n",
         }.get(document, "")
     if t.path == "02_Espressif/ESP32C6":
@@ -910,7 +912,7 @@ def target_appendix(t: Target, document: str) -> str:
 def generate_target(t: Target) -> dict[str, object]:
     if t.path == "02_Espressif/ESP32":
         t = replace(t, mcu="ESP32-WROOM-32", board="ESP32-DevKitC V4 / 4 MB WROOM reference",
-                    sdk_version="IDF 5.4.0 reference; build evidence in build.md",
+                    sdk_version="IDF 5.4.0; bootloader/application build verified 2026-09-07",
                     compiler="Xtensa ESP ELF GCC", debugger="External JTAG; UART flashing",
                     pins=("GPIO18 / J3-9", "GPIO23 / J3-2", "GPIO19 / J3-8", "GPIO21 / J3-6",
                           "GPIO27 / J2-11", "GPIO22 / J3-3", "GPIO25 / J2-9", "GPIO26 / J2-10", "UART0; no EEG stream implemented"))

@@ -19,7 +19,7 @@ and must not be toggled inside `spi_transfer`.
 
 Vendor startup, linker scripts, CMSIS/HAL, generated configuration and middleware
 stay in the user's official SDK project. This repository owns only the thin
-callback adapter and ADS1299-independent tests. Pin `IDF 5.4.0 reference; build evidence in build.md` in the
+callback adapter and ADS1299-independent tests. Pin `IDF 5.4.0; bootloader/application build verified 2026-09-07` in the
 consumer project and record any API change in `version.md`.
 
 ## Concrete IDF binding

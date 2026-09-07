@@ -1,7 +1,7 @@
-# Rank 14 verification in progress — 2026-09-07
+# Rank 14 software reference evidence — 2026-09-07
 
-Status **Reference**. Actual IDF build is in progress, not yet recorded as passed.
-Do not proceed to rank 15 until the software reference gate is complete.
+Status **Reference**. Actual IDF bootloader/application build and mock logic tests
+passed. Software reference gate permits proceeding to rank 15. No hardware claim.
 
 Run from this platform directory:
 
@@ -27,6 +27,14 @@ runtime. Covered nullable/boundary transactions, queue/result failure, wrong
 descriptor, late completion with persistent buffers, GPIO failure, invalid pin and
 wait values, and rejecting GPIO34 as an output while allowing it as an input.
 
-Remaining: actual bootloader/application build, final source verification and
-recorded sizes. Hardware boot, chip ID/readback, internal-test capture, SPI timing
-and long-duration loss counters are separate, unverified work.
+## Actual build
+
+PASS: bootloader.elf/.bin, firmware.elf/.bin and partitions.bin generated with the
+versions above. RAM 12156 / 327680 bytes; application flash 215556 / 1048576 bytes.
+The application partition is 1 MB within the 4 MB flash configuration. Repository
+main/Port/adapter sources build with -Werror and actual IDF headers, no fixtures.
+Hardware boot, chip ID/readback, internal-test capture, SPI timing and long-duration
+loss counters are separate, unverified work.
+
+esptool image_info verified application checksum and embedded hash. Observed file
+SHA256: `d27316c7ae0b129ce0820dd9193fd70c7c93097f5d265e2a2b75ec52d1897c42`.

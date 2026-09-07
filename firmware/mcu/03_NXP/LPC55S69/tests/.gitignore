@@ -1,0 +1,4 @@
+.tools/
+.uv-cache/
+.verify-*/
+__pycache__/
