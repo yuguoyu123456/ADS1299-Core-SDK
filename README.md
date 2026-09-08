@@ -474,3 +474,30 @@ For public technical questions that may help other developers, GitHub Issues are
 ## Intended use
 
 This repository is intended for **research, education, prototyping and engineering development**. It is not, by itself, a certified medical device, diagnostic system or clinically validated software stack.
+
+---
+
+## Biomedical Engineering & BCI Student Support Initiative
+
+Beyond the technical platform, **ADS1299-Core-SDK** also supports a planned international student-support initiative for **biomedical engineering, brain-computer interfaces (BCI), open hardware, open science, scientific education and early-stage research participation**.
+
+The initiative is intended to help students gain practical access to EEG/BCI research and engineering through open educational resources, reference designs, development tools and, when resources permit, hardware support, PCB/component support or small research grants.
+
+Key goals include:
+
+- reducing barriers to biomedical engineering and BCI research;
+- supporting student-led EEG, biosignal, embedded-system, open-hardware and signal-processing projects;
+- encouraging reproducible engineering, open science and responsible research practices;
+- expanding access for students and early-career researchers in resource-limited environments;
+- connecting education, open-source engineering and real research participation.
+
+The long-term vision may include establishing a formally registered nonprofit or foundation when appropriate. Until such an entity is legally established, this activity is described as an **independent student-support initiative** rather than a registered charitable foundation.
+
+No active funding round or grant program is implied by this README. Future calls, if launched, will publish their own eligibility criteria, budget, review process and award conditions.
+
+See **[`bme_bci_student_foundation/`](bme_bci_student_foundation/)** for the mission, governance, student-grant framework, application templates, transparency materials and SDG-alignment documentation.
+
+For student-support, academic collaboration, sponsorship or related inquiries:
+
+- **Gmail:** yuguoyu520@gmail.com
+- **Email:** yuguoyu123456@126.com
