@@ -24,7 +24,7 @@ You do not need to understand the repository architecture first. Choose what you
 | Understand the hardware / 8–64 channel scaling | [`hardware/`](hardware/) |
 | Use STM32 / ESP32 / RP2040 / another MCU | [`firmware/mcu/`](firmware/mcu/) |
 | Study or reuse the common ADS1299 C driver | [`firmware/core_driver/ads1299/`](firmware/core_driver/ads1299/) |
-| Use FPGA | [`firmware/fpga/`](firmware/fpga/) |
+| Use FPGA / Verilog RTL | [`firmware/fpga/`](firmware/fpga/) |
 | Browse the ranked 1–100 ecosystem / 101–200 MCU extensions | [`firmware/ECOSYSTEM_100.md`](firmware/ECOSYSTEM_100.md) / [`firmware/mcu/ECOSYSTEM_101_200.md`](firmware/mcu/ECOSYSTEM_101_200.md) |
 | Stream packets over UART/USB/BLE/network/LSL bridge | [`firmware/transport/`](firmware/transport/) |
 | Receive, record or plot data on a PC | [`pc_tools/`](pc_tools/) |
@@ -119,7 +119,7 @@ ADS1299-Core-SDK/
 │   ├── transport/            # host-link boundary; never ADS1299 register logic
 │   ├── linux_compute/        # Linux compute-board / SBC integration planning
 │   ├── mcu/                  # MCU/SoC/DSP port ecosystem and reference projects
-│   └── fpga/                 # FPGA RTL interface reference packages
+│   └── fpga/                 # FPGA reference packages with Verilog RTL (.v) + testbenches
 │
 ├── pc_tools/                 # host packet decoding, recording and visualization
 │
@@ -224,7 +224,7 @@ The MCU tree currently contains **185 target directories**: the original **85 ma
 FPGA is a separate **15-package rank-71–85 track** covering **AMD/Xilinx, Intel FPGA,
 Lattice, Microchip PolarFire, Gowin, Tang, Anlogic and Efinix** families.
 Each track now provides the same vendor-neutral SPI transaction and 4/6/8-channel
-frame RTL, a self-checking testbench, platform constraint template and explicit
+Verilog frame RTL, a self-checking testbench, platform constraint template and explicit
 validation record. These are `Reference` packages, not claimed board projects.
 
 The roadmap is intentionally broad, but the repository distinguishes **roadmap coverage** from **verified support**.
