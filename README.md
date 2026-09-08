@@ -25,7 +25,7 @@ You do not need to understand the repository architecture first. Choose what you
 | Use STM32 / ESP32 / RP2040 / another MCU | [`firmware/mcu/`](firmware/mcu/) |
 | Study or reuse the common ADS1299 C driver | [`firmware/core_driver/ads1299/`](firmware/core_driver/ads1299/) |
 | Use FPGA | [`firmware/fpga/`](firmware/fpga/) |
-| Browse the ranked 1–100 ecosystem | [`firmware/ECOSYSTEM_100.md`](firmware/ECOSYSTEM_100.md) |
+| Browse the ranked 1–100 ecosystem / 101–200 MCU extensions | [`firmware/ECOSYSTEM_100.md`](firmware/ECOSYSTEM_100.md) / [`firmware/mcu/ECOSYSTEM_101_200.md`](firmware/mcu/ECOSYSTEM_101_200.md) |
 | Stream packets over UART/USB/BLE/network/LSL bridge | [`firmware/transport/`](firmware/transport/) |
 | Receive, record or plot data on a PC | [`pc_tools/`](pc_tools/) |
 | Connect ADS1299 to Android / Apple / Linux / wearables / XR / smart home | [`integrations/`](integrations/) |
@@ -214,7 +214,9 @@ The controller ecosystem targets representative projects for major global platfo
 
 **STM32 · GD32 · CH32 · ESP32 · nRF52/nRF53 · RP2040/RP2350 · NXP · Renesas · TI MCU · Infineon/PSoC · Silicon Labs · Microchip · HC32 · AT32 · MM32 · N32 · PY32 · APM32 · STC · AVR**
 
-FPGA is a separate rank-71–85 track covering **AMD/Xilinx, Intel FPGA,
+The MCU tree currently contains **185 target directories**: the original **85 maintained MCU/SoC/DSP packages** plus **100 Planned 101–200 extensions**.
+
+FPGA is a separate **15-package rank-71–85 track** covering **AMD/Xilinx, Intel FPGA,
 Lattice, Microchip PolarFire, Gowin, Tang, Anlogic and Efinix** families.
 Each track now provides the same vendor-neutral SPI transaction and 4/6/8-channel
 frame RTL, a self-checking testbench, platform constraint template and explicit
