@@ -147,7 +147,7 @@ static int demo_input_short(ads1299_t *dev)
 static int demo_configure_eeg_250sps(ads1299_t *dev)
 {
     uint8_t ch;
-    uint8_t channel_count = ads1299_effective_variant(dev).channel_count;
+    uint8_t channel_count = (uint8_t)ads1299_effective_variant(dev);
 
     stm32c031_example_log("RUN EEG 250 SPS config\r\n");
     if (ads1299_sdatac(dev) != ADS1299_OK) {
