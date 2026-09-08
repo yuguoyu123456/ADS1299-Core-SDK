@@ -20,3 +20,38 @@ SPI 路由和内核均取决于具体开发板，不能仅用 SoC 型号确定�
 
 统一 ADS1299 驱动仍使用 firmware/core_driver/ads1299；不复制芯片驱动。
 下一步见 [Linux 接入边界](integration.md)。不下载完整 BSP 或系统镜像。
+
+## Runnable bring-up utility
+
+`common/` now contains a real Linux userspace acquisition reference instead of only catalog text:
+
+```text
+common/ads1299_linux_capture.c
+common/Makefile
+common/README.md
+```
+
+The tool can reset and identify ADS1299, apply a test/short/EEG starting profile, wait on DRDY falling edges, read exact 27-byte conversion frames through spidev, and write either raw frames or decoded CSV.
+
+Quick build:
+
+```bash
+cd common
+make
+```
+
+Typical use:
+
+```bash
+sudo ./ads1299_linux_capture \
+  --spi /dev/spidevB.C \
+  --gpiochip /dev/gpiochipN \
+  --drdy-line OFFSET \
+  --profile test \
+  --samples 1000 \
+  --csv > ads1299_test.csv
+```
+
+Start with `--profile test`, then `--profile short`, and only then move to normal inputs. The per-Rockchip `DIRECT_USE.md` files show how to connect each platform directory to this common program without inventing board-specific SPI/GPIO numbering.
+
+For a production 64-channel system, Linux remains an excellent compute/recording layer, while deterministic alignment of eight ADS1299 devices is better handled by the MCU/FPGA acquisition layer before data reaches the Linux host.
