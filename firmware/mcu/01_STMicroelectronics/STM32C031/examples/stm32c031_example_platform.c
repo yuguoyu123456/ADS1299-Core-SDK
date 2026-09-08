@@ -112,6 +112,11 @@ int stm32c031_ads1299_make_hal(ads1299_platform_hal_t *hal)
     return 0;
 }
 
+int board_ads1299_hal(ads1299_platform_hal_t *hal)
+{
+    return stm32c031_ads1299_make_hal(hal);
+}
+
 int stm32c031_example_write(const uint8_t *data, size_t len)
 {
     if (data == NULL || len == 0u || len > 65535u) {
