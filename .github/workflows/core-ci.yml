@@ -39,6 +39,18 @@ jobs:
             tests/c/test_ads1299_transport.c \
             -o /tmp/test_ads1299_transport
           /tmp/test_ads1299_transport
+      - name: Fetch official Renesas FSP v6.5.0 API headers
+        run: |
+          mkdir -p /tmp/renesas-fsp
+          git init /tmp/renesas-fsp
+          git -C /tmp/renesas-fsp remote add origin https://github.com/renesas/fsp.git
+          git -C /tmp/renesas-fsp config core.sparseCheckout true
+          printf 'ra/fsp/inc/api/\n' > /tmp/renesas-fsp/.git/info/sparse-checkout
+          git -C /tmp/renesas-fsp fetch --depth 1 --filter=blob:none origin d3795123de40a9906e75ef03fb6fbf7aef430162
+          git -C /tmp/renesas-fsp checkout --detach FETCH_HEAD
+          test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_spi_api.h
+          test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_ioport_api.h
+          test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_transfer_api.h
       - name: Compile every standardized MCU port package
         run: |
           python tests/validate_mcu_catalog.py
@@ -52,11 +64,25 @@ jobs:
           find firmware/mcu -type d -name ads1299_port -print0 | while IFS= read -r -d '' port_dir; do
             target_dir="$(dirname "$port_dir")"
             for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
+              extra_flags=()
+              if [ "$source" = "$target_dir/tests/test_fsp_adapter.c" ]; then
+                extra_flags+=("-I$target_dir/fsp_adapter")
+                extra_flags+=("-I/tmp/renesas-fsp/ra/fsp/inc/api")
+                extra_flags+=("-include" "$target_dir/tests/fixtures/bsp_fixture.h")
+              fi
               gcc -std=c11 -Wall -Wextra -Werror \
-                -Ifirmware/core_driver/ads1299 -I"$port_dir" -I"$target_dir/fsp_adapter" \
+                -Ifirmware/core_driver/ads1299 -I"$port_dir" \
+                "${extra_flags[@]}" \
                 -c "$source" -o /tmp/ads1299_port_check.o
             done
           done
+          ra_target="firmware/mcu/05_Renesas/RA6M5"
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/core_driver/ads1299 -I"$ra_target/ads1299_port" \
+            -I"$ra_target/fsp_adapter" -I/tmp/renesas-fsp/ra/fsp/inc/api \
+            -include "$ra_target/tests/fixtures/bsp_fixture.h" \
+            -c "$ra_target/fsp_adapter/ads1299_fsp_hal.c" \
+            -o /tmp/ads1299_fsp_hal_check.o
 
   python-smoke:
     runs-on: ubuntu-latest
