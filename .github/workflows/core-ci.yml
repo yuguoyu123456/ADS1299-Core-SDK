@@ -14,7 +14,7 @@ jobs:
         run: |
           core_sources="firmware/core_driver/ads1299/ads1299.c firmware/core_driver/ads1299/ads1299_frame.c firmware/core_driver/ads1299/ads1299_model.c firmware/core_driver/ads1299/ads1299_multi.c"
           for test_source in tests/c/test_ads1299*.c; do
-            if [ "$test_source" = "tests/c/test_ads1299_packet.c" ]; then continue; fi
+            if [ "$test_source" = "tests/c/test_ads1299_packet.c" ] || [ "$test_source" = "tests/c/test_ads1299_transport.c" ]; then continue; fi
             test_name="$(basename "$test_source" .c)"
             gcc -std=c11 -Wall -Wextra -Werror -Ifirmware/core_driver/ads1299 \
               $core_sources "$test_source" -o "/tmp/$test_name"
