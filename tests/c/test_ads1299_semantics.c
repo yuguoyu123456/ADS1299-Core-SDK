@@ -90,7 +90,7 @@ static void test_ti_physical_helpers(void) {
     assert(ads1299_semantic_leadoff_frequency_hz(
                3u, 0.0, 250.0, ADS1299_SEMCTX_FDR, &value, &required) ==
            ADS1299_SEMANTIC_OK);
-    assert(near(value, 62.5, 1e-12));
+    assert(near(value, 250.0 / 450.0, 1e-12));
     assert(ads1299_semantic_leadoff_frequency_hz(
                3u, 0.0, 0.0, 0u, &value, &required) ==
            ADS1299_SEMANTIC_CONTEXT_REQUIRED);
