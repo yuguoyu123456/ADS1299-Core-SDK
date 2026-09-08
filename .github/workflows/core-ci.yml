@@ -77,26 +77,21 @@ jobs:
           python tests/validate_ecosystem_100.py
           find firmware/mcu -type d -name ads1299_port -print0 | while IFS= read -r -d '' port_dir; do
             target_dir="$(dirname "$port_dir")"
-            for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
-              # Keep portable port tests in this host-GCC pass, but do not pretend
-              # target/MMIO or vendor-SDK adapter tests are host-portable. Those
-              # are compiled/executed by their platform-owned reference scripts.
-              if [ "$(basename "$target_dir")" = "SAME54" ] && [ "$source" = "$target_dir/tests/test_polling.c" ]; then
-                continue
-              fi
-              if [ "$(basename "$target_dir")" = "LPC55S69" ] && { [ "$source" = "$target_dir/tests/test_adapter.c" ] || [ "$source" = "$target_dir/tests/test_vendor_spi.c" ]; }; then
-                continue
-              fi
-              extra_flags=()
-              if [ "$source" = "$target_dir/tests/test_fsp_adapter.c" ]; then
-                extra_flags+=("-I$target_dir/fsp_adapter")
-                extra_flags+=("-I/tmp/renesas-fsp/ra/fsp/inc/api")
-                extra_flags+=("-include" "$target_dir/tests/fixtures/bsp_fixture.h")
-              fi
+            # The standardized port itself is host-portable by contract.
+            for source in "$port_dir"/*.c; do
               gcc -std=c11 -Wall -Wextra -Werror \
                 -Ifirmware/core_driver/ads1299 -I"$port_dir" \
-                "${extra_flags[@]}" \
                 -c "$source" -o /tmp/ads1299_port_check.o
+            done
+            # These four smoke tests exercise only the shared Core/Port boundary.
+            # Adapter/MMIO/vendor-driver tests stay in platform-owned reference
+            # scripts where the genuine SDK headers and target compiler are used.
+            for test_name in test_frame.c test_register.c test_reset.c test_spi.c; do
+              source="$target_dir/tests/$test_name"
+              [ -f "$source" ] || continue
+              gcc -std=c11 -Wall -Wextra -Werror \
+                -Ifirmware/core_driver/ads1299 -I"$port_dir" \
+                -c "$source" -o /tmp/ads1299_port_test_check.o
             done
           done
           ra_target="firmware/mcu/05_Renesas/RA6M5"
