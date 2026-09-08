@@ -51,6 +51,20 @@ jobs:
           test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_spi_api.h
           test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_ioport_api.h
           test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_transfer_api.h
+      - name: Prepare SAME54 official reference toolchain and headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
+          python -m pip install --disable-pip-version-check unicorn pyelftools
+          mkdir -p /tmp/microchip-same54-reference
+          git init /tmp/microchip-same54-reference
+          git -C /tmp/microchip-same54-reference remote add origin https://github.com/Microchip-MPLAB-Harmony/csp_apps_sam_d5x_e5x.git
+          git -C /tmp/microchip-same54-reference config core.sparseCheckout true
+          printf 'apps/sercom/spi/master/spi_self_loopback_interrupt/\n' > /tmp/microchip-same54-reference/.git/info/sparse-checkout
+          git -C /tmp/microchip-same54-reference fetch --depth 1 --filter=blob:none origin 4a38194d468e94d4710c31bbfd67fbfe9f5d2096
+          git -C /tmp/microchip-same54-reference checkout --detach FETCH_HEAD
+          test -f /tmp/microchip-same54-reference/apps/sercom/spi/master/spi_self_loopback_interrupt/firmware/src/packs/ATSAME54P20A_DFP/same54p20a.h
+          test -f /tmp/microchip-same54-reference/apps/sercom/spi/master/spi_self_loopback_interrupt/firmware/src/packs/CMSIS/CMSIS/Core/Include/core_cm4.h
       - name: Compile every standardized MCU port package
         run: |
           python tests/validate_mcu_catalog.py
@@ -64,6 +78,12 @@ jobs:
           find firmware/mcu -type d -name ads1299_port -print0 | while IFS= read -r -d '' port_dir; do
             target_dir="$(dirname "$port_dir")"
             for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
+              # SAME54's polling test is an ARM/MMIO target test. It is compiled and
+              # executed below with the pinned official Microchip reference instead
+              # of weakening it into a host-only syntax check.
+              if [ "$source" = "$target_dir/tests/test_polling.c" ] && [ "$(basename "$target_dir")" = "SAME54" ]; then
+                continue
+              fi
               extra_flags=()
               if [ "$source" = "$target_dir/tests/test_fsp_adapter.c" ]; then
                 extra_flags+=("-I$target_dir/fsp_adapter")
@@ -83,6 +103,16 @@ jobs:
             -include "$ra_target/tests/fixtures/bsp_fixture.h" \
             -c "$ra_target/fsp_adapter/ads1299_fsp_hal.c" \
             -o /tmp/ads1299_fsp_hal_check.o
+      - name: Compile SAME54 adapter against pinned official Harmony reference
+        run: |
+          python firmware/mcu/06_Microchip/SAME54/tests/compile_adapter.py \
+            --reference /tmp/microchip-same54-reference \
+            --cc "$(command -v arm-none-eabi-gcc)"
+      - name: Run SAME54 modeled-MMIO polling fault tests
+        run: |
+          python firmware/mcu/06_Microchip/SAME54/tests/run_polling_tests.py \
+            --reference /tmp/microchip-same54-reference \
+            --cc "$(command -v arm-none-eabi-gcc)"
 
   python-smoke:
     runs-on: ubuntu-latest
