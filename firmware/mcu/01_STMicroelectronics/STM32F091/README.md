@@ -44,3 +44,45 @@ CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件
 tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
 
 [官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+
+---
+
+## Current roll-up status (additive update)
+
+The historical planning section above is retained for provenance. The current implementation has progressed beyond that scaffold.
+
+**Current status: TEMPLATE / integration candidate-complete.** This does not imply STM32CubeIDE BUILD-VERIFIED or physical BOARD-VERIFIED status.
+
+### Reference configuration
+
+- MCU: **STM32F091RCT6**
+- Reference board: **NUCLEO-F091RC (MB1136)**
+- Toolchain: **STM32CubeIDE + STM32CubeF0 / STM32Cube HAL**
+- Board/config entry point: `board/board_config.h`
+- Wiring guide: `board/README.md` and `board/pinmap.md`
+- STM32 HAL binding: `examples/stm32f091_example_platform.c/.h`
+- Beginner flow: `examples/stm32f091_beginner_demo.c/.h`
+- Port adapter: `ads1299_port/`
+- Host/integration tests: `tests/`
+
+### Beginner path
+
+A normal first-time user should not edit shared ADS1299 files. Use this sequence:
+
+1. Create an STM32CubeIDE project for NUCLEO-F091RC.
+2. Configure SPI1 as master, full duplex, 8-bit, MSB-first, CPOL Low, CPHA 2Edge (ADS1299 SPI Mode 1).
+3. Configure the GPIO labels documented in `board/board_config.h`.
+4. Configure USART2 when the example UART stream is enabled.
+5. Add the shared ADS1299 core, canonical packet module, this model's `ads1299_port`, board/config and example sources as documented in `integration.md`.
+6. Call `stm32f091_ads1299_beginner_demo(1000u)` after HAL/peripheral initialization.
+7. Verify the staged flow: ADS1299 ID/probe -> internal test -> input-short -> 250-SPS EEG -> canonical packet streaming -> clean stop.
+
+Expected bring-up text is documented in `examples/README.md`. Changing to another STM32F091 board should normally be a CubeMX plus board/config change, not a modification to `ads1299.c`, `ads1299_regs.h` or shared model logic.
+
+### Validation boundary
+
+- Repository integration sources: present.
+- Host adapter and integration-test infrastructure: present.
+- STM32CubeIDE reference-board compile/link: **not yet claimed BUILD-VERIFIED**.
+- NUCLEO-F091RC + ADS1299 physical execution: **not yet claimed BOARD-VERIFIED**.
+- Sustained/24-hour acquisition, electrical safety, EMC and production readiness: **not claimed**.
