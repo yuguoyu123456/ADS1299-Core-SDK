@@ -42,10 +42,11 @@ int ads1299_ethernet_frame_peek_size(const uint8_t *header,
         header[1] != ADS1299_ETH_FRAME_MAGIC1 ||
         header[2] != ADS1299_ETH_FRAME_MAGIC2 ||
         header[3] != ADS1299_ETH_FRAME_MAGIC3) return -3;
-    if (header[4] != ADS1299_ETH_FRAME_VERSION) return -4;
+    if (header[ADS1299_ETH_FRAME_OFFSET_VERSION] != ADS1299_ETH_FRAME_VERSION)
+        return -4;
 
-    packet_count = header[6];
-    payload_bytes = get_u16le(&header[8]);
+    packet_count = header[ADS1299_ETH_FRAME_OFFSET_PACKET_COUNT];
+    payload_bytes = get_u16le(&header[ADS1299_ETH_FRAME_OFFSET_PAYLOAD_BYTES]);
 
     if (packet_count == 0u || packet_count > ADS1299_ETH_FRAME_MAX_PACKETS)
         return -5;
@@ -81,17 +82,16 @@ size_t ads1299_ethernet_frame_encode(uint8_t *out,
             return 0u;
     }
 
+    memset(out, 0, ADS1299_ETH_FRAME_HEADER_SIZE);
     out[0] = ADS1299_ETH_FRAME_MAGIC0;
     out[1] = ADS1299_ETH_FRAME_MAGIC1;
     out[2] = ADS1299_ETH_FRAME_MAGIC2;
     out[3] = ADS1299_ETH_FRAME_MAGIC3;
-    out[4] = ADS1299_ETH_FRAME_VERSION;
-    out[5] = flags;
-    out[6] = packet_count;
-    out[7] = 0u;
-    put_u16le(&out[8], (uint16_t)payload_bytes);
-    put_u16le(&out[10], 0u);
-    put_u32le(&out[ADS1299_ETH_FRAME_HEADER_SIZE - 4u], block_sequence);
+    out[ADS1299_ETH_FRAME_OFFSET_VERSION] = ADS1299_ETH_FRAME_VERSION;
+    out[ADS1299_ETH_FRAME_OFFSET_FLAGS] = flags;
+    out[ADS1299_ETH_FRAME_OFFSET_PACKET_COUNT] = packet_count;
+    put_u16le(&out[ADS1299_ETH_FRAME_OFFSET_PAYLOAD_BYTES], (uint16_t)payload_bytes);
+    put_u32le(&out[ADS1299_ETH_FRAME_OFFSET_BLOCK_SEQUENCE], block_sequence);
 
     memcpy(&out[ADS1299_ETH_FRAME_HEADER_SIZE], packets, payload_bytes);
     return frame_size;
@@ -112,7 +112,7 @@ int ads1299_ethernet_frame_decode(const uint8_t *frame,
     if (rc != 0) return rc;
     if (frame_length != expected_size) return -7;
 
-    packet_count = frame[6];
+    packet_count = frame[ADS1299_ETH_FRAME_OFFSET_PACKET_COUNT];
     for (i = 0u; i < packet_count; ++i) {
         const uint8_t *packet = &frame[ADS1299_ETH_FRAME_HEADER_SIZE +
                                       i * ADS1299_PACKET_SIZE];
@@ -120,10 +120,10 @@ int ads1299_ethernet_frame_decode(const uint8_t *frame,
             return -8;
     }
 
-    info->block_sequence = get_u32le(&frame[ADS1299_ETH_FRAME_HEADER_SIZE - 4u]);
-    info->flags = frame[5];
+    info->block_sequence = get_u32le(&frame[ADS1299_ETH_FRAME_OFFSET_BLOCK_SEQUENCE]);
+    info->flags = frame[ADS1299_ETH_FRAME_OFFSET_FLAGS];
     info->packet_count = packet_count;
-    info->payload_bytes = get_u16le(&frame[8]);
+    info->payload_bytes = get_u16le(&frame[ADS1299_ETH_FRAME_OFFSET_PAYLOAD_BYTES]);
     *packets = &frame[ADS1299_ETH_FRAME_HEADER_SIZE];
     return 0;
 }
