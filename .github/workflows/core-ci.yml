@@ -78,10 +78,13 @@ jobs:
           find firmware/mcu -type d -name ads1299_port -print0 | while IFS= read -r -d '' port_dir; do
             target_dir="$(dirname "$port_dir")"
             for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
-              # SAME54's polling test is an ARM/MMIO target test. It is compiled and
-              # executed below with the pinned official Microchip reference instead
-              # of weakening it into a host-only syntax check.
-              if [ "$source" = "$target_dir/tests/test_polling.c" ] && [ "$(basename "$target_dir")" = "SAME54" ]; then
+              # Keep portable port tests in this host-GCC pass, but do not pretend
+              # target/MMIO or vendor-SDK adapter tests are host-portable. Those
+              # are compiled/executed by their platform-owned reference scripts.
+              if [ "$(basename "$target_dir")" = "SAME54" ] && [ "$source" = "$target_dir/tests/test_polling.c" ]; then
+                continue
+              fi
+              if [ "$(basename "$target_dir")" = "LPC55S69" ] && { [ "$source" = "$target_dir/tests/test_adapter.c" ] || [ "$source" = "$target_dir/tests/test_vendor_spi.c" ]; }; then
                 continue
               fi
               extra_flags=()
