@@ -2,6 +2,26 @@
 
 Ranks 71-85 are FPGA/CPLD interfaces and remain separate from MCU ports.
 
+## Verilog RTL sources
+
+The FPGA reference packages contain **Verilog RTL (`.v`) source code** for the ADS1299 digital acquisition path. This is a hardware-description implementation, separate from the MCU C driver.
+
+Each reference package includes the same core Verilog structure:
+
+```text
+rtl/
+├── ads1299_spi_master.v      # ADS1299 SPI Mode-1 byte engine
+├── ads1299_controller.v      # ADS1299 transaction / acquisition controller
+└── frame_parser.v            # 4/6/8-channel ADS1299 frame parser
+
+tb/
+└── simulation_tb.v           # self-checking Verilog testbench
+```
+
+The Verilog RTL is intentionally vendor-neutral so the same acquisition logic can be reused across supported FPGA families while vendor-specific constraints and integration files remain inside each platform package.
+
+Presence of Verilog source does not by itself imply synthesis, timing closure, board-level verification or hardware validation. Those claims require explicit validation evidence.
+
 | Rank | Vendor | Family | Package | Status |
 |---:|---|---|---|---|
 | 71 | AMD Xilinx | Zynq-7000 | `AMD_Xilinx/Zynq7000_Reference` | Reference |
