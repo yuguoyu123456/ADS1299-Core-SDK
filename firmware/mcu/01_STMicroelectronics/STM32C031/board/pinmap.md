@@ -18,3 +18,19 @@ The ADS1299 digital I/O supply and MCU GPIO voltage must be compatible. Confirm
 header routing, boot straps, solder bridges and debugger conflicts against the
 exact board schematic before connecting hardware. `SDK_*` names mean the user
 must select and document an available pin in the consuming vendor project.
+
+## Beginner mapping convention
+
+For the standardized STM32C031 beginner path, configure the actual pins in CubeMX and give the control GPIOs these exact user labels:
+
+| Logical `SDK_*` signal | CubeMX user label |
+|---|---|
+| `SDK_CS` | `ADS1299_CS` |
+| `SDK_DRDY` | `ADS1299_DRDY` |
+| `SDK_RESET` | `ADS1299_RESET` |
+| `SDK_PWDN` | `ADS1299_PWDN` |
+| `SDK_START` | `ADS1299_START` |
+
+SCK/MOSI/MISO are selected through the chosen SPI peripheral alternate functions. Optional `SDK_TX` is selected through the chosen output transport.
+
+After CubeMX generates the project, `board_config.h` is the single repository file a beginner normally edits. It maps the generated SPI/UART handle names and the labeled GPIO symbols into the STM32C031 ADS1299 integration. The exact physical header pin remains board-specific and must be verified against the selected ST board schematic.
