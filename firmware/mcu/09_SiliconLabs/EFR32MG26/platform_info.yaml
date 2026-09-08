@@ -1,0 +1,13 @@
+schema: 1
+rank: 174
+vendor: "Silicon Labs"
+family: "EFR32MG26"
+mcu: "EFR32MG26"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official EFR32MG26 evaluation board"
+official_sdk: "Simplicity Studio / device SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

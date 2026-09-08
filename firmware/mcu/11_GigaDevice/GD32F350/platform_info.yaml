@@ -1,0 +1,13 @@
+schema: 1
+rank: 177
+vendor: "GigaDevice"
+family: "GD32F350"
+mcu: "GD32F350"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official GD32F350 evaluation board"
+official_sdk: "GD32 device firmware library / wireless SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

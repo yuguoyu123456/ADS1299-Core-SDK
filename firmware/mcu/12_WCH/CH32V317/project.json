@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 183,
+  "path": "12_WCH/CH32V317",
+  "vendor": "WCH",
+  "family": "CH32V317",
+  "mcu": "CH32V317",
+  "board": "Select an official CH32V317 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "WCH official EVT / MounRiver toolchain",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "补充低成本、无线和高速接口候选；低资源器件先做 Core 容量评估。",
+  "official_source": "https://www.wch-ic.com/products/productsCenter/mcuInterface?categoryId=70",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

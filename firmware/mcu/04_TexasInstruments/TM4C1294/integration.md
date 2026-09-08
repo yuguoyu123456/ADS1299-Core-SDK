@@ -19,5 +19,9 @@ and must not be toggled inside `spi_transfer`.
 
 Vendor startup, linker scripts, CMSIS/HAL, generated configuration and middleware
 stay in the user's official SDK project. This repository owns only the thin
-callback adapter and ADS1299-independent tests. Pin `pin in CCS project` in the
+callback adapter and ADS1299-independent tests. Pin `TI DriverLib 2.1.4.178 in Energia cbd522c8; GNU reference verified` in the
 consumer project and record any API change in `version.md`.
+
+## Concrete binding
+
+Add standard Port, tivaware_adapter/ and either your board binding or board/reference_image.c. The latter is cold-boot-only, PIOSC16, 1 MHz SSI0 and exclusive GPIO ownership. Its complete reference uses external Energia startup/linker, not the current TI installer. Never include test caches in a distributed SDK. See build.md for reproducible checks.

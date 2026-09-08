@@ -1,0 +1,13 @@
+schema: 1
+rank: 193
+vendor: "Nationstech"
+family: "N32L406"
+mcu: "N32L406"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official N32L406 evaluation board"
+official_sdk: "N32 device firmware library"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

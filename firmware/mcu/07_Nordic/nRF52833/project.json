@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 168,
+  "path": "07_Nordic/nRF52833",
+  "vendor": "Nordic Semiconductor",
+  "family": "nRF52833",
+  "mcu": "nRF52833",
+  "board": "Select an official nRF52833 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "nRF Connect SDK / supported device SDK",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "补充短距离无线和蜂窝应用处理器候选；无线发送与采集时序分别验证。",
+  "official_source": "https://www.nordicsemi.com/Products",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

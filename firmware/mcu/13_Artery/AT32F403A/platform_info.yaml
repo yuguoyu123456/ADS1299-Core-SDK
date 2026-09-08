@@ -1,0 +1,13 @@
+schema: 1
+rank: 184
+vendor: "Artery"
+family: "AT32F403A"
+mcu: "AT32F403A"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official AT32F403A evaluation board"
+official_sdk: "AT32 device firmware library"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

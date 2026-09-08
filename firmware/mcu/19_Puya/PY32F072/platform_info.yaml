@@ -1,0 +1,13 @@
+schema: 1
+rank: 198
+vendor: "Puya"
+family: "PY32F072"
+mcu: "PY32F072"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official PY32F072 evaluation board"
+official_sdk: "PY32 device SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

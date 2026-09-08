@@ -1,0 +1,13 @@
+schema: 1
+rank: 125
+vendor: "Espressif"
+family: "ESP32-P4"
+mcu: "ESP32-P4"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official ESP32-P4 evaluation board"
+official_sdk: "ESP-IDF"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

@@ -1,5 +1,11 @@
 # ADS1299 MCU Port Ecosystem
 
+第 101–200 项已建立为独立的 Planned 扩展清单：
+[查看 100 个新增 MCU 目录](ECOSYSTEM_101_200.md)。
+机器可读元信息在 `catalog_101_200.json`。这些是后续开发候选，
+编号不表示全球销量排名，通用模板尚未绑定各平台官方 SDK。
+本树包含原清单的 85 个目标和新增 100 个 Planned 目录，共 185 个目标目录。
+
 Linux compute-board planning is maintained separately in
 [Linux compute boards](../linux_compute/README.md), initially covering
 six Rockchip SoC families. These Planned extensions are outside ranks 1–100

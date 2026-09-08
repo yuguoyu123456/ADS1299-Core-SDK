@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 194,
+  "path": "17_Nationstech/N32G430",
+  "vendor": "Nationstech",
+  "family": "N32G430",
+  "mcu": "N32G430",
+  "board": "Select an official N32G430 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "N32 device firmware library",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "补充 N32 低功耗和通用控制候选；具体板卡与供货情况待核对。",
+  "official_source": "https://www.nationstech.com/",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

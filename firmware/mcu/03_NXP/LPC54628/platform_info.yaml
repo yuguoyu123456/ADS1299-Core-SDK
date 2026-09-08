@@ -1,0 +1,13 @@
+schema: 1
+rank: 138
+vendor: "NXP"
+family: "LPC54628"
+mcu: "LPC54628"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official LPC54628 evaluation board"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

@@ -1,0 +1,13 @@
+schema: 1
+rank: 199
+vendor: "Ambiq"
+family: "Apollo510"
+mcu: "Apollo510"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official Apollo510 evaluation board"
+official_sdk: "AmbiqSuite SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

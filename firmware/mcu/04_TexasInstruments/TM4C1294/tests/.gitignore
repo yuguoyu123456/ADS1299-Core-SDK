@@ -1,0 +1,3 @@
+.tools/
+.verify-*/
+__pycache__/

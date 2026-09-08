@@ -1,0 +1,13 @@
+schema: 1
+rank: 189
+vendor: "HDSC"
+family: "HC32F448"
+mcu: "HC32F448"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official HC32F448 evaluation board"
+official_sdk: "HC32 device DDL"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

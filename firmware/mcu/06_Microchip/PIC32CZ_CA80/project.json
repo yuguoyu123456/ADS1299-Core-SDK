@@ -1,0 +1,22 @@
+{
+  "schema": 2,
+  "rank": 165,
+  "path": "06_Microchip/PIC32CZ_CA80",
+  "vendor": "Microchip",
+  "family": "PIC32CZ_CA80",
+  "mcu": "PIC32CZ_CA80",
+  "board": "Select an official PIC32CZ_CA80 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "MPLAB Harmony / device packs; AVR uses its own toolchain",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "补充 SAM、PIC32 和 AVR DB；RAM、编译器及指针模型必须分别评估。",
+  "official_source": "https://www.microchip.com/en-us/products/microcontrollers",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank",
+  "related_family_rank": 51
+}

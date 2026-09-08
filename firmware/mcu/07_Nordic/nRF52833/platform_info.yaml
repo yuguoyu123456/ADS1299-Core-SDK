@@ -1,0 +1,13 @@
+schema: 1
+rank: 168
+vendor: "Nordic Semiconductor"
+family: "nRF52833"
+mcu: "nRF52833"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official nRF52833 evaluation board"
+official_sdk: "nRF Connect SDK / supported device SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

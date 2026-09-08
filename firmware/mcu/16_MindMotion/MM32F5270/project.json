@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 192,
+  "path": "16_MindMotion/MM32F5270",
+  "vendor": "MindMotion",
+  "family": "MM32F5270",
+  "mcu": "MM32F5270",
+  "board": "Select an official MM32F5270 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "MM32 device SDK",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "补充国内通用系列；按手册逐项确认时钟、SPI 和 DMA 能力。",
+  "official_source": "https://www.mindmotion.com.cn/products/",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

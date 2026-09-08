@@ -1,0 +1,13 @@
+schema: 1
+rank: 197
+vendor: "Puya"
+family: "PY32F030"
+mcu: "PY32F030"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official PY32F030 evaluation board"
+official_sdk: "PY32 device SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

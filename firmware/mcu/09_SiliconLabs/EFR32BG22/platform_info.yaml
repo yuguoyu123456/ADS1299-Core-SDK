@@ -1,0 +1,13 @@
+schema: 1
+rank: 173
+vendor: "Silicon Labs"
+family: "EFR32BG22"
+mcu: "EFR32BG22"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official EFR32BG22 evaluation board"
+official_sdk: "Simplicity Studio / device SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

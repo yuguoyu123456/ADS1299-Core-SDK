@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 132,
+  "path": "03_NXP/MIMXRT1011",
+  "vendor": "NXP",
+  "family": "MIMXRT1011",
+  "mcu": "MIMXRT1011",
+  "board": "Select an official MIMXRT1011 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "MCUXpresso SDK",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "覆盖 MCX 新平台及已有 i.MX RT、LPC、Kinetis 工程迁移候选。",
+  "official_source": "https://www.nxp.com/",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

@@ -1,0 +1,13 @@
+schema: 1
+rank: 192
+vendor: "MindMotion"
+family: "MM32F5270"
+mcu: "MM32F5270"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official MM32F5270 evaluation board"
+official_sdk: "MM32 device SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

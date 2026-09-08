@@ -1,0 +1,13 @@
+schema: 1
+rank: 149
+vendor: "Renesas"
+family: "RA8T1"
+mcu: "RA8T1"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official RA8T1 evaluation board"
+official_sdk: "FSP for RA; FIT/RX Driver Package for RX"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

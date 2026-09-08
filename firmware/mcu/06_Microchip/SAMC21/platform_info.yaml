@@ -1,0 +1,13 @@
+schema: 1
+rank: 157
+vendor: "Microchip"
+family: "SAMC21"
+mcu: "SAMC21"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official SAMC21 evaluation board"
+official_sdk: "MPLAB Harmony / device packs; AVR uses its own toolchain"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

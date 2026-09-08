@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 124,
+  "path": "02_Espressif/ESP32-H2",
+  "vendor": "Espressif",
+  "family": "ESP32-H2",
+  "mcu": "ESP32-H2",
+  "board": "Select an official ESP32-H2 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "ESP-IDF",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "补充联网采集和本地处理选型；各型号无线能力不同，不能默认全部带 Wi-Fi。",
+  "official_source": "https://www.espressif.com/en/products/socs",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

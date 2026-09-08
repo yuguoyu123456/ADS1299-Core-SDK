@@ -1,0 +1,13 @@
+schema: 1
+rank: 128
+vendor: "NXP"
+family: "MCXA153"
+mcu: "MCXA153"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official MCXA153 evaluation board"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

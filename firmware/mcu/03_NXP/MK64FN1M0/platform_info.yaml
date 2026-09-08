@@ -1,0 +1,13 @@
+schema: 1
+rank: 139
+vendor: "NXP"
+family: "MK64FN1M0"
+mcu: "MK64FN1M0"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official MK64FN1M0 evaluation board"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

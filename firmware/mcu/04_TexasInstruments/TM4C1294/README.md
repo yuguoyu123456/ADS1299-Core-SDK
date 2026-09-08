@@ -5,11 +5,11 @@ Global ecosystem rank: **16**. Status: **Reference**. Tier A. Hardware validatio
 ## Platform
 
 - Vendor: Texas Instruments
-- Family / MCU: TM4C129 / TM4C1294NCPDT
+- Family / MCU: TM4C129x / TM4C1294NCPDT
 - Architecture: Arm Cortex-M4F
 - Reference board: EK-TM4C1294XL
 - Official environment: TivaWare
-- Compiler: TI Arm Clang / arm-none-eabi-gcc
+- Compiler: GCC Arm Embedded 9.2.1; CCS/TI Arm Clang not run
 
 ## ADS1299 connection
 
@@ -30,3 +30,7 @@ The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
 provides a millisecond helper without changing the stable Core port contract.
 It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
 in `firmware/transport/` and must not block a DRDY handler.
+
+## Maintained SSI reference
+
+Use tivaware_adapter/ with shared Core. SPI mode 1 legacy SSI0 uses PA2 SCK, PA4 TX and PA5 RX; do not copy the opposite TM4C123 mapping. Board controls are provisional and protected by a review interlock. See board/reference_image.md and build.md.

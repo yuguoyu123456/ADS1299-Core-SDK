@@ -1,0 +1,13 @@
+schema: 1
+rank: 170
+vendor: "Infineon"
+family: "XMC4500"
+mcu: "XMC4500"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official XMC4500 evaluation board"
+official_sdk: "XMC device-supported SDK / ModusToolbox or DAVE as applicable"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

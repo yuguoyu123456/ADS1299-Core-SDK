@@ -1,0 +1,13 @@
+schema: 1
+rank: 183
+vendor: "WCH"
+family: "CH32V317"
+mcu: "CH32V317"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official CH32V317 evaluation board"
+official_sdk: "WCH official EVT / MounRiver toolchain"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

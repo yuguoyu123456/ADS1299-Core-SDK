@@ -5,7 +5,7 @@
 | CPU | 120 MHz Cortex-M4F |
 | RAM | 256 KiB SRAM |
 | Flash | 1 MiB Flash |
-| SPI | SSI Mode 1 |
+| SPI | SSI0 legacy Mode 1; PIOSC16 / 16 = 1 MHz |
 | DMA | Yes |
 | USB | USB OTG |
 | BLE | No |

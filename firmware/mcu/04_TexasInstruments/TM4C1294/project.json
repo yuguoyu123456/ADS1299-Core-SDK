@@ -3,7 +3,7 @@
   "rank": 16,
   "path": "04_TexasInstruments/TM4C1294",
   "vendor": "Texas Instruments",
-  "family": "TM4C129",
+  "family": "TM4C129x",
   "mcu": "TM4C1294NCPDT",
   "board": "EK-TM4C1294XL",
   "architecture": "Arm Cortex-M4F",

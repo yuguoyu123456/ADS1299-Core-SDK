@@ -659,6 +659,8 @@ def render_validation(t: Target) -> str:
         evidence = "Actual ESP-IDF 5.4.0 classic ESP32 bootloader/application images built on 2026-09-07. Mock queue/lifetime and GPIO direction tests passed separately. See build.md; no hardware execution claimed."
     elif t.path == "03_NXP/LPC55S69":
         evidence = "Complete 17-source Core0 ELF linked with MCUX_2.16.000 on 2026-09-07, vectors at zero and no unresolved symbols. Adapter API-double and real vendor SPI / modeled FIFO tests passed. See build.md. Provisional control pins and untested boot/hardware keep status Reference."
+    elif t.path == "04_TexasInstruments/TM4C1294":
+        evidence = "A complete GNU reference ELF linked on 2026-09-07 using external Energia startup/linker and its TI DriverLib 2.1.4.178 sources. Vectors, stack and zero unresolved symbols checked; five real-driver/model fault scenarios passed. See build.md. No TI SDK 2.2, CCS build or board execution claim."
     else:
         evidence = "No clean vendor-toolchain build is claimed."
     return f"""# Validation\n\nCurrent status: **{t.status}**\n\nAllowed lifecycle states: `Planned`, `Reference`, `Example`, `Compatible`,\n`Compiles`, `Bench-tested`, `24h-tested`.\n\n{evidence}\n\nTo advance status, attach exact SDK/compiler versions, the clean command and\nlog. `Bench-tested` additionally requires a real ADS1299 ID read, internal-test\nwaveform and packet integrity evidence. `24h-tested` requires loss/CRC/error\ncounts from a continuous 24-hour run.\n"""
@@ -850,6 +852,12 @@ LPSPI example. Generate GPIO and LPSPI mux code in the consuming SDK project.
 
 
 def target_appendix(t: Target, document: str) -> str:
+    if t.path == "04_TexasInstruments/TM4C1294":
+        return {
+            "readme": "\n## Maintained SSI reference\n\nUse tivaware_adapter/ with shared Core. SPI mode 1 legacy SSI0 uses PA2 SCK, PA4 TX and PA5 RX; do not copy the opposite TM4C123 mapping. Board controls are provisional and protected by a review interlock. See board/reference_image.md and build.md.\n",
+            "integration": "\n## Concrete binding\n\nAdd standard Port, tivaware_adapter/ and either your board binding or board/reference_image.c. The latter is cold-boot-only, PIOSC16, 1 MHz SSI0 and exclusive GPIO ownership. Its complete reference uses external Energia startup/linker, not the current TI installer. Never include test caches in a distributed SDK. See build.md for reproducible checks.\n",
+            "version": "\n2026-09-07: TM4C hardware adapter 0.1.0, GNU reference link and modeled real-DriverLib tests passed. Compatible with shared Core 2.0; no hardware qualification.\n",
+        }.get(document, "")
     if t.path == "03_NXP/LPC55S69":
         return {
             "readme": "\n## Maintained LPC55 reference\n\nUse mcux_adapter/ with shared Core and the standard Port. The cold-boot Core0 binding uses SPI7 at 1 MHz from FRO12. Control pins are provisional and a wiring interlock prevents automatic acquisition. See board/reference_image.md and build.md for complete link evidence and limitations.\n",
@@ -918,6 +926,12 @@ def target_appendix(t: Target, document: str) -> str:
 
 
 def generate_target(t: Target) -> dict[str, object]:
+    if t.path == "04_TexasInstruments/TM4C1294":
+        t = replace(t, sdk_version="TI DriverLib 2.1.4.178 in Energia cbd522c8; GNU reference verified",
+                    compiler="GCC Arm Embedded 9.2.1; CCS/TI Arm Clang not run",
+                    spi="SSI0 legacy Mode 1; PIOSC16 / 16 = 1 MHz",
+                    pins=("PA2", "PA4 / SSI0XDAT0 TX", "PA5 / SSI0XDAT1 RX", "PA3 (provisional GPIO)",
+                          "PL3 (provisional)", "PL0 (provisional)", "PL1 (provisional)", "PL2 (provisional)", "Debugger snapshot only"))
     if t.path == "03_NXP/LPC55S69":
         t = replace(t, sdk_version="MCUX_2.16.000 / 6f3fd257; Core0 reference ELF verified",
                     compiler="GCC Arm Embedded 9.2.1; MCUXpresso IDE not run",
@@ -963,7 +977,7 @@ def generate_target(t: Target) -> dict[str, object]:
     write(base / "ads1299_port" / "ads1299_drdy.h", PORT_DRDY_H)
     write(base / "ads1299_port" / "ads1299_drdy.c", PORT_DRDY_C)
     example = EXAMPLE_C
-    if t.path in ("03_NXP/MIMXRT1170", "03_NXP/MIMXRT1062", "04_TexasInstruments/MSPM0G3507", "07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32", "03_NXP/LPC55S69"):
+    if t.path in ("03_NXP/MIMXRT1170", "03_NXP/MIMXRT1062", "04_TexasInstruments/MSPM0G3507", "07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32", "03_NXP/LPC55S69", "04_TexasInstruments/TM4C1294"):
         example = example.replace(
             'extern int board_ads1299_hal(ads1299_platform_hal_t *hal);',
             'extern int board_ads1299_hal(ads1299_platform_hal_t *hal);\n\n'
@@ -974,7 +988,7 @@ def generate_target(t: Target) -> dict[str, object]:
             "/* Send frame through the application's UART/USB/BLE/Ethernet path. */",
             '++ads1299_frame_sequence;\n            ads1299_latest_frame = frame;\n'
             '            ++ads1299_frame_sequence;')
-    if t.path in ("07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32", "03_NXP/LPC55S69"):
+    if t.path in ("07_Nordic/nRF5340", "05_Renesas/RA6M5", "06_Microchip/SAME54", "08_Infineon/PSoC6", "01_STMicroelectronics/STM32G4", "01_STMicroelectronics/STM32U5", "02_Espressif/ESP32C6", "02_Espressif/ESP32", "03_NXP/LPC55S69", "04_TexasInstruments/TM4C1294"):
         example = example.replace('if (port.drdy_read(port.user) == 0) {',
             'int ready = port.drdy_read(port.user);\n        if (ready < 0) return 11;\n'
             '        if (ready == 0) {')

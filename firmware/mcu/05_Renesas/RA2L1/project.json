@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 153,
+  "path": "05_Renesas/RA2L1",
+  "vendor": "Renesas",
+  "family": "RA2L1",
+  "mcu": "RA2L1",
+  "board": "Select an official RA2L1 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "FSP for RA; FIT/RX Driver Package for RX",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "覆盖 RA 性能、低功耗梯度及 RX 工程迁移；分别核对 FSP/FIT 支持。",
+  "official_source": "https://www.renesas.com/en/products/microcontrollers-microprocessors",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

@@ -1,0 +1,21 @@
+{
+  "schema": 2,
+  "rank": 176,
+  "path": "11_GigaDevice/GD32F303",
+  "vendor": "GigaDevice",
+  "family": "GD32F303",
+  "mcu": "GD32F303",
+  "board": "Select an official GD32F303 evaluation board",
+  "architecture": "Confirm exact CPU/core variant in official device documentation",
+  "sdk": "GD32 device firmware library / wireless SDK",
+  "tier": "C",
+  "status": "Planned",
+  "core": "../../../core_driver/ads1299",
+  "port": "ads1299_port",
+  "example": "examples/main_ads1299.c",
+  "selection_reason": "覆盖国内通用、低功耗及无线选型；不同系列外设寄存器不可互换。",
+  "official_source": "https://www.gigadevice.com/product/mcu",
+  "created": "2026-09-08",
+  "catalog_scope": "extension_101_200",
+  "rank_meaning": "maintenance_id_not_sales_rank"
+}

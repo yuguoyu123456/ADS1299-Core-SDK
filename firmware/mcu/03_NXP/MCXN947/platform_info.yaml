@@ -1,0 +1,13 @@
+schema: 1
+rank: 126
+vendor: "NXP"
+family: "MCXN947"
+mcu: "MCXN947"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official MCXN947 evaluation board"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

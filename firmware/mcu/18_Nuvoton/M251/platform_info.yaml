@@ -1,0 +1,13 @@
+schema: 1
+rank: 196
+vendor: "Nuvoton"
+family: "M251"
+mcu: "M251"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official M251 evaluation board"
+official_sdk: "NuMicro device BSP"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

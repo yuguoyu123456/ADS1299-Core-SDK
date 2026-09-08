@@ -1,0 +1,13 @@
+schema: 1
+rank: 188
+vendor: "Geehy"
+family: "APM32F103"
+mcu: "APM32F103"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official APM32F103 evaluation board"
+official_sdk: "APM32 device SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"

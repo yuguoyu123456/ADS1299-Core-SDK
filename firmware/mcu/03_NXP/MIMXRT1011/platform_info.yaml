@@ -1,0 +1,13 @@
+schema: 1
+rank: 132
+vendor: "NXP"
+family: "MIMXRT1011"
+mcu: "MIMXRT1011"
+architecture: "Confirm exact CPU/core variant in official device documentation"
+board: "Select an official MIMXRT1011 evaluation board"
+official_sdk: "MCUXpresso SDK"
+sdk_version: "pin in the consuming official SDK project"
+compiler: "vendor-supported compiler"
+debugger: "vendor-supported debug probe"
+tier: "C"
+status: "Planned"
