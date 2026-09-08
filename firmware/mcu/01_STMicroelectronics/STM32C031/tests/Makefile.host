@@ -1,8 +1,8 @@
 CC ?= cc
 CFLAGS ?= -std=c99 -Wall -Wextra -Werror -pedantic -O2
 
-ROOT := ../../../../..
-CORE := $(ROOT)/core_driver/ads1299
+FIRMWARE := ../../../..
+CORE := $(FIRMWARE)/core_driver/ads1299
 PORT := ../ads1299_port
 
 TARGET := stm32c031_integration_tests
