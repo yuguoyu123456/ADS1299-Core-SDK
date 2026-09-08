@@ -18,6 +18,9 @@ extern "C" {
  */
 int stm32c031_ads1299_make_hal(ads1299_platform_hal_t *hal);
 
+/* Backward-compatible entry used by the pre-existing main_ads1299.c example. */
+int board_ads1299_hal(ads1299_platform_hal_t *hal);
+
 /* Beginner-visible logging/transport helpers used by the examples. */
 void stm32c031_example_log(const char *text);
 int stm32c031_example_write(const uint8_t *data, size_t len);
