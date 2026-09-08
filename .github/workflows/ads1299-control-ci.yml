@@ -1,0 +1,28 @@
+name: ads1299-control-ci
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'firmware/common/ads1299_control/**'
+      - 'firmware/core_driver/ads1299/**'
+      - '.github/workflows/ads1299-control-ci.yml'
+
+jobs:
+  compile-control-layer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile control and CLI against current core headers
+        run: |
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/core_driver/ads1299 \
+            -Ifirmware/common/ads1299_control \
+            -c firmware/common/ads1299_control/ads1299_control.c \
+            -o /tmp/ads1299_control.o
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/core_driver/ads1299 \
+            -Ifirmware/common/ads1299_control \
+            -c firmware/common/ads1299_control/ads1299_cli.c \
+            -o /tmp/ads1299_cli.o
