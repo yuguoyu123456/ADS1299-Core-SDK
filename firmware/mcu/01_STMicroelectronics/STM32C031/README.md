@@ -1,46 +1,92 @@
 # STM32C031 ADS1299 Port
 
-Global ecosystem rank: **114**. Status: **Planned**. Tier C. Hardware validation is not implied.
+Status: **TEMPLATE / integration-complete for this model; not BUILD-VERIFIED or BOARD-VERIFIED**. Hardware validation is not implied.
 
-## Platform
+## Recommended reference board
 
-- Vendor: STMicroelectronics
-- Family / MCU: STM32C031 / STM32C031
-- Architecture: Confirm exact CPU/core variant in official device documentation
-- Reference board: Select an official STM32C031 evaluation board
-- Official environment: STM32Cube / official device package
-- Compiler: vendor-supported compiler
+Use **STMicroelectronics NUCLEO-C031C6 (MB1717)** as the primary reference board for this model folder. It carries an **STM32C031C6T6** MCU and an on-board ST-LINK debugger/programmer. The intended software environment is **STM32CubeC0 + STM32CubeIDE** (or another ST-supported toolchain using the same generated HAL project).
 
-## ADS1299 connection
+Official board page: https://www.st.com/en/evaluation-tools/nucleo-c031c6.html
 
-Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. Keep CS software-controlled and
-route DRDY, RESET, PWDN and START as independent GPIOs. Start at 4 MHz or less
-until ID read, configuration readback and the internal test signal pass. The
-reference pin assignment is documented in `board/pinmap.md`; confirm it against
-the exact board revision before wiring.
+Official board data brief: https://www.st.com/resource/en/data_brief/nucleo-c031c6.pdf
+
+## What a beginner edits
+
+For normal bring-up, do **not** edit `../../../core_driver/ads1299/`.
+
+The board-specific edit point is:
+
+- `board/board_config.h`
+
+Use STM32CubeMX GPIO labels `ADS1299_CS`, `ADS1299_DRDY`, `ADS1299_RESET`, `ADS1299_PWDN`, and `ADS1299_START`. Configure the selected SPI peripheral as **SPI Mode 1 (CPOL=0, CPHA=1), MSB-first**, software-controlled CS. Start at a conservative SPI clock until ID read and self-test pass.
+
+See `board/README.md` and `board/pinmap.md` before wiring. The exact NUCLEO header pins must be checked against the board revision and the CubeMX pin assignment you choose; this repository does not fabricate a fixed pin map where the application has not selected one.
 
 ## Repository layers
 
-- ADS1299 behavior: `../../../core_driver/ads1299/`
-- This platform's hardware-only adapter: `ads1299_port/`
-- Minimal call flow: `examples/main_ads1299.c`
-- Vendor-project procedure: `integration.md`
+- Shared ADS1299 behavior: `../../../core_driver/ads1299/`
+- Canonical packet code: `../../../common/data_packet/`
+- STM32C031 board configuration: `board/`
+- STM32 HAL adapter: `ads1299_port/`
+- Runnable integration example: `examples/stm32c031_beginner_demo.c`
+- STM32 example glue: `examples/stm32c031_example_platform.c`
+- Legacy-compatible example entry: `examples/main_ads1299.c`
+- Host/software smoke tests: `tests/`
+- Cube project integration steps: `integration.md`
 
-The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
-provides a millisecond helper without changing the stable Core port contract.
-It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
-in `firmware/transport/` and must not block a DRDY handler.
+The platform layer never owns ADS1299 register definitions. ADS1299 behavior remains in the shared core.
 
-## 第 114 项：后续开发入口
+## Beginner bring-up flow
 
-当前是 **Planned** 目录和通用回调模板，尚未实现 STM32C031 的官方 SDK 绑定。
-编号是项目维护顺序，不是全球销量排名，也不表示未来供货保证。
+1. Install STM32CubeIDE and STM32CubeC0.
+2. Create a project for **NUCLEO-C031C6 / STM32C031C6T6**.
+3. Configure one SPI peripheral as Mode 1, MSB-first, software NSS.
+4. Configure GPIO labels for CS, DRDY, RESET, PWDN, and START.
+5. Configure a UART if you want the included text/binary streaming example.
+6. Add the shared ADS1299 core sources, STM32C031 port sources, board include path, and example sources listed in `integration.md`.
+7. After CubeMX-generated peripheral initialization, call the beginner demo entry described in `examples/README.md`.
+8. First verify device ID, then internal-test data, then input-short, then 250-SPS EEG acquisition, then streaming.
 
-选型理由：兼顾已有工程迁移、低功耗采集及较新高性能系列，具体供货周期待选型时核实。
+Expected text-stage progression is conceptually:
 
-先确定完整料号、封装、板卡和官方 SDK，再补充真实 SPI/GPIO/DRDY 适配。
-CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件为准。
-通用 examples/main_ads1299.c 需要板级 board_ads1299_hal，当前不能独立链接运行。
-tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
+```text
+ADS1299: port initialized
+ADS1299: reset complete
+ADS1299: ID read OK
+ADS1299: internal test configured
+ADS1299: input short configured
+ADS1299: EEG 250 SPS configured
+ADS1299: streaming
+```
 
-[官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+Exact numeric channel values depend on the actual ADS1299 hardware and wiring. Do not treat the text above as a hardware measurement record.
+
+## ADS1299 invariants used by this model
+
+- SPI Mode 1: CPOL=0, CPHA=1
+- MSB-first
+- ADS1299-8 continuous raw frame: 27 bytes
+- Shared repository packet where used: 49 bytes, sync `0xA5 0x5A`, version/flags, sequence, timestamp, 3 status bytes, 8 int32 channels, CRC16
+
+## Validation status
+
+- Shared/software test infrastructure: present
+- STM32C031 port host self-test: present
+- STM32C031 model integration smoke-test entry: present
+- STM32CubeC0 / CubeIDE reference-board build: **not yet verified in this repository**
+- Physical NUCLEO-C031C6 + ADS1299 board test: **not verified**
+- Electrical safety / EMC / medical / production readiness: **not claimed**
+
+Until an actual documented CubeIDE build succeeds, treat this folder as **TEMPLATE / integration-complete**, not BUILD-VERIFIED.
+
+## First troubleshooting checks
+
+If ID read fails, check in this order: ADS1299 power/reference/clock, RESET/PWDN state, shared ground, SPI Mode 1, MSB-first, software CS timing, MISO/MOSI/SCK wiring, and the selected CubeMX SPI handle.
+
+If ID succeeds but acquisition stalls, inspect DRDY polarity/wiring and confirm that no UART or other transport work is blocking the DRDY timing path.
+
+For detailed integration and source ownership rules, continue with `integration.md`.
+
+## Maintenance metadata
+
+Catalog maintenance ID: **114**. This number is a repository maintenance ordering identifier, not a global sales ranking or supply guarantee.
