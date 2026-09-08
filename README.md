@@ -117,7 +117,8 @@ ADS1299-Core-SDK/
 │   ├── core_driver/          # controller-independent ADS1299 driver
 │   ├── common/               # shared embedded utilities / packet encoder
 │   ├── transport/            # host-link boundary; never ADS1299 register logic
-│   ├── mcu/                  # complete MCU reference projects
+│   ├── linux_compute/        # Linux compute-board / SBC integration planning
+│   ├── mcu/                  # MCU/SoC/DSP port ecosystem and reference projects
 │   └── fpga/                 # FPGA RTL interface reference packages
 │
 ├── pc_tools/                 # host packet decoding, recording and visualization
@@ -133,10 +134,14 @@ ADS1299-Core-SDK/
 │   └── protocols/
 │
 ├── eeg_analysis/             # EEG analysis in Python / MATLAB / R
+├── brain_regions/            # brain-region, EEG electrode and cortex-mapping references
 ├── bci/                      # SSVEP / motor imagery / P300 / online BCI
 ├── datasets/                 # dataset notes and preparation scripts
+├── pcb_products/             # public ADS1299 PCB hardware and product releases
+├── bme_bci_student_foundation/ # biomedical engineering / BCI student-support initiative
 ├── docs/                     # engineering documentation and validation
 ├── tests/                    # automated tests
+├── tools/                    # ecosystem maintenance and generation scripts
 └── .github/                  # CI, issue templates and project automation
 ```
 
