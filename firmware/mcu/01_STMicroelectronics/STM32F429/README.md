@@ -1,46 +1,58 @@
 # STM32F429 ADS1299 Port
 
-Global ecosystem rank: **105**. Status: **Planned**. Tier C. Hardware validation is not implied.
+Global ecosystem rank: **105**. Legacy catalog status: **Planned**. Current repository roll-up: **TEMPLATE / integration candidate-complete**. Tier C. Hardware validation is not implied.
 
 ## Platform
 
 - Vendor: STMicroelectronics
-- Family / MCU: STM32F429 / STM32F429
-- Architecture: Confirm exact CPU/core variant in official device documentation
-- Reference board: Select an official STM32F429 evaluation board
-- Official environment: STM32Cube / official device package
-- Compiler: vendor-supported compiler
+- Family / MCU: STM32F429 / **STM32F429ZIT6** reference path
+- Architecture: Arm Cortex-M4 with FPU, up to 180 MHz
+- Reference board: **STM32F429I-DISC1 (MB1075)**
+- Official environment: STM32CubeMX / STM32CubeIDE + STM32CubeF4
+- Compiler: STM32CubeIDE bundled GNU Arm toolchain or another ST-supported compiler
+
+The STM32F429ZI family provides up to 2 MB Flash, up to 256+4 KB SRAM including 64 KB CCM, a 16-stream DMA controller, and up to six SPI peripherals. These device capabilities are planning headroom, not ADS1299 throughput evidence.
+
+## Quick Start
+
+1. Start from **STM32F429I-DISC1 / STM32F429ZIT6** in STM32CubeMX or STM32CubeIDE.
+2. Open `board/board_config.h`. This is the one obvious repository-owned file to change for board pins, SPI instance and starter transport.
+3. Configure SPI1 as **Mode 1 (CPOL=0, CPHA=1), 8-bit, MSB-first, software NSS** and reproduce the GPIO routing documented in `board/README.md` / `board/pinmap.md`.
+4. Add the shared ADS1299 core from `../../../core_driver/ads1299/`, this model's `ads1299_port/`, and the progressive example sources from `examples/` to the generated STM32 project.
+5. Initialize Cube HAL peripherals, then call `stm32f429_ads1299_beginner_demo(1000u)`; use `0u` for continuous streaming.
+6. Expected progression is **probe/ID -> internal test -> input short -> 250-SPS EEG -> canonical packet stream -> clean stop**.
+7. If using another STM32F429 board, change CubeMX routing and `board/board_config.h`; do not edit shared ADS1299 register/model/frame files merely because pins differ.
 
 ## ADS1299 connection
 
-Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. Keep CS software-controlled and
-route DRDY, RESET, PWDN and START as independent GPIOs. Start at 4 MHz or less
-until ID read, configuration readback and the internal test signal pass. The
-reference pin assignment is documented in `board/pinmap.md`; confirm it against
-the exact board revision before wiring.
+The starter routing is PA5/PA6/PA7 for SPI1 SCK/MISO/MOSI, PB0 CS, PB1 DRDY, PB11 RESET, PB12 PWDN and PB13 START. The reference starter host stream uses USART1 PA9/PA10. Confirm the exact MB1075 revision, solder bridges and onboard-function conflicts before wiring.
+
+Use software-controlled CS. Keep DRDY, RESET, PWDN and START as independent GPIOs. Start with conservative SPI timing until ID read, configuration/readback and internal-test behavior are correct.
 
 ## Repository layers
 
 - ADS1299 behavior: `../../../core_driver/ads1299/`
-- This platform's hardware-only adapter: `ads1299_port/`
-- Minimal call flow: `examples/main_ads1299.c`
+- One board/config edit point: `board/board_config.h`
+- STM32F429 hardware adapter: `ads1299_port/`
+- Progressive beginner flow: `examples/stm32f429_beginner_demo.c`
+- HAL binding: `examples/stm32f429_example_platform.c`
+- Legacy minimal call flow retained for compatibility: `examples/main_ads1299.c`
+- Host/integration smoke tests: `tests/`
 - Vendor-project procedure: `integration.md`
 
-The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
-provides a millisecond helper without changing the stable Core port contract.
-It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
-in `firmware/transport/` and must not block a DRDY handler.
+The platform layer never owns ADS1299 register policy. UART, USB, BLE or Ethernet transport must stay outside the shared ADS1299 core and must not block the DRDY timing path. For sustained high-rate or multi-device acquisition, use DMA/interrupt-driven acquisition plus bounded buffering and explicit overflow accounting.
 
-## 第 105 项：后续开发入口
+## Validation status
 
-当前是 **Planned** 目录和通用回调模板，尚未实现 STM32F429 的官方 SDK 绑定。
-编号是项目维护顺序，不是全球销量排名，也不表示未来供货保证。
+- Board/config layer: **present**
+- STM32F429 HAL/portable-port binding: **present**
+- Progressive probe/test/EEG/stream example: **present**
+- Host integration test sources/build recipe: **present**
+- Host test PASS recorded: **no**
+- Clean STM32CubeIDE build for this progressive reference path: **not yet recorded**
+- STM32F429I-DISC1 + ADS1299 physical-board verification: **not yet recorded**
+- Sustained acquisition / multi-ADS1299 verification: **not yet recorded**
 
-选型理由：兼顾已有工程迁移、低功耗采集及较新高性能系列，具体供货周期待选型时核实。
+The original rank 105 / Planned entry is retained as catalog history; it is not the current technical-completeness assessment. The number is a maintenance ordering identifier, not a global sales rank.
 
-先确定完整料号、封装、板卡和官方 SDK，再补充真实 SPI/GPIO/DRDY 适配。
-CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件为准。
-通用 examples/main_ads1299.c 需要板级 board_ads1299_hal，当前不能独立链接运行。
-tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
-
-[官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+[ST STM32F429ZI product page](https://www.st.com/en/microcontrollers-microprocessors/stm32f429zi.html) · [STM32F429 Discovery kit](https://www.st.com/en/evaluation-tools/32f429idiscovery.html) · [101–200 catalog](../../ECOSYSTEM_101_200.md)
