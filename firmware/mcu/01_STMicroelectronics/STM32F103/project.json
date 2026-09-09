@@ -17,5 +17,35 @@
   "official_source": "https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html",
   "created": "2026-09-08",
   "catalog_scope": "extension_101_200",
-  "rank_meaning": "maintenance_id_not_sales_rank"
+  "rank_meaning": "maintenance_id_not_sales_rank",
+  "current_rollup": {
+    "status": "TEMPLATE / integration candidate-complete",
+    "reference_board": "NUCLEO-F103RB",
+    "board_id": "MB1136",
+    "reference_mcu": "STM32F103RBT6",
+    "toolchain": "STM32CubeMX + STM32CubeIDE / STM32CubeF1 HAL",
+    "board_config": "board/board_config.h",
+    "platform_binding": "examples/stm32f103_example_platform.c",
+    "beginner_demo": "examples/stm32f103_beginner_demo.c",
+    "legacy_example_preserved": "examples/main_ads1299.c",
+    "port_selftest": "ads1299_port/ads1299_port_selftest.c",
+    "port_selftest_build": "ads1299_port/Makefile.host",
+    "integration_tests": "tests/Makefile.host",
+    "beginner_flow": [
+      "hardware reset",
+      "probe / ID",
+      "internal test",
+      "input short",
+      "250-SPS EEG",
+      "continuous frame acquisition",
+      "canonical packet streaming",
+      "clean stop"
+    ],
+    "core_edit_required_for_beginner": false,
+    "build_verified": false,
+    "board_verified": false,
+    "sustained_acquisition_verified": false,
+    "multi_ads1299_verified": false,
+    "validation_note": "Source/integration completeness is not hardware evidence; promote validation states only with recorded results."
+  }
 }
