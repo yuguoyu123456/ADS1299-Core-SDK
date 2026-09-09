@@ -135,7 +135,7 @@ ADS1299-Core-SDK/
 │
 ├── eeg_analysis/             # EEG analysis in Python / MATLAB / R
 ├── brain_regions/            # brain-region, EEG electrode and cortex-mapping references
-├── bci/                      # SSVEP / motor imagery / P300 / online BCI
+├── bci/                      # SSVEP / motor imagery / P300 BCI
 ├── datasets/                 # dataset notes and preparation scripts
 ├── pcb_products/             # public ADS1299 PCB hardware and product releases
 ├── bme_bci_student_foundation/ # biomedical engineering / BCI student-support initiative
@@ -465,6 +465,7 @@ Academic and engineering collaboration is welcome, including areas such as:
 - **Name:** Guoyu Yu
 - **Status:** PhD Candidate in Biomedical Engineering / Medical Sciences
 - **Affiliation:** School of Medical Frontier Interdisciplinary Studies, Zhengzhou University (formerly Academy of Medical Sciences of Zhengzhou University)
+- **Research Focus:** Clinical small-sample machine learning and tabular data modeling, including gradient boosting models (LightGBM, XGBoost, CatBoost) and tabular foundation models (e.g., TabPFN).
 
 For public technical questions that may help other developers, GitHub Issues are preferred. For direct collaboration or professional inquiries, email is welcome:
 
