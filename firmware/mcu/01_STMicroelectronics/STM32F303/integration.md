@@ -21,3 +21,24 @@ Vendor startup, linker scripts, CMSIS/HAL, generated configuration and middlewar
 stay in the user's official SDK project. This repository owns only the thin
 callback adapter and ADS1299-independent tests. Pin `pin in the consuming official SDK project` in the
 consumer project and record any API change in `version.md`.
+
+---
+
+## Current NUCLEO-F303RE integration path
+
+The generic callback recipe above is preserved for compatibility. New users should prefer the repository-provided STM32F303 binding instead of implementing `board_ads1299_hal()` from scratch.
+
+1. Create a **NUCLEO-F303RE** project in STM32CubeMX/STM32CubeIDE.
+2. Configure SPI1 and ADS1299 control GPIOs exactly as documented in `board/README.md`; SPI must be master, full-duplex, 8-bit, MSB-first, CPOL Low, CPHA 2Edge (Mode 1).
+3. Keep generated HAL/startup/linker files in the vendor project. Do not copy or invent them in this SDK.
+4. Add the repository shared ADS1299 core sources required by the existing project build, plus this model's `ads1299_port/*.c`.
+5. Add `examples/stm32f303_example_platform.c` and `examples/stm32f303_beginner_demo.c`.
+6. Include `board/board_config.h`; this is the obvious repository-owned place for SPI/UART handle selection and board-level choices.
+7. Call `stm32f303_ads1299_beginner_demo(frame_count)` from the generated application after HAL/peripheral initialization. A frame count of zero selects continuous streaming in the current example contract.
+8. Observe the example diagnostics in order: platform/configuration, reset/command path, ID probe, internal test, input-short, DRDY/frame read, packet transport, stop.
+
+For another STM32F303 board, change CubeMX pin/peripheral routing and the board/config handles. Do not modify shared ADS1299 register/model files for normal board migration.
+
+### Validation boundary
+
+This integration recipe is repository-present, but no clean STM32CubeIDE build or physical-board run is claimed here until an actual recorded validation exists.
