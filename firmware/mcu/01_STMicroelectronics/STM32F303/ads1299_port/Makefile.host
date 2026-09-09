@@ -1,0 +1,18 @@
+CC ?= cc
+CFLAGS ?= -std=c99 -Wall -Wextra -Werror -pedantic
+CORE_DIR := ../../../../core_driver/ads1299
+TARGET := ads1299_port_selftest
+SOURCES := ads1299_port_selftest.c ads1299_spi.c ads1299_gpio.c ads1299_drdy.c
+
+.PHONY: all test clean
+
+all: $(TARGET)
+
+$(TARGET): $(SOURCES)
+	$(CC) $(CFLAGS) -I. -I$(CORE_DIR) $(SOURCES) -o $@
+
+test: $(TARGET)
+	./$(TARGET)
+
+clean:
+	rm -f $(TARGET)
