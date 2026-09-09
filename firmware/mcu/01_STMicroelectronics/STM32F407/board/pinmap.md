@@ -18,3 +18,15 @@ The ADS1299 digital I/O supply and MCU GPIO voltage must be compatible. Confirm
 header routing, boot straps, solder bridges and debugger conflicts against the
 exact board schematic before connecting hardware. `SDK_*` names mean the user
 must select and document an available pin in the consuming vendor project.
+
+## Current reference configuration
+
+`board_config.h` is now the single repository-owned board configuration point for the STM32F407 beginner path. The reference MCU mapping is PA5/PA6/PA7 for SPI1, PB0 for CS, PB1 for DRDY, PB11 for RESET, PB12 for PWDN, PB13 for START, and optional PA2/USART2_TX for host transport.
+
+Configure SPI as Mode 1 (CPOL=0, CPHA=1), 8-bit, MSB-first, with software-controlled CS. The ADS1299-8 continuous raw frame contract is 27 bytes; the canonical repository packet is 49 bytes.
+
+### MB997 on-board peripheral caution
+
+PA5, PA6 and PA7 are also connected into on-board Discovery-kit peripheral circuitry on MB997 revisions. Treat the table above as the software reference mapping, not a guarantee that every physical board revision is conflict-free without checking its schematic/solder-bridge population. Before connecting ADS1299 hardware, verify the exact MB997 revision. If another SPI/pin mapping is more appropriate, change CubeMX plus `board_config.h`; do not modify the shared ADS1299 core.
+
+Validation remains **TEMPLATE / integration configuration present** until a documented STM32Cube build succeeds. Physical hardware behavior is **not BOARD-VERIFIED**.
