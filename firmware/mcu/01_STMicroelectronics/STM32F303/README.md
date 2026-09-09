@@ -44,3 +44,42 @@ CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件
 tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
 
 [官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+
+---
+
+## Current roll-up (supersedes the initial scaffold status above)
+
+The initial planning notes above are intentionally preserved as project history. The current repository state is now an **integration candidate**, not merely an empty scaffold.
+
+### Reference path
+
+- Reference board: **NUCLEO-F303RE (MB1136)**
+- MCU: **STM32F303RET6**, Arm Cortex-M4F, up to 72 MHz
+- Reference device memory class: **512 KB Flash, 80 KB total SRAM including 16 KB CCM**
+- Vendor flow: **STM32CubeMX + STM32CubeIDE / STM32CubeF3 HAL**
+- Board/config entry: `board/board_config.h`
+- Hardware adapter: `ads1299_port/`
+- Beginner platform binding: `examples/stm32f303_example_platform.c`
+- Beginner flow: `examples/stm32f303_beginner_demo.c`
+- Host integration tests: `tests/Makefile.host`
+- Port self-test: `ads1299_port/Makefile.host`
+
+### Beginner path
+
+1. Start an STM32CubeMX/STM32CubeIDE project for NUCLEO-F303RE.
+2. Apply the SPI1/GPIO/USART2 setup documented in `board/README.md`.
+3. Treat `board/board_config.h` as the single repository-owned hardware configuration point.
+4. Add the shared ADS1299 core, this model's `ads1299_port` sources, and the beginner example sources.
+5. Run `stm32f303_ads1299_beginner_demo(...)` to exercise probe/ID, internal-test, input-short, 250-SPS EEG acquisition, canonical packet streaming and clean stop.
+6. For another STM32F303 board, change the CubeMX peripheral/pin routing and board config/handles only; normal bring-up must not require editing `ads1299.c`, `ads1299_regs.h` or `ads1299_model.c`.
+
+### Validation status
+
+- **TEMPLATE / repository integration present:** yes.
+- **Host-test recipes present:** yes; presence is not a recorded pass.
+- **STM32CubeIDE BUILD-VERIFIED:** no claim yet.
+- **NUCLEO-F303RE + ADS1299 BOARD-VERIFIED:** no claim yet.
+- **Sustained acquisition / overflow characterization:** no claim yet.
+- **Multi-ADS1299 / 64-channel validation:** no claim yet.
+
+The model is therefore **integration candidate-complete for this repository-filling round**, but it is not yet build-verified or board-verified.
