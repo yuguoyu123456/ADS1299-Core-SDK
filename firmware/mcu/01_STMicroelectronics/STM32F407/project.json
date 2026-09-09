@@ -12,5 +12,22 @@
   "status": "Compiles",
   "core": "../../../core_driver/ads1299",
   "port": "ads1299_port",
-  "example": "examples/main_ads1299.c"
+  "example": "examples/main_ads1299.c",
+  "current_rollup": {
+    "reference_board": "STM32F407G-DISC1 (MB997)",
+    "board_config": "board/board_config.h",
+    "beginner_demo": "examples/stm32f407_beginner_demo.c",
+    "example_platform_binding": "examples/stm32f407_example_platform.c",
+    "host_port_tests": "ads1299_port/Makefile.host",
+    "integration_tests": "tests/Makefile.host",
+    "core_edit_required_for_beginner": false,
+    "reference_build_verified": true,
+    "reference_build_verified_date": "2026-09-04",
+    "beginner_demo_cubeide_build_verified": false,
+    "host_test_pass_recorded": false,
+    "board_verified": false,
+    "sustained_acquisition_verified": false,
+    "multi_ads1299_verified": false,
+    "round_status": "integration-candidate-complete"
+  }
 }
