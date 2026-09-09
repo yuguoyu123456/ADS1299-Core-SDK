@@ -466,6 +466,7 @@ Academic and engineering collaboration is welcome, including areas such as:
 - **Status:** PhD Candidate in Biomedical Engineering / Medical Sciences
 - **Affiliation:** School of Medical Frontier Interdisciplinary Studies, Zhengzhou University (formerly Academy of Medical Sciences of Zhengzhou University)
 - **Research Focus:** Clinical small-sample machine learning and tabular data modeling, including gradient boosting models (LightGBM, XGBoost, CatBoost) and tabular foundation models (e.g., TabPFN).
+- **Core Strengths:** Analog Front-End (AFE) circuit design · chip-level/embedded programming · software system development · 3D mechanical and structural design · clinical medicine · pathology.
 
 For public technical questions that may help other developers, GitHub Issues are preferred. For direct collaboration or professional inquiries, email is welcome:
 
