@@ -68,7 +68,23 @@ Also add the shared ADS1299 core sources already maintained under:
 firmware/core_driver/ads1299/
 ```
 
-Include the shared core headers and the STM32G071 `ads1299_port` / `examples` directories using the IDE include-path settings. Reuse the repository's existing shared packet implementation required by `ads1299_packet.h`; do not duplicate packet/register logic inside this model folder.
+The canonical stream encoder is shared infrastructure too. Add this source exactly once:
+
+```text
+firmware/common/data_packet/ads1299_packet.c
+```
+
+Add these include directories in CubeIDE:
+
+```text
+firmware/core_driver/ads1299
+firmware/common/data_packet
+firmware/mcu/01_STMicroelectronics/STM32G071/ads1299_port
+firmware/mcu/01_STMicroelectronics/STM32G071/examples
+firmware/mcu/01_STMicroelectronics/STM32G071/board
+```
+
+`ads1299_packet.h` defines the repository's canonical 49-byte packet and `ads1299_packet_encode()`; the model example intentionally reuses that shared implementation rather than duplicating framing or CRC logic.
 
 ## Expected serial progress
 
