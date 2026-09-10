@@ -28,7 +28,9 @@ Confirm ADS1299 DVDD and MCU digital I/O levels are electrically compatible befo
 
 Configure `SPI1` as full-duplex master with software NSS, 8-bit data, MSB first, clock polarity low and clock phase on the second edge (**SPI Mode 1: CPOL=0, CPHA=1**). Choose a conservative SPI baud rate for first bring-up and raise it only after a clean probe/read path is established.
 
-Configure PD14, PF12, PF13 and PE9 as push-pull outputs. Keep CS deasserted high when idle. Configure PD15 as input or falling-edge EXTI for DRDY; ADS1299 DRDY is active low. Configure `USART3` on PD8/PD9 for the ST-LINK virtual COM port, initially at 115200 baud.
+Configure PD14, PF12, PF13 and PE9 as push-pull outputs. Keep CS deasserted high when idle. Configure PD15 as input or falling-edge EXTI for DRDY; ADS1299 DRDY is active low. Configure `USART3` on PD8/PD9 for the ST-LINK virtual COM port.
+
+For simple textual probe/debug logs, lower UART rates can be useful during bring-up. For the repository's full canonical 49-byte packet stream at 250 SPS, however, configure USART3 to the authoritative value in `board/board_config.h`, currently **460800 baud**. A 49-byte packet at 250 SPS requires 12,250 payload bytes/s; 115200 baud with 8N1 provides only about 11,520 payload bytes/s and therefore cannot sustain the complete canonical stream.
 
 The NUCLEO-144 manual documents that USART3 PD8/PD9 can be routed between ST-LINK VCP and the ST Morpho connector using solder bridges. Verify the actual MB1137 revision and solder-bridge state when serial output is missing.
 
@@ -48,4 +50,4 @@ The blocking HAL path is for first 250-SPS bring-up. Sustained acquisition, high
 
 ## Validation status
 
-**TEMPLATE / integration configuration present.** The reference routing and configuration contract are now concrete, but this folder does not yet claim STM32Cube build verification or physical NUCLEO-F767ZI + ADS1299 board verification.
+**TEMPLATE / integration configuration present.** The reference routing and configuration contract are concrete, but this folder does not yet claim STM32Cube build verification or physical NUCLEO-F767ZI + ADS1299 board verification.
