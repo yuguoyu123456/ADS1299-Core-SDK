@@ -1,46 +1,71 @@
 # STM32F767 ADS1299 Port
 
-Global ecosystem rank: **107**. Status: **Planned**. Tier C. Hardware validation is not implied.
+Global ecosystem rank: **107**. Current round status: **integration-candidate-complete**. Hardware validation is not implied.
 
-## Platform
+## Reference platform
 
 - Vendor: STMicroelectronics
-- Family / MCU: STM32F767 / STM32F767
-- Architecture: Confirm exact CPU/core variant in official device documentation
-- Reference board: Select an official STM32F767 evaluation board
-- Official environment: STM32Cube / official device package
-- Compiler: vendor-supported compiler
+- MCU: STM32F767ZIT6
+- Reference board: **NUCLEO-F767ZI (MB1137)**
+- Tooling: STM32CubeMX + STM32CubeIDE + STM32CubeF7 HAL
+- Shared ADS1299 core: `../../../core_driver/ads1299/`
 
-## ADS1299 connection
+The reference board is the reproducible starter path for this model folder. Other STM32F767 boards are expected to reuse the same shared core and normally require only CubeMX routing, `board/board_config.h`, and peripheral-handle binding changes.
 
-Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. Keep CS software-controlled and
-route DRDY, RESET, PWDN and START as independent GPIOs. Start at 4 MHz or less
-until ID read, configuration readback and the internal test signal pass. The
-reference pin assignment is documented in `board/pinmap.md`; confirm it against
-the exact board revision before wiring.
+## Beginner path
+
+1. Read `board/README.md` and wire the ADS1299 to the documented NUCLEO-F767ZI pins.
+2. Configure SPI1 as Mode 1 (CPOL=0, CPHA=1), 8-bit, MSB-first, software CS.
+3. Configure USART3/ST-LINK VCP at the baud rate defined by `board/board_config.h` for canonical streaming.
+4. Add the model-local port/example files plus the shared ADS1299 core to the Cube project; exact ownership is listed in `integration.md`.
+5. Call `stm32f767_ads1299_beginner_demo(1000u)` after Cube-generated peripheral initialization.
+6. Verify probe/ID, internal test, input-short, 250-SPS EEG configuration, canonical packet streaming and clean STOP/SDATAC.
+7. Use `0u` only when an endless stream is intentionally required.
+
+The beginner path does **not** require editing `ads1299.c`, `ads1299_regs.h`, `ads1299_model.c` or any other shared ADS1299 core file.
 
 ## Repository layers
 
-- ADS1299 behavior: `../../../core_driver/ads1299/`
-- This platform's hardware-only adapter: `ads1299_port/`
-- Minimal call flow: `examples/main_ads1299.c`
-- Vendor-project procedure: `integration.md`
+- `board/board_config.h`: single repository-owned board/config entry point.
+- `ads1299_port/`: STM32F767 SPI/GPIO/DRDY adapter only.
+- `examples/stm32f767_beginner_demo.c`: progressive beginner flow.
+- `examples/stm32f767_example_platform.c`: concrete STM32F7 HAL binding and legacy compatibility binding.
+- `tests/`: host-side STM32F767 port + shared-core smoke tests.
+- `integration.md`: exact Cube integration/build/run procedure.
+- `validation.md`: evidence status; do not infer hardware verification from source presence.
 
-The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
-provides a millisecond helper without changing the stable Core port contract.
-It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
-in `firmware/transport/` and must not block a DRDY handler.
+Shared ADS1299 behavior stays under `firmware/core_driver/ads1299/`. This model folder must not duplicate register/profile/frame logic.
 
-## 第 107 项：后续开发入口
+## What success looks like
 
-当前是 **Planned** 目录和通用回调模板，尚未实现 STM32F767 的官方 SDK 绑定。
-编号是项目维护顺序，不是全球销量排名，也不表示未来供货保证。
+The starter log should progress through messages equivalent to:
 
-选型理由：兼顾已有工程迁移、低功耗采集及较新高性能系列，具体供货周期待选型时核实。
+```text
+ADS1299 STM32F767 beginner demo
+OK ID ADS1299-8
+RUN internal-test
+OK internal-test frames
+RUN input-short
+OK input-short frames
+RUN EEG 250 SPS config
+OK EEG 250 SPS configured
+RUN stream canonical packets
+```
 
-先确定完整料号、封装、板卡和官方 SDK，再补充真实 SPI/GPIO/DRDY 适配。
-CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件为准。
-通用 examples/main_ads1299.c 需要板级 board_ads1299_hal，当前不能独立链接运行。
-tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
+ADS1299-4 and ADS1299-6 IDs are also accepted by the example path.
 
-[官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+## Sustained acquisition rule
+
+The blocking HAL path is intentionally a first-bring-up path. For sustained acquisition, higher rates, or multiple ADS1299 devices, move the DRDY timing path to IRQ/DMA and a bounded queue/ring buffer with explicit overflow accounting. UART/USB/Ethernet work must not block DRDY handling. On STM32F7, DMA buffers placed in cacheable SRAM require an explicit cache-coherency strategy.
+
+The repository default multi-device architecture remains shared SPI with independent software-controlled CS per ADS1299 unless another topology is intentionally documented and verified.
+
+## Validation status
+
+**Integration candidate-complete for the current round.** Board/config, HAL/portable port, progressive beginner example, diagnostics and a host integration-test recipe are present. The repository does **not** currently record a successful host test execution, STM32CubeIDE clean build, physical NUCLEO-F767ZI + ADS1299 run, sustained-stream validation, DMA/cache validation, multi-ADS1299 validation or 64-channel validation.
+
+## Legacy compatibility
+
+The original `examples/main_ads1299.c` path remains present. `stm32f767_example_platform.c` supplies its `board_ads1299_hal()` compatibility binding, so existing user work is preserved while new students use the progressive demo.
+
+Maintenance identifier 107 is a repository traversal identifier, not a sales ranking or supply guarantee.
