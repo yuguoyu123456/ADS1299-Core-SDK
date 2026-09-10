@@ -2,12 +2,19 @@ schema: 1
 rank: 107
 vendor: "STMicroelectronics"
 family: "STM32F767"
-mcu: "STM32F767"
-architecture: "Confirm exact CPU/core variant in official device documentation"
-board: "Select an official STM32F767 evaluation board"
-official_sdk: "STM32Cube / official device package"
+mcu: "STM32F767ZIT6"
+architecture: "STM32F7 high-performance MCU; exact characteristics remain governed by official device documentation"
+board: "NUCLEO-F767ZI (MB1137)"
+official_sdk: "STM32CubeMX + STM32CubeIDE + STM32CubeF7 HAL"
 sdk_version: "pin in the consuming official SDK project"
-compiler: "vendor-supported compiler"
-debugger: "vendor-supported debug probe"
+compiler: "STM32CubeIDE-supported toolchain"
+debugger: "onboard ST-LINK"
 tier: "C"
-status: "Planned"
+status: "integration-candidate-complete"
+validation:
+  host_test_pass_recorded: false
+  cube_build_verified: false
+  board_verified: false
+  sustained_acquisition_verified: false
+  multi_ads1299_verified: false
+  ads1299_64ch_verified: false
