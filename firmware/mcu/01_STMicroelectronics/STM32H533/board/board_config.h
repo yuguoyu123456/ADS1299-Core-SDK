@@ -59,4 +59,23 @@
  */
 #define ADS1299_BOARD_FRAME_QUEUE_DEPTH  16u
 
+/*
+ * STM32CubeH5 HAL aliases for the reference-board path. Include the generated
+ * main.h / stm32h5xx_hal.h before this header so GPIOA/B/C and GPIO_PIN_x are
+ * available. A custom STM32H533 board normally changes only this board file
+ * plus CubeMX peripheral/pin generation; the shared ADS1299 core stays intact.
+ */
+#if defined(GPIOA) && defined(GPIOB) && defined(GPIOC)
+#define ADS1299_H533_CS_GPIO_PORT        GPIOC
+#define ADS1299_H533_CS_GPIO_PIN         GPIO_PIN_9
+#define ADS1299_H533_DRDY_GPIO_PORT      GPIOC
+#define ADS1299_H533_DRDY_GPIO_PIN       GPIO_PIN_6
+#define ADS1299_H533_RESET_GPIO_PORT     GPIOC
+#define ADS1299_H533_RESET_GPIO_PIN      GPIO_PIN_7
+#define ADS1299_H533_PWDN_GPIO_PORT      GPIOA
+#define ADS1299_H533_PWDN_GPIO_PIN       GPIO_PIN_8
+#define ADS1299_H533_START_GPIO_PORT     GPIOB
+#define ADS1299_H533_START_GPIO_PIN      GPIO_PIN_10
+#endif
+
 #endif /* ADS1299_STM32H533_BOARD_CONFIG_H */
