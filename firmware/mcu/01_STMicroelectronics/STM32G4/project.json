@@ -12,5 +12,23 @@
   "status": "Reference",
   "core": "../../../core_driver/ads1299",
   "port": "ads1299_port",
-  "example": "examples/main_ads1299.c"
+  "example": "examples/main_ads1299.c",
+  "standardized_sdk": {
+    "maintenance_status": "integration-candidate-complete",
+    "reference_board": "NUCLEO-G474RE (MB1367 / STM32G474RET6)",
+    "board_config": "board/board_config.h",
+    "beginner_example": "examples/stm32g4_beginner_demo.c",
+    "beginner_entry": "stm32g4_ads1299_beginner_demo",
+    "legacy_example_preserved": true,
+    "portable_port_present": true,
+    "progressive_example_present": true,
+    "canonical_packet_integration_present": true,
+    "host_test_recipe_present": true,
+    "core_edit_required_for_beginner": false,
+    "target_build_verified": false,
+    "board_verified": false,
+    "sustained_exti_dma_verified": false,
+    "multi_ads1299_verified": false,
+    "ads1299_64ch_verified": false
+  }
 }
