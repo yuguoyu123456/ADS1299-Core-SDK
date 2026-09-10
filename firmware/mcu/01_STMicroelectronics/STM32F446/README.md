@@ -1,46 +1,71 @@
 # STM32F446 ADS1299 Port
 
-Global ecosystem rank: **106**. Status: **Planned**. Tier C. Hardware validation is not implied.
+Global ecosystem rank: **106**. Current round status: **integration candidate-complete**. Hardware validation is not implied.
 
-## Platform
+## Reference path
 
-- Vendor: STMicroelectronics
-- Family / MCU: STM32F446 / STM32F446
-- Architecture: Confirm exact CPU/core variant in official device documentation
-- Reference board: Select an official STM32F446 evaluation board
-- Official environment: STM32Cube / official device package
-- Compiler: vendor-supported compiler
+- MCU: **STM32F446RET6**
+- Reference board: **NUCLEO-F446RE (MB1136)**
+- Toolchain: **STM32CubeMX + STM32CubeIDE + STM32CubeF4 HAL**
+- Beginner board configuration: `board/board_config.h`
+- Platform adapter: `ads1299_port/`
+- Progressive beginner example: `examples/stm32f446_beginner_demo.c`
+- Host integration tests: `tests/Makefile.host`
+- Shared ADS1299 behavior: `../../../core_driver/ads1299/`
 
-## ADS1299 connection
+The normal beginner path must not require changes to shared ADS1299 register, model, frame or packet files.
 
-Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. Keep CS software-controlled and
-route DRDY, RESET, PWDN and START as independent GPIOs. Start at 4 MHz or less
-until ID read, configuration readback and the internal test signal pass. The
-reference pin assignment is documented in `board/pinmap.md`; confirm it against
-the exact board revision before wiring.
+## Quick Start
 
-## Repository layers
+1. Start from a CubeMX/CubeIDE project for NUCLEO-F446RE.
+2. Configure the pins/peripherals to match `board/board_config.h`.
+3. Configure SPI1 as ADS1299 SPI Mode 1 (`CPOL=0`, `CPHA=1`), 8-bit, MSB-first with software-controlled CS.
+4. Configure DRDY as input and RESET/PWDN/START as outputs.
+5. Enable USART2 for the reference ST-LINK VCP starter stream.
+6. Add the model port sources, progressive example sources and the shared ADS1299 core sources described in `integration.md`.
+7. After generated GPIO/SPI/UART initialization, call:
 
-- ADS1299 behavior: `../../../core_driver/ads1299/`
-- This platform's hardware-only adapter: `ads1299_port/`
-- Minimal call flow: `examples/main_ads1299.c`
-- Vendor-project procedure: `integration.md`
+```c
+(void)stm32f446_ads1299_beginner_demo(1000u);
+```
 
-The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
-provides a millisecond helper without changing the stable Core port contract.
-It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
-in `firmware/transport/` and must not block a DRDY handler.
+Use `0u` only when continuous streaming is desired.
 
-## 第 106 项：后续开发入口
+## Expected beginner progression
 
-当前是 **Planned** 目录和通用回调模板，尚未实现 STM32F446 的官方 SDK 绑定。
-编号是项目维护顺序，不是全球销量排名，也不表示未来供货保证。
+The progressive demo performs:
 
-选型理由：兼顾已有工程迁移、低功耗采集及较新高性能系列，具体供货周期待选型时核实。
+`reset -> SDATAC -> probe/ID -> internal test -> input short -> 250-SPS gain-24 EEG -> canonical stream -> STOP/SDATAC`
 
-先确定完整料号、封装、板卡和官方 SDK，再补充真实 SPI/GPIO/DRDY 适配。
-CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件为准。
-通用 examples/main_ads1299.c 需要板级 board_ads1299_hal，当前不能独立链接运行。
-tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
+Expected success messages include:
 
-[官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+- `OK ID ADS1299-8` (or ADS1299-6 / ADS1299-4)
+- `OK internal-test frames`
+- `OK input-short frames`
+- `OK EEG 250 SPS configured`
+- `OK beginner demo complete`
+
+Diagnostics distinguish reset/power, SPI/ID, DRDY timeout, frame-read and host-transport failures.
+
+## Changing to another STM32F446 board
+
+Change only the CubeMX pin/peripheral routing plus `board/board_config.h`. If generated peripheral handle names differ from `hspi1` / `huart2`, adapt only the model example platform binding. Do not edit `ads1299.c`, `ads1299_regs.h`, `ads1299_model.c` or other shared ADS1299 behavior for an ordinary board change.
+
+## Performance boundary
+
+The blocking HAL example is for first bring-up at 250 SPS. Sustained higher-rate or multi-ADS1299 acquisition should use interrupt/DMA-driven acquisition with bounded buffering and explicit overflow accounting. UART/printf/network transport must not block the DRDY timing path.
+
+## Validation status
+
+- Board/config layer: present.
+- STM32F446 HAL/portable port: present.
+- Progressive beginner flow: present.
+- Host integration smoke-test recipe: present.
+- Host test PASS: **not recorded**.
+- STM32CubeIDE clean build for the progressive demo: **not recorded**.
+- NUCLEO-F446RE + ADS1299 BOARD-VERIFIED: **not recorded**.
+- Sustained acquisition / multi-ADS1299 / 64-channel validation: **not recorded**.
+
+The older `examples/main_ads1299.c` path remains available for compatibility; new students should start with the progressive example above.
+
+The maintenance rank is a repository ordering identifier, not a sales or market-share ranking.
