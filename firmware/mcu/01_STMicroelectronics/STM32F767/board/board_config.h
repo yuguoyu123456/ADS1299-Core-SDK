@@ -38,7 +38,14 @@
 #define ADS1299_BOARD_STREAM_TX_PIN               GPIO_PIN_8  /* USART3_TX */
 #define ADS1299_BOARD_STREAM_RX_GPIO_PORT         GPIOD
 #define ADS1299_BOARD_STREAM_RX_PIN               GPIO_PIN_9  /* USART3_RX */
-#define ADS1299_BOARD_STREAM_BAUD                 115200u
+/*
+ * A canonical packet is 49 bytes. At 250 SPS that is 12,250 payload bytes/s.
+ * 115200 baud with 8N1 carries only about 11,520 payload bytes/s, so it cannot
+ * sustain the starter stream even before software overhead. Use 460800 baud
+ * for margin on the reference ST-LINK VCP path.
+ */
+#define ADS1299_BOARD_STREAM_BAUD                 460800u
+#define ADS1299_BOARD_STREAM_MIN_BAUD_250SPS      122500u
 
 /* ADS1299 transport invariants for the shared driver. */
 #define ADS1299_BOARD_SPI_CPOL                    0u
