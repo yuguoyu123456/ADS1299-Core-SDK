@@ -1,13 +1,26 @@
-schema: 1
+schema: 2
 rank: 115
 vendor: "STMicroelectronics"
 family: "STM32G071"
-mcu: "STM32G071"
-architecture: "Confirm exact CPU/core variant in official device documentation"
-board: "Select an official STM32G071 evaluation board"
-official_sdk: "STM32Cube / official device package"
-sdk_version: "pin in the consuming official SDK project"
-compiler: "vendor-supported compiler"
-debugger: "vendor-supported debug probe"
+mcu: "STM32G071RBT6"
+architecture: "Arm Cortex-M0+"
+board: "NUCLEO-G071RB (MB1360)"
+official_sdk: "STM32CubeG0 / STM32CubeIDE"
+sdk_version: "pin and record in the consuming Cube project"
+compiler: "STM32CubeIDE-supported GNU Arm toolchain or another ST-supported compiler"
+debugger: "on-board ST-LINK"
 tier: "C"
-status: "Planned"
+status: "integration-candidate-complete"
+board_config: "board/board_config.h"
+port: "ads1299_port"
+beginner_example: "examples/stm32g071_beginner_demo.c"
+legacy_example: "examples/main_ads1299.c"
+host_test_recipe: "tests/Makefile.host"
+validation:
+  host_test_pass_recorded: false
+  target_build_verified: false
+  board_verified: false
+  sustained_acquisition_verified: false
+  dma_exti_path_verified: false
+  multi_ads1299_verified: false
+  ads1299_64ch_verified: false
