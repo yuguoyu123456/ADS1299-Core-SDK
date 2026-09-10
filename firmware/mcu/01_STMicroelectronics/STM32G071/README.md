@@ -1,46 +1,48 @@
 # STM32G071 ADS1299 Port
 
-Global ecosystem rank: **115**. Status: **Planned**. Tier C. Hardware validation is not implied.
+Global ecosystem rank: **115**. Current status: **Integration candidate-complete**. Tier C. Hardware validation is not implied.
 
-## Platform
+## Reference platform
 
 - Vendor: STMicroelectronics
-- Family / MCU: STM32G071 / STM32G071
-- Architecture: Confirm exact CPU/core variant in official device documentation
-- Reference board: Select an official STM32G071 evaluation board
-- Official environment: STM32Cube / official device package
-- Compiler: vendor-supported compiler
+- MCU: STM32G071RBT6
+- Reference board: **NUCLEO-G071RB (MB1360)**
+- Official environment: STM32CubeG0 / STM32CubeIDE
+- Debug/host link: on-board ST-LINK, USART2 VCP
 
-## ADS1299 connection
+## Beginner path
 
-Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. Keep CS software-controlled and
-route DRDY, RESET, PWDN and START as independent GPIOs. Start at 4 MHz or less
-until ID read, configuration readback and the internal test signal pass. The
-reference pin assignment is documented in `board/pinmap.md`; confirm it against
-the exact board revision before wiring.
+1. Open `board/README.md` and wire the ADS1299 to the NUCLEO-G071RB reference mapping.
+2. Edit only `board/board_config.h` for repository-owned board choices. If CubeMX generated different peripheral handle names, adjust only the model-local HAL binding in `examples/stm32g071_example_platform.c`.
+3. Configure SPI1 as Mode 1 (CPOL=0, CPHA=1), 8-bit, MSB-first, software CS.
+4. Add the model port/example sources, the shared ADS1299 core, and `firmware/common/data_packet/ads1299_packet.c` to the Cube project as listed in `integration.md`.
+5. Call `stm32g071_ads1299_beginner_demo(1000u)` after Cube/HAL initialization. Use `0u` only for intentional continuous streaming.
+6. Observe probe/ID, internal-test, input-short, 250-SPS EEG configuration, canonical packet streaming, and clean stop.
+
+A normal first bring-up must **not** require editing `firmware/core_driver/ads1299/ads1299.c`, `ads1299_regs.h`, `ads1299_model.c`, or other shared-core implementation files.
 
 ## Repository layers
 
-- ADS1299 behavior: `../../../core_driver/ads1299/`
-- This platform's hardware-only adapter: `ads1299_port/`
-- Minimal call flow: `examples/main_ads1299.c`
-- Vendor-project procedure: `integration.md`
+- Shared ADS1299 behavior: `../../../core_driver/ads1299/`
+- Shared canonical packet encoder: `../../../common/data_packet/`
+- Hardware-only STM32G071 adapter: `ads1299_port/`
+- Single board/config entry: `board/board_config.h`
+- Recommended progressive demo: `examples/stm32g071_beginner_demo.c`
+- HAL binding: `examples/stm32g071_example_platform.c`
+- Compatibility/minimal example: `examples/main_ads1299.c`
+- Host/integration tests: `tests/`
+- Vendor project procedure: `integration.md`
 
-The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
-provides a millisecond helper without changing the stable Core port contract.
-It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
-in `firmware/transport/` and must not block a DRDY handler.
+## Reference behavior
 
-## 第 115 项：后续开发入口
+The starter configuration uses 250 SPS, gain 24 and the repository canonical 49-byte packet. At 250 SPS, 49-byte packets require 12,250 payload bytes/s, so the reference VCP stream uses 460800 baud rather than 115200 baud.
 
-当前是 **Planned** 目录和通用回调模板，尚未实现 STM32G071 的官方 SDK 绑定。
-编号是项目维护顺序，不是全球销量排名，也不表示未来供货保证。
+STM32G071 is treated as a small-MCU target: keep DRDY-path work short, use static bounded storage, avoid heap allocation and floating-point conversion in the timing-critical path, and explicitly count queue overflow when moving beyond the blocking bring-up example.
 
-选型理由：兼顾已有工程迁移、低功耗采集及较新高性能系列，具体供货周期待选型时核实。
+## Current validation status
 
-先确定完整料号、封装、板卡和官方 SDK，再补充真实 SPI/GPIO/DRDY 适配。
-CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件为准。
-通用 examples/main_ads1299.c 需要板级 board_ads1299_hal，当前不能独立链接运行。
-tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
+Repository integration is present for board/config, portable port, progressive examples and host-test recipes. This is **not** a BUILD-VERIFIED or BOARD-VERIFIED claim. No sustained-acquisition, multi-ADS1299, 64-channel, 24-hour, electrical-safety, EMC or production-readiness claim is made.
 
-[官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+The older planning text for this maintenance slot has now been superseded by the concrete NUCLEO-G071RB integration above; rank 115 remains only a repository maintenance identifier, not a sales ranking.
+
+[Official STM32G0 family entry](https://www.st.com/en/microcontrollers-microprocessors/stm32g0-series.html) · [101–200 maintenance list](../../ECOSYSTEM_101_200.md)
