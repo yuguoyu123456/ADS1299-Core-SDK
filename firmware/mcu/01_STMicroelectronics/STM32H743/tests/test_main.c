@@ -6,6 +6,7 @@ void test_port_spi(void);
 void test_port_reset_line(void);
 void test_port_drdy_active_low(void);
 void test_canonical_packet_round_trip(void);
+void test_beginner_demo_build_and_board_failure(void);
 
 int main(void) {
     test_core_frame_numeric_boundary();
@@ -14,6 +15,7 @@ int main(void) {
     test_port_reset_line();
     test_port_drdy_active_low();
     test_canonical_packet_round_trip();
+    test_beginner_demo_build_and_board_failure();
     puts("PASS STM32H743 integration smoke tests");
     return 0;
 }
