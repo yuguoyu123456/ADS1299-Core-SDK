@@ -72,33 +72,72 @@ Add these repository sources to the CubeIDE application:
 - `../../../core_driver/ads1299/ads1299_frame.c`
 - `../../../core_driver/ads1299/ads1299_model.c`
 - `../../../core_driver/ads1299/ads1299_multi.c`
+- `../../../common/data_packet/ads1299_packet.c` when using canonical streaming
 - `ads1299_port/ads1299_spi.c`
 - `ads1299_port/ads1299_gpio.c`
 - `ads1299_port/ads1299_drdy.c`
 - `examples/board_ads1299_hal_stm32cube.c`
-- `examples/main_ads1299.c` (or copy its call flow into Cube-generated `main.c`)
+- `examples/main_ads1299.c` for the minimal internal-test loop, or
+- `examples/stm32h723_beginner_demo.c` for the full staged beginner flow.
 
-Add include paths for the shared ADS1299 core, this folder's `ads1299_port/`,
-and `board/`. Do not edit shared ADS1299 register/core files for board bring-up.
+Add include paths for the shared ADS1299 core, `../../../common/data_packet/`,
+this folder's `ads1299_port/`, `board/`, and `examples/`. Do not edit shared
+ADS1299 register/core files for board bring-up.
 
 `examples/board_ads1299_hal_stm32cube.c` is now the concrete STM32CubeH7
 implementation of the previously undefined `board_ads1299_hal()` callback. It
 uses real STM32 HAL SPI/GPIO calls and a Cortex-M7 DWT microsecond delay, so the
 minimal example no longer requires a student to invent the adapter architecture.
 
-Expected early bring-up sequence remains: hardware reset -> SDATAC -> ID probe
--> internal test setup -> RDATAC -> START -> DRDY-gated frame reads. The current
-example stops with distinct return codes 1..10 for board adapter, port init,
-core init, reset, SDATAC, ID, test configuration, RDATAC, START, or frame-read
-failure respectively.
+## Progressive beginner demo
+
+`examples/stm32h723_beginner_demo.c` now provides one explicit staged path:
+
+1. hardware reset + SDATAC + ADS1299 ID/family validation;
+2. internal-test profile, eight DRDY-gated frames, clean STOP/SDATAC;
+3. input-short profile, eight DRDY-gated frames, clean STOP/SDATAC;
+4. 250-SPS normal-input EEG configuration for the detected 4/6/8-channel part;
+5. optional canonical packet streaming with sequence, timestamp, three status
+   bytes, eight signed channels and the shared packet CRC implementation.
+
+The demo deliberately calls shared typed APIs (`ads1299_configure_internal_test`,
+`ads1299_configure_input_short_test`, `ads1299_set_data_rate`,
+`ads1299_set_channel`) instead of embedding register literals. Board SPI/GPIO
+still comes only from `board/ads1299_board_config.h` plus the Cube HAL adapter.
+
+A minimal Cube-generated application can call:
+
+```c
+#include "stm32h723_beginner_demo.h"
+
+/* After HAL_Init(), SystemClock_Config(), MX_GPIO_Init(), MX_SPI1_Init(): */
+int rc = stm32h723_ads1299_beginner_demo(NULL, 0u);
+```
+
+That performs probe, internal-test, input-short and 250-SPS configuration with
+no transport dependency. To stream packets, provide the small `io` structure
+from `stm32h723_beginner_demo.h`: `write()` sends bytes through the application's
+UART/USB/Ethernet path, `timestamp_us()` supplies the acquisition timestamp, and
+`log()` is optional. This keeps transport policy outside the ADS1299 driver.
+
+Expected diagnostic strings include `OK ID ADS1299-8` (or -6/-4),
+`OK internal-test frames`, `OK input-short frames`, and
+`OK EEG 250 SPS configured`. DRDY and frame errors print wiring-oriented
+messages rather than exposing register bytes to the beginner.
+
+The original `examples/main_ads1299.c` is intentionally retained as the smaller
+low-level integration example; the new staged demo is additive and does not
+replace existing public examples.
 
 ### Validation status
 
 - STM32CubeH7 adapter source: **PRESENT**
 - single board/config edit point: **PRESENT**
+- progressive probe/internal-test/input-short/250-SPS/stream example: **PRESENT**
+- shared canonical packet integration in staged example: **PRESENT**
 - host interface smoke suite: **PRESENT**
 - STM32CubeIDE target build for current revision: **NOT YET BUILD-VERIFIED**
 - NUCLEO-H723ZG + ADS1299 physical execution: **NOT BOARD-VERIFIED**
 - DMA/cache/long-run acquisition validation: **NOT YET VERIFIED**
 
-Do not interpret the presence of the adapter as a hardware-validation claim.
+Do not interpret the presence of the adapter or examples as a hardware-validation claim.
