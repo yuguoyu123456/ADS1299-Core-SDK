@@ -4,8 +4,9 @@ CFLAGS ?= -std=c99 -Wall -Wextra -Werror -pedantic -O0 -g
 MODEL := ..
 PORT := $(MODEL)/ads1299_port
 CORE := ../../../core_driver/ads1299
+PACKET := ../../../common/data_packet
 
-INCLUDES := -I$(PORT) -I$(CORE)
+INCLUDES := -I$(PORT) -I$(CORE) -I$(PACKET)
 
 TEST_SRCS := \
 	test_main.c \
@@ -13,7 +14,8 @@ TEST_SRCS := \
 	test_register.c \
 	test_spi.c \
 	test_reset.c \
-	test_drdy.c
+	test_drdy.c \
+	test_packet.c
 
 PORT_SRCS := \
 	$(PORT)/ads1299_spi.c \
@@ -26,12 +28,15 @@ CORE_SRCS := \
 	$(CORE)/ads1299_model.c \
 	$(CORE)/ads1299_multi.c
 
+PACKET_SRCS := \
+	$(PACKET)/ads1299_packet.c
+
 TARGET := stm32f767_ads1299_host_tests
 
 .PHONY: all test clean
 all: $(TARGET)
 
-$(TARGET): $(TEST_SRCS) $(PORT_SRCS) $(CORE_SRCS)
+$(TARGET): $(TEST_SRCS) $(PORT_SRCS) $(CORE_SRCS) $(PACKET_SRCS)
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@
 
 test: $(TARGET)
