@@ -39,6 +39,7 @@ Model-local files:
 - `../ads1299_port/ads1299_drdy.c`
 - `stm32f767_example_platform.c`
 - `stm32f767_beginner_demo.c`
+- `stm32f767_frame_queue.c` when using the sustained-acquisition path
 
 Shared ADS1299 files required by the APIs used here must also be part of the project, including the core driver, model/frame support and canonical packet implementation already maintained under `firmware/core_driver/ads1299/`.
 
@@ -90,9 +91,22 @@ ADS1299-4 and ADS1299-6 are accepted and reported by their corresponding ID mess
 - `ERR frame read`: check SPI/CS integrity while RDATAC is active.
 - `ERR stream transport`: verify USART3, ST-LINK VCP routing and the configured baud rate.
 
-## F767 sustained-acquisition note
+## F767 sustained-acquisition path
 
-This starter uses blocking HAL SPI/UART so the first board bring-up is easy to inspect. It is not the final architecture for high-rate or multi-device acquisition. For sustained acquisition, move the DRDY timing path to IRQ/DMA and write into a bounded queue/ring buffer with explicit overflow counters. Drain UART/USB/Ethernet outside that timing-critical path. If DMA touches cacheable SRAM on STM32F7, apply the appropriate cache coherency strategy for the selected memory region and DMA direction.
+The beginner demo intentionally uses blocking HAL SPI/UART so first bring-up is easy to inspect. For sustained acquisition, use `stm32f767_frame_queue.[ch]` as the bounded handoff between completed ADS1299 frames and a lower-priority transport consumer:
+
+```text
+DRDY / deferred acquisition
+        -> complete + decode one ADS1299 frame
+        -> stm32f767_ads1299_frame_queue_push()
+        -> lower-priority consumer
+        -> shared canonical packet encoder
+        -> UART / USB / Ethernet
+```
+
+The queue is static and bounded (16 frames by default), uses no heap, records `sequence` and `timestamp_us`, exposes `dropped` and `high_watermark`, and refuses a push when full instead of overwriting unread EEG data. If producer and consumer can pre-empt one another, protect queue operations with the application's STM32 critical-section strategy or defer them into compatible execution contexts.
+
+For an IRQ/DMA implementation, enqueue only after the complete SPI frame and CS transaction have finished. If DMA touches cacheable SRAM on STM32F7, apply the appropriate cache-coherency strategy for the selected memory region and DMA direction. The current repository does not claim DMA/cache hardware validation.
 
 For multiple ADS1299 devices, preserve the repository default architecture of shared SPI with independent software-controlled CS signals unless a different topology is intentionally documented and verified.
 
@@ -100,4 +114,4 @@ For multiple ADS1299 devices, preserve the repository default architecture of sh
 
 **TEMPLATE / repository integration present.**
 
-The source path is now complete enough for Cube integration, but this README does **not** claim a recorded STM32CubeIDE clean build, physical NUCLEO-F767ZI + ADS1299 execution, sustained-stream validation, DMA/cache validation, or multi-ADS1299/64-channel board validation.
+The progressive beginner path and bounded sustained-acquisition queue are present and host-regression integrated. This README does **not** claim a recorded STM32CubeIDE clean build, physical NUCLEO-F767ZI + ADS1299 execution, sustained-stream board validation, DMA/cache validation, or multi-ADS1299/64-channel board validation.
