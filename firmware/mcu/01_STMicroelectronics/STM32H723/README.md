@@ -44,3 +44,61 @@ CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件
 tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
 
 [官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+
+## Reference-board-first Quick Start
+
+The concrete reference path is now **ST NUCLEO-H723ZG** (STM32H723ZG) with
+STM32CubeH7 / STM32CubeIDE. The generic statements above are retained for
+history, but new work should use this reference path first.
+
+A beginner should only edit `board/ads1299_board_config.h` after CubeMX has
+generated the project. Name the five GPIO labels `ADS1299_CS`, `ADS1299_DRDY`,
+`ADS1299_RESET`, `ADS1299_PWDN`, and `ADS1299_START`, or map existing generated
+names in that one configuration file. If a SPI peripheral other than SPI1 is
+chosen, change the handle mapping there as well.
+
+CubeMX SPI requirements:
+
+- master, full duplex;
+- 8-bit data size;
+- MSB first;
+- CPOL Low, CPHA 2 Edge: ADS1299 SPI Mode 1;
+- software NSS; ADS1299 CS is a normal output GPIO;
+- begin at 4 MHz or lower for bring-up.
+
+Add these repository sources to the CubeIDE application:
+
+- `../../../core_driver/ads1299/ads1299.c`
+- `../../../core_driver/ads1299/ads1299_frame.c`
+- `../../../core_driver/ads1299/ads1299_model.c`
+- `../../../core_driver/ads1299/ads1299_multi.c`
+- `ads1299_port/ads1299_spi.c`
+- `ads1299_port/ads1299_gpio.c`
+- `ads1299_port/ads1299_drdy.c`
+- `examples/board_ads1299_hal_stm32cube.c`
+- `examples/main_ads1299.c` (or copy its call flow into Cube-generated `main.c`)
+
+Add include paths for the shared ADS1299 core, this folder's `ads1299_port/`,
+and `board/`. Do not edit shared ADS1299 register/core files for board bring-up.
+
+`examples/board_ads1299_hal_stm32cube.c` is now the concrete STM32CubeH7
+implementation of the previously undefined `board_ads1299_hal()` callback. It
+uses real STM32 HAL SPI/GPIO calls and a Cortex-M7 DWT microsecond delay, so the
+minimal example no longer requires a student to invent the adapter architecture.
+
+Expected early bring-up sequence remains: hardware reset -> SDATAC -> ID probe
+-> internal test setup -> RDATAC -> START -> DRDY-gated frame reads. The current
+example stops with distinct return codes 1..10 for board adapter, port init,
+core init, reset, SDATAC, ID, test configuration, RDATAC, START, or frame-read
+failure respectively.
+
+### Validation status
+
+- STM32CubeH7 adapter source: **PRESENT**
+- single board/config edit point: **PRESENT**
+- host interface smoke suite: **PRESENT**
+- STM32CubeIDE target build for current revision: **NOT YET BUILD-VERIFIED**
+- NUCLEO-H723ZG + ADS1299 physical execution: **NOT BOARD-VERIFIED**
+- DMA/cache/long-run acquisition validation: **NOT YET VERIFIED**
+
+Do not interpret the presence of the adapter as a hardware-validation claim.
