@@ -3,6 +3,7 @@ CFLAGS ?= -std=c99 -Wall -Wextra -Werror -pedantic -O2
 
 FIRMWARE := ../../../..
 CORE := $(FIRMWARE)/core_driver/ads1299
+PACKET := $(FIRMWARE)/common/data_packet
 PORT := ../ads1299_port
 
 TARGET := stm32f407_integration_tests
@@ -13,7 +14,8 @@ TEST_SRCS := \
 	test_register.c \
 	test_reset.c \
 	test_spi.c \
-	test_drdy.c
+	test_drdy.c \
+	test_packet.c
 
 PORT_SRCS := \
 	$(PORT)/ads1299_spi.c \
@@ -26,13 +28,16 @@ CORE_SRCS := \
 	$(CORE)/ads1299_model.c \
 	$(CORE)/ads1299_multi.c
 
-INCLUDES := -I$(CORE) -I$(PORT)
+PACKET_SRCS := \
+	$(PACKET)/ads1299_packet.c
+
+INCLUDES := -I$(CORE) -I$(PORT) -I$(PACKET)
 
 .PHONY: all test clean
 
 all: $(TARGET)
 
-$(TARGET): $(TEST_SRCS) $(PORT_SRCS) $(CORE_SRCS)
+$(TARGET): $(TEST_SRCS) $(PORT_SRCS) $(CORE_SRCS) $(PACKET_SRCS)
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ -lm
 
 test: $(TARGET)
