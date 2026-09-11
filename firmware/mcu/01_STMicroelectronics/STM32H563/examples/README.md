@@ -61,6 +61,11 @@ Add these model-local files to the application build:
 - `examples/stm32h563_example_platform.c`
 - `examples/stm32h563_beginner_demo.c`
 
+For sustained acquisition also add:
+
+- `examples/stm32h563_frame_queue.c`
+- `examples/stm32h563_frame_queue.h`
+
 Also add the shared ADS1299 core modules required by the repository API, including the base driver, frame/model support and canonical packet implementation. Reuse the repository's existing shared sources rather than copying register code into this model directory.
 
 Add include paths for the STM32H563 `ads1299_port`, `board`, `examples`, and shared ADS1299 core headers.
@@ -95,18 +100,24 @@ Typical diagnostics are intentionally separated:
 
 ## Sustained acquisition
 
-The polling/blocking example is appropriate for first bring-up and functional validation. For sustained EEG acquisition on STM32H563, evolve the timing path to:
+The polling/blocking beginner example is appropriate for first bring-up. For sustained EEG acquisition, use the model-local bounded queue to separate acquisition timing from slower packet/transport work:
 
-`DRDY falling edge -> short ISR/timestamp -> bounded static queue/ring buffer -> frame/packet work -> transport`
+`DRDY falling edge -> short ISR/deferred frame read -> stm32h563_frame_queue -> canonical packet encode -> UART/USB/network`
 
-Do not perform long UART/USB/network work inside the DRDY ISR. Count queue overflow explicitly. If SPI DMA is introduced, preserve deterministic CS/frame boundaries and do not reuse a DMA buffer before completion. Apply cache maintenance only according to the actual H563 memory/cache/DMA placement used by the generated project.
+`stm32h563_frame_queue` is static, bounded and heap-free. Each entry stores the decoded `ads1299_frame_t`, acquisition timestamp and sequence number. It also exposes queue depth, dropped-frame count and high-watermark so overload is visible instead of silently overwriting EEG data. The default capacity is 16 frames and may be changed at compile time with `STM32H563_ADS1299_FRAME_QUEUE_CAPACITY`.
+
+The queue intentionally does not claim universal lock-free ISR safety. If producer and consumer can pre-empt each other, protect `push()`/`pop()` using the application's normal STM32 critical-section mechanism or defer them to non-preempting contexts.
+
+Do not perform long UART/USB/network work inside the DRDY ISR. If SPI DMA is introduced, enqueue only after the complete 27-byte ADS1299 frame and CS transaction have finished; never expose a half-filled/reused DMA buffer as a completed queue entry. Apply cache maintenance only according to the actual H563 memory/cache/DMA placement used by the generated project.
 
 ## Validation status
 
 - Source/integration example: **PRESENT**
 - Probe/internal-test/input-short/250-SPS/stream flows: **PRESENT**
 - Shared canonical packet usage: **PRESENT**
+- Bounded frame queue with overflow/high-watermark accounting: **PRESENT**
+- Host queue regressions: **PRESENT** (execution result is documented separately in `../tests/README.md`)
 - STM32CubeH5 target build: **NOT YET RECORDED**
 - NUCLEO-H563ZI + ADS1299 physical board run: **NOT YET RECORDED**
-- Sustained EXTI/DMA acquisition: **NOT YET VERIFIED**
+- Sustained EXTI/DMA acquisition on hardware: **NOT YET VERIFIED**
 - Multi-ADS1299 / 64-channel hardware path: **NOT YET VERIFIED**
