@@ -1,12 +1,13 @@
 # STM32F303 host integration smoke tests
 
-These tests exercise the repository-owned STM32F303 ADS1299 port together with the shared ADS1299 core on a normal desktop C compiler. They are intended to catch API drift and adapter regressions before a CubeIDE board build.
+These tests exercise the repository-owned STM32F303 ADS1299 port together with the shared ADS1299 core and canonical packet layer on a normal desktop C compiler. They are intended to catch API drift and adapter/transport regressions before a CubeIDE board build.
 
 ## Run
 
 From this directory:
 
 ```sh
+make -f Makefile.host clean
 make -f Makefile.host test
 ```
 
@@ -22,7 +23,9 @@ The runner covers:
 - proof that the STM32F303 platform layer treats register traffic as opaque bytes rather than duplicating ADS1299 register policy;
 - SPI callback forwarding and TX/RX behavior;
 - RESET GPIO routing and microsecond/millisecond delay conversion;
-- DRDY active-low behavior, including the distinction between the MCU helper (`1` means data ready) and the shared `ads1299_port_t.drdy_read` electrical-level callback (`0` means the ADS1299 DRDY pin is asserted).
+- DRDY active-low behavior, including the distinction between the MCU helper (`1` means data ready) and the shared `ads1299_port_t.drdy_read` electrical-level callback (`0` means the ADS1299 DRDY pin is asserted);
+- canonical ADS1299 packet encode/validate/decode round trip, including sync/version/flags, sequence, timestamp, 3 status bytes and 8 signed channels;
+- CRC rejection after a deliberate one-bit payload corruption.
 
 The build intentionally compiles the current repository copies of:
 
@@ -31,10 +34,11 @@ firmware/core_driver/ads1299/ads1299.c
 firmware/core_driver/ads1299/ads1299_frame.c
 firmware/core_driver/ads1299/ads1299_model.c
 firmware/core_driver/ads1299/ads1299_multi.c
+firmware/common/data_packet/ads1299_packet.c
 firmware/mcu/01_STMicroelectronics/STM32F303/ads1299_port/*.c
 ```
 
-This makes the test useful as a shared-core/platform integration smoke test rather than an isolated mock-only test.
+This makes the test useful as a shared-core/platform/transport integration smoke test rather than an isolated mock-only test. The STM32F303 folder does not duplicate packet framing or CRC logic; it links the shared canonical packet implementation.
 
 ## Validation scope
 
@@ -45,5 +49,8 @@ For real-board bring-up, use the STM32F303 model Quick Start and keep SPI config
 Validation status for this directory is therefore:
 
 - host-test infrastructure: PRESENT;
+- canonical packet/CRC regression source: PRESENT;
+- shared packet linkage: PRESENT;
+- host PASS recorded for this maintenance run: NO;
 - STM32CubeIDE BUILD-VERIFIED: NO;
 - NUCLEO-F303RE + ADS1299 BOARD-VERIFIED: NO.
