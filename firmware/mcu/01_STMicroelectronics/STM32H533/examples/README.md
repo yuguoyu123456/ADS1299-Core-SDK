@@ -100,6 +100,45 @@ The demo intentionally separates these failure classes so a first-time user does
 
 The blocking HAL path is suitable for first bring-up and finite examples. For sustained EEG on STM32H533, prefer a short DRDY falling-edge ISR, bounded static queue/ring buffer, and packetization/transport outside the timing-critical path. If SPI DMA is introduced, preserve deterministic CS and complete ADS1299 frame boundaries, count overflow explicitly, and apply cache maintenance only where the actual H533 memory/cache configuration requires it.
 
+### Bounded frame queue now provided
+
+`stm32h533_frame_queue.h/.c` provides a model-local, fixed-capacity queue for completed `ads1299_frame_t` samples. It is intentionally separate from the shared ADS1299 core and from the canonical packet encoder: the producer stores a completed frame plus timestamp/sequence, while the consumer can encode and transmit it later. This prevents a slow UART/USB/network write from becoming part of the acquisition timing contract.
+
+Add the queue source for sustained designs:
+
+```text
+examples/stm32h533_frame_queue.c
+```
+
+Typical producer/deferred-consumer shape:
+
+```c
+stm32h533_ads1299_frame_queue_t queue;
+stm32h533_ads1299_frame_record_t record;
+ads1299_frame_t frame;
+uint32_t sequence = 0u;
+
+stm32h533_ads1299_frame_queue_init(&queue);
+
+/* After one complete 27-byte ADS1299 frame has been acquired: */
+if (stm32h533_ads1299_frame_queue_push(&queue, &frame,
+        stm32h533_example_timestamp_us(), sequence++) != 0) {
+    /* queue.dropped records overload explicitly */
+}
+
+/* In the non-timing-critical consumer/task/main loop: */
+if (stm32h533_ads1299_frame_queue_pop(&queue, &record) == 0) {
+    /* ads1299_packet_encode(... record.sequence, record.timestamp_us,
+       record.frame.status, record.frame.channel); then transmit */
+}
+```
+
+The queue defaults to 16 records and uses no heap allocation. Override `STM32H533_ADS1299_FRAME_QUEUE_CAPACITY` at compile time when RAM/latency requirements differ. `dropped` counts full-queue rejection and `high_watermark` records the peak occupancy so sustained tests can distinguish acquisition health from transport back-pressure.
+
+Concurrency is deliberately explicit rather than hidden: the queue assumes one producer and one consumer, and applications must protect `push()`/`pop()` with their normal STM32 critical-section mechanism if those contexts can pre-empt one another. The repository does **not** claim this helper is a universal lock-free ISR primitive. For SPI DMA, enqueue only after the complete ADS1299 frame transfer and CS boundary are finished; do not enqueue partially filled DMA buffers.
+
+This addition does not change the beginner blocking demo and does not imply DMA, sustained-throughput, cache-coherency, target-build, or board verification. Those remain separate validation steps.
+
 ## Packet contract
 
 Streaming uses the repository shared `ads1299_packet_encode()` implementation rather than a model-local packet format. The canonical packet is 49 bytes and carries sync `0xA5 0x5A`, version/flags, sequence, timestamp, three status bytes, eight signed 32-bit channels, and CRC16.
