@@ -24,6 +24,7 @@ the exact board revision before wiring.
 - ADS1299 behavior: `../../../core_driver/ads1299/`
 - This platform's hardware-only adapter: `ads1299_port/`
 - Minimal call flow: `examples/main_ads1299.c`
+- Progressive beginner flow: `examples/stm32h743_beginner_demo.[ch]`
 - Vendor-project procedure: `integration.md`
 
 The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
@@ -72,6 +73,56 @@ The Cube HAL adapter uses `HAL_SPI_TransmitReceive`, `HAL_GPIO_WritePin`,
 It supports full-duplex, TX-only and RX-only calls required by the portable MCU
 port without moving ADS1299 register semantics into the board layer.
 
+## Progressive beginner example
+
+After the minimal reset/ID bring-up works, add
+`examples/stm32h743_beginner_demo.c`, its header, and
+`firmware/common/data_packet/ads1299_packet.c` to the CubeIDE application. The
+example reuses the shared typed ADS1299 API and runs this fixed progression:
+
+1. hardware reset + ADS1299 family ID probe;
+2. internal-test configuration and eight captured validation frames;
+3. input-short configuration and eight captured validation frames;
+4. normal-input 250-SPS EEG configuration for the detected 4/6/8-channel
+   variant;
+5. optional finite canonical-packet streaming.
+
+For the safest first run, call it without a transport:
+
+```c
+#include "stm32h743_beginner_demo.h"
+
+int rc = stm32h743_ads1299_beginner_demo(NULL, 0u);
+```
+
+`stream_frames == 0` deliberately stops after the 250-SPS configuration, so a
+new student can validate the ADS1299 path before writing UART/USB/Ethernet
+code. To stream, provide `write()` and `timestamp_us()` in
+`stm32h743_ads1299_demo_io_t` and request a finite frame count. Packets are
+created by the shared `ads1299_packet_encode()` implementation; this platform
+does not define a competing frame format or CRC.
+
+Expected logger milestones, when a logger callback is supplied, are of the
+form:
+
+```text
+ADS1299 STM32H743 beginner demo
+OK ID ADS1299-8
+RUN internal-test
+OK internal-test frames
+RUN input-short
+OK input-short frames
+RUN EEG 250 SPS config
+OK EEG 250 SPS configured
+OK stream skipped (stream_frames=0)
+OK beginner demo complete
+```
+
+The detected ID line is `ADS1299-4`, `ADS1299-6`, or `ADS1299-8` as
+appropriate. Error text intentionally separates RESET/power, SPI/CS/Mode-1,
+DRDY, frame-read, and transport failures so initial bring-up does not require
+editing the shared driver to discover the fault class.
+
 ### Reference hardware availability
 
 ST currently marks the NUCLEO-H743ZI product page **Obsolete / Out of
@@ -81,16 +132,18 @@ new H743 Nucleo can still be purchased from ST. The STM32H743ZI MCU itself is
 still an active device. For a custom/current STM32H743 board, the intended
 migration surface is CubeMX plus `board/ads1299_board_config.h` only.
 
-### Validation status for the newly added Cube adapter
+### Validation status for the newly added Cube adapter and beginner flow
 
 - Board/config edit point: **PRESENT**.
 - STM32Cube HAL implementation of `board_ads1299_hal()`: **PRESENT**.
+- Progressive probe/internal-test/input-short/250-SPS/stream source: **PRESENT**.
+- Canonical packet encoder reuse: **PRESENT; shared implementation**.
 - Shared ADS1299 register/control logic: **REUSED; not duplicated here**.
 - Existing host integration regression suite: **PRESENT**.
-- Newly added Cube adapter target build: **not yet BUILD-VERIFIED**.
+- Newly added Cube adapter and beginner example target build: **not yet BUILD-VERIFIED**.
 - NUCLEO-H743ZI2 + ADS1299 physical execution: **not BOARD-VERIFIED**.
 - DMA/cache sustained streaming: **not verified**.
 
 The historical `Status: Compiles` metadata at the top predates this newly added
-Cube board adapter; it must not be read as a build-verification claim for this
-new adapter until a documented target build is actually recorded.
+Cube board adapter and beginner flow; it must not be read as a build-verification
+claim for these additions until a documented target build is actually recorded.
