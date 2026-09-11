@@ -44,3 +44,32 @@ CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件
 tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
 
 [官方资料入口](https://www.st.com/en/microcontrollers-microprocessors/STM32-32-bit-arm-cortex-mcus.html) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+
+---
+
+## Standardized SDK maintenance status
+
+Current maintenance status: **integration-candidate-complete**.
+
+The historical `Planned` catalog text above is preserved for compatibility, but the model folder now contains a concrete reference-board path, portable ADS1299 port, progressive beginner example, and host-side integration smoke-test recipe.
+
+### Recommended reference path
+
+- Reference board: **NUCLEO-H563ZI / STM32H563ZIT6**.
+- One board-edit point: `board/board_config.h`.
+- Hardware adapter: `ads1299_port/`.
+- Progressive beginner entry point: `stm32h563_ads1299_beginner_demo(1000u)` in `examples/`.
+- Host smoke-test recipe: `tests/Makefile.host`.
+- Shared ADS1299 behavior remains in `../../../core_driver/ads1299/`; beginners must not edit shared register/model/core files for board bring-up.
+
+### Beginner flow
+
+`NUCLEO-H563ZI -> board_config.h -> STM32CubeH5 HAL -> ads1299_port -> shared ADS1299 core -> probe/ID -> internal test -> input short -> 250-SPS gain-24 EEG -> canonical packet stream -> clean STOP/SDATAC`
+
+Use `stm32h563_ads1299_beginner_demo(1000u)` for a finite starter run. A value of `0u` selects continuous streaming.
+
+For another STM32H563 board, keep the shared core unchanged and adapt only the CubeMX peripheral/pin setup plus the values/aliases in `board/board_config.h` unless the alternate board truly requires a different transport implementation.
+
+### Validation language
+
+This folder is **not** currently claimed as STM32CubeH5 BUILD-VERIFIED or physical BOARD-VERIFIED. The present state means the integration files and test recipes exist and are internally organized for validation; actual target build and hardware evidence must be recorded separately in `validation.md`.
