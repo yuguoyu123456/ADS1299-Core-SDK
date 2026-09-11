@@ -13,7 +13,8 @@ TEST_SRCS := \
 	test_register.c \
 	test_reset.c \
 	test_spi.c \
-	test_drdy.c
+	test_drdy.c \
+	test_packet.c
 
 PORT_SRCS := \
 	$(PORT)/ads1299_spi.c \
@@ -24,9 +25,10 @@ CORE_SRCS := \
 	$(CORE)/ads1299.c \
 	$(CORE)/ads1299_frame.c \
 	$(CORE)/ads1299_model.c \
-	$(CORE)/ads1299_multi.c
+	$(CORE)/ads1299_multi.c \
+	$(FIRMWARE)/common/stream/ads1299_packet.c
 
-INCLUDES := -I$(CORE) -I$(PORT)
+INCLUDES := -I$(CORE) -I$(PORT) -I$(FIRMWARE)/common/stream
 
 .PHONY: all test clean
 
