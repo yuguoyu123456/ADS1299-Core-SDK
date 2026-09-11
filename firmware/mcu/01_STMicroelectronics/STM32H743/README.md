@@ -25,6 +25,7 @@ the exact board revision before wiring.
 - This platform's hardware-only adapter: `ads1299_port/`
 - Minimal call flow: `examples/main_ads1299.c`
 - Progressive beginner flow: `examples/stm32h743_beginner_demo.[ch]`
+- Sustained-acquisition queue: `examples/stm32h743_frame_queue.[ch]`
 - Vendor-project procedure: `integration.md`
 
 The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
@@ -123,6 +124,37 @@ appropriate. Error text intentionally separates RESET/power, SPI/CS/Mode-1,
 DRDY, frame-read, and transport failures so initial bring-up does not require
 editing the shared driver to discover the fault class.
 
+## Sustained acquisition and transport back-pressure
+
+For interrupt-driven or higher-throughput operation, add
+`examples/stm32h743_frame_queue.[ch]`. The queue is static, bounded and uses no
+heap. The recommended ownership chain is:
+
+```text
+DRDY / deferred acquisition
+    -> finish one complete ADS1299 frame
+    -> enqueue {frame, timestamp, sequence}
+    -> lower-priority consumer
+    -> shared canonical packet encoder
+    -> UART / USB / Ethernet transport
+```
+
+The default queue holds 16 decoded frames and can be changed at compile time
+with `STM32H743_ADS1299_FRAME_QUEUE_CAPACITY`. A full queue does not overwrite
+old EEG data: `push()` fails and increments `dropped`; `high_watermark` records
+peak occupancy. This makes transport overload visible during validation.
+
+The queue itself deliberately does not claim lock-free ISR safety. If the DRDY
+producer and transport consumer can pre-empt one another, protect push/pop with
+the application's STM32 critical-section mechanism or defer work into contexts
+with compatible ownership.
+
+For an H743 DMA implementation, enqueue only after the complete ADS1299 SPI
+transaction and CS boundary have finished. Do not expose a partially filled DMA
+buffer as a completed frame. Cortex-M7 D-cache handling, DMA buffer placement,
+and sustained-throughput limits remain application/board concerns until a real
+CubeH7 DMA path is implemented and measured.
+
 ### Reference hardware availability
 
 ST currently marks the NUCLEO-H743ZI product page **Obsolete / Out of
@@ -132,18 +164,21 @@ new H743 Nucleo can still be purchased from ST. The STM32H743ZI MCU itself is
 still an active device. For a custom/current STM32H743 board, the intended
 migration surface is CubeMX plus `board/ads1299_board_config.h` only.
 
-### Validation status for the newly added Cube adapter and beginner flow
+### Validation status for the Cube adapter, beginner flow and queue
 
 - Board/config edit point: **PRESENT**.
 - STM32Cube HAL implementation of `board_ads1299_hal()`: **PRESENT**.
 - Progressive probe/internal-test/input-short/250-SPS/stream source: **PRESENT**.
+- Bounded sustained-acquisition queue with drop/high-water diagnostics: **PRESENT**.
 - Canonical packet encoder reuse: **PRESENT; shared implementation**.
 - Shared ADS1299 register/control logic: **REUSED; not duplicated here**.
-- Existing host integration regression suite: **PRESENT**.
+- Host integration regression suite: **PRESENT**, including bounded-queue FIFO/wraparound/overflow and a 4096-frame stress regression.
+- Actual host PASS for the current revision: **not claimed unless a run is recorded**.
 - Newly added Cube adapter and beginner example target build: **not yet BUILD-VERIFIED**.
 - NUCLEO-H743ZI2 + ADS1299 physical execution: **not BOARD-VERIFIED**.
 - DMA/cache sustained streaming: **not verified**.
 
-The historical `Status: Compiles` metadata at the top predates this newly added
-Cube board adapter and beginner flow; it must not be read as a build-verification
-claim for these additions until a documented target build is actually recorded.
+The historical `Status: Compiles` metadata at the top predates the newer Cube
+board adapter, beginner flow and bounded queue; it must not be read as a
+build-verification claim for these additions until a documented target build is
+actually recorded.
