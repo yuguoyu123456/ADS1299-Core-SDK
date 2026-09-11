@@ -11,3 +11,25 @@ compiler: "vendor-supported compiler"
 debugger: "vendor-supported debug probe"
 tier: "C"
 status: "Planned"
+maintenance_status: "integration-candidate-complete"
+reference_board: "NUCLEO-H563ZI"
+reference_mcu: "STM32H563ZIT6"
+reference_sdk: "STM32CubeH5"
+board_config: "board/board_config.h"
+beginner_example: "examples/stm32h563_beginner_demo.c"
+beginner_entry: "stm32h563_ads1299_beginner_demo"
+host_test_recipe: "tests/Makefile.host"
+board_config_present: true
+portable_port_present: true
+progressive_example_present: true
+canonical_packet_integration_present: true
+host_test_recipe_present: true
+legacy_example_preserved: true
+core_edit_required_for_beginner: false
+host_test_pass_recorded: false
+target_build_verified: false
+board_verified: false
+sustained_exti_dma_verified: false
+loss_accounting_verified: false
+multi_ads1299_verified: false
+ads1299_64ch_verified: false
