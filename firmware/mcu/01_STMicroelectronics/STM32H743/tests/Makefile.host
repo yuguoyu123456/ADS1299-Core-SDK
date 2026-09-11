@@ -17,7 +17,8 @@ TEST_SRCS := \
 	test_reset.c \
 	test_drdy.c \
 	test_packet.c \
-	test_beginner_demo.c
+	test_beginner_demo.c \
+	test_frame_queue.c
 
 PORT_SRCS := \
 	$(PORT)/ads1299_spi.c \
@@ -25,7 +26,8 @@ PORT_SRCS := \
 	$(PORT)/ads1299_drdy.c
 
 EXAMPLE_SRCS := \
-	$(EXAMPLES)/stm32h743_beginner_demo.c
+	$(EXAMPLES)/stm32h743_beginner_demo.c \
+	$(EXAMPLES)/stm32h743_frame_queue.c
 
 CORE_SRCS := \
 	$(CORE)/ads1299.c \
