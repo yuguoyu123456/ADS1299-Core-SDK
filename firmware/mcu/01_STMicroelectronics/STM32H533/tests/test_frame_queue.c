@@ -20,6 +20,25 @@ static ads1299_frame_t make_frame(uint32_t marker)
     return frame;
 }
 
+static void assert_record_matches(
+    const stm32h533_ads1299_frame_record_t *record,
+    uint32_t sequence)
+{
+    size_t i;
+
+    assert(record != NULL);
+    assert(record->sequence == sequence);
+    assert(record->timestamp_us == 100000u + sequence);
+    assert(record->frame.status[0] == (uint8_t)(0xC0u | (sequence & 0x0Fu)));
+    assert(record->frame.status[1] == (uint8_t)(sequence >> 8));
+    assert(record->frame.status[2] == (uint8_t)(sequence >> 16));
+
+    for (i = 0u; i < ADS1299_CHANNEL_COUNT; ++i) {
+        assert(record->frame.channel[i] ==
+               (int32_t)(sequence * 100u + (uint32_t)i));
+    }
+}
+
 void test_frame_queue_fifo_wraparound_and_overflow(void)
 {
     stm32h533_ads1299_frame_queue_t queue;
@@ -92,4 +111,50 @@ void test_frame_queue_argument_validation(void)
     assert(stm32h533_ads1299_frame_queue_count(NULL) == 0u);
     assert(stm32h533_ads1299_frame_queue_dropped(NULL) == 0u);
     assert(stm32h533_ads1299_frame_queue_high_watermark(NULL) == 0u);
+}
+
+void test_frame_queue_long_running_interleaving(void)
+{
+    enum { STRESS_FRAME_COUNT = 4096 };
+    stm32h533_ads1299_frame_queue_t queue;
+    stm32h533_ads1299_frame_record_t record;
+    uint32_t produced = 0u;
+    uint32_t consumed = 0u;
+
+    stm32h533_ads1299_frame_queue_init(&queue);
+
+    while (produced < STRESS_FRAME_COUNT) {
+        ads1299_frame_t frame;
+
+        if (stm32h533_ads1299_frame_queue_count(&queue) ==
+            STM32H533_ADS1299_FRAME_QUEUE_CAPACITY) {
+            assert(stm32h533_ads1299_frame_queue_pop(&queue, &record) == 0);
+            assert_record_matches(&record, consumed);
+            ++consumed;
+        }
+
+        frame = make_frame(produced);
+        assert(stm32h533_ads1299_frame_queue_push(
+                   &queue, &frame, 100000u + produced, produced) == 0);
+        ++produced;
+
+        if ((produced % 3u) == 0u &&
+            stm32h533_ads1299_frame_queue_count(&queue) != 0u) {
+            assert(stm32h533_ads1299_frame_queue_pop(&queue, &record) == 0);
+            assert_record_matches(&record, consumed);
+            ++consumed;
+        }
+    }
+
+    while (stm32h533_ads1299_frame_queue_count(&queue) != 0u) {
+        assert(stm32h533_ads1299_frame_queue_pop(&queue, &record) == 0);
+        assert_record_matches(&record, consumed);
+        ++consumed;
+    }
+
+    assert(consumed == STRESS_FRAME_COUNT);
+    assert(stm32h533_ads1299_frame_queue_count(&queue) == 0u);
+    assert(stm32h533_ads1299_frame_queue_dropped(&queue) == 0u);
+    assert(stm32h533_ads1299_frame_queue_high_watermark(&queue) ==
+           STM32H533_ADS1299_FRAME_QUEUE_CAPACITY);
 }
