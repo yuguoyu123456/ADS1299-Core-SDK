@@ -22,7 +22,8 @@ The runner covers:
 - proof that the STM32F072 platform layer treats register traffic as opaque bytes rather than duplicating ADS1299 register policy;
 - SPI callback forwarding and TX/RX behavior;
 - RESET GPIO routing and microsecond/millisecond delay conversion;
-- DRDY active-low behavior, including the distinction between the MCU helper (`1` means data ready) and the shared `ads1299_port_t.drdy_read` electrical-level callback (`0` means the ADS1299 DRDY pin is asserted).
+- DRDY active-low behavior, including the distinction between the MCU helper (`1` means data ready) and the shared `ads1299_port_t.drdy_read` electrical-level callback (`0` means the ADS1299 DRDY pin is asserted);
+- canonical repository packet encode/validate/decode coverage, including sync bytes, version/flags, sequence, timestamp, 3 status bytes, eight signed channel samples and CRC rejection after payload corruption.
 
 The build intentionally compiles the current repository copies of:
 
@@ -31,10 +32,11 @@ firmware/core_driver/ads1299/ads1299.c
 firmware/core_driver/ads1299/ads1299_frame.c
 firmware/core_driver/ads1299/ads1299_model.c
 firmware/core_driver/ads1299/ads1299_multi.c
+firmware/common/data_packet/ads1299_packet.c
 firmware/mcu/01_STMicroelectronics/STM32F072/ads1299_port/*.c
 ```
 
-This makes the test useful as a shared-core/platform integration smoke test rather than an isolated mock-only test.
+This makes the test useful as a shared-core/platform/transport integration smoke test rather than an isolated mock-only test. The STM32F072 folder does not duplicate packet framing or CRC logic; it consumes the shared canonical packet implementation.
 
 ## What this does not validate
 
