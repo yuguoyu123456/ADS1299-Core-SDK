@@ -44,3 +44,58 @@ CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件
 tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
 
 [官方资料入口](https://www.espressif.com/en/products/socs) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+
+## Current reference implementation (supersedes the earlier Planned note)
+
+The folder now contains a concrete ESP-IDF reference path for the official
+**ESP32-C3-DevKitM-1**. The earlier Planned text above is retained as historical
+context, but is no longer the current integration state.
+
+Edit only `board/esp32c3_devkitm1_ads1299.h` when adapting pins to another
+ESP32-C3 board. The default reference wiring is:
+
+| ADS1299 | ESP32-C3-DevKitM-1 |
+|---|---|
+| DOUT / MISO | GPIO3 |
+| DIN / MOSI | GPIO7 |
+| SCLK | GPIO6 |
+| CS | GPIO10 |
+| DRDY | GPIO4 |
+| RESET | GPIO5 |
+| PWDN | GPIO0 |
+| START | GPIO1 |
+
+The defaults avoid GPIO2/GPIO8/GPIO9 strapping-sensitive assignments, GPIO8's
+on-board RGB LED, USB Serial/JTAG GPIO18/GPIO19, and UART0 GPIO20/GPIO21.
+
+### Build / flash / run
+
+```bash
+cd firmware/mcu/02_Espressif/ESP32-C3/examples/esp_idf_reference
+idf.py set-target esp32c3
+idf.py build
+idf.py -p <serial-port> flash monitor
+```
+
+The reference application uses the shared ADS1299 core and executes this
+progressive path without requiring edits to core register files:
+
+1. hardware reset + SDATAC;
+2. ID/family probe;
+3. internal-test capture;
+4. input-short capture;
+5. typed 250-SPS, gain-24, normal-input channel configuration;
+6. RDATAC/START continuous EEG acquisition;
+7. a fixed 16-frame queue between the acquisition and lower-priority transport tasks.
+
+Expected successful monitor output includes `probe OK`, diagnostic frame lines,
+and `beginner flow complete: probe -> internal-test -> input-short -> EEG250 stream`.
+Queue overflow is explicit through dropped/high-watermark diagnostics rather
+than silently overwriting unread EEG frames.
+
+### Validation status
+
+- **TEMPLATE / IMPLEMENTED:** ESP-IDF SPI/GPIO HAL, reference-board config,
+  progressive example, bounded acquisition queue and shared-core build wiring are present.
+- **BUILD-VERIFIED:** not yet established for the documented ESP-IDF toolchain/reference configuration.
+- **BOARD-VERIFIED:** not established; no physical ESP32-C3-DevKitM-1 + ADS1299 run is claimed.
