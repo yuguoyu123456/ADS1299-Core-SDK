@@ -1,46 +1,93 @@
 # ESP32-P4 ADS1299 Port
 
-Global ecosystem rank: **125**. Status: **Planned**. Tier C. Hardware validation is not implied.
+Global ecosystem rank: **125**. Status: **TEMPLATE / PLANNED**. Tier C. Hardware validation is not implied.
 
-## Platform
+## Reference platform
 
-- Vendor: Espressif
-- Family / MCU: ESP32-P4 / ESP32-P4
-- Architecture: Confirm exact CPU/core variant in official device documentation
-- Reference board: Select an official ESP32-P4 evaluation board
-- Official environment: ESP-IDF
-- Compiler: vendor-supported compiler
+- MCU: ESP32-P4
+- Reference board: **Espressif ESP32-P4-Function-EV-Board v1.4**
+- Toolchain / SDK: official ESP-IDF
+- Shared ADS1299 implementation: `../../../core_driver/ads1299/`
+- Hardware adapter: `ads1299_port/`
+- Beginner board config: `board/esp32p4_function_ev_ads1299.h`
+- Runnable reference project: `examples/esp_idf_reference/`
 
-## ADS1299 connection
+The board configuration is the normal place to change pins, SPI host and SPI clock.
+A beginner should not edit `ads1299.c`, `ads1299_regs.h` or `ads1299_model.c` to bring up a board.
 
-Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. Keep CS software-controlled and
-route DRDY, RESET, PWDN and START as independent GPIOs. Start at 4 MHz or less
-until ID read, configuration readback and the internal test signal pass. The
-reference pin assignment is documented in `board/pinmap.md`; confirm it against
-the exact board revision before wiring.
+## Default ADS1299 wiring
 
-## Repository layers
+| ADS1299 | ESP32-P4-Function-EV-Board v1.4 |
+|---|---|
+| SCLK | GPIO4 |
+| DIN / MOSI | GPIO5 |
+| DOUT / MISO | GPIO3 |
+| CS | GPIO7 |
+| DRDY | GPIO8 |
+| RESET | GPIO20 |
+| PWDN | GPIO21 |
+| START | GPIO22 |
+| GND | GND |
 
-- ADS1299 behavior: `../../../core_driver/ads1299/`
-- This platform's hardware-only adapter: `ads1299_port/`
-- Minimal call flow: `examples/main_ads1299.c`
-- Vendor-project procedure: `integration.md`
+Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. The reference starts at 4 MHz with software-controlled CS.
 
-The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
-provides a millisecond helper without changing the stable Core port contract.
-It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
-in `firmware/transport/` and must not block a DRDY handler.
+## Quick Start
 
-## 第 125 项：后续开发入口
+With ESP-IDF installed:
 
-当前是 **Planned** 目录和通用回调模板，尚未实现 ESP32-P4 的官方 SDK 绑定。
-编号是项目维护顺序，不是全球销量排名，也不表示未来供货保证。
+```bash
+cd firmware/mcu/02_Espressif/ESP32-P4/examples/esp_idf_reference
+idf.py set-target esp32p4
+idf.py build
+idf.py -p <serial-port> flash monitor
+```
 
-选型理由：补充联网采集和本地处理选型；各型号无线能力不同，不能默认全部带 Wi-Fi。
+Expected progression when the hardware is connected correctly:
 
-先确定完整料号、封装、板卡和官方 SDK，再补充真实 SPI/GPIO/DRDY 适配。
-CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件为准。
-通用 examples/main_ads1299.c 需要板级 board_ads1299_hal，当前不能独立链接运行。
-tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
+```text
+probe OK: ADS1299-family ID=0x.. channels=...
+internal-test frame=0 ...
+input-short frame=0 ...
+beginner flow complete: probe -> internal-test -> input-short -> EEG250 stream
+EEG250 seq=0 ...
+```
 
-[官方资料入口](https://www.espressif.com/en/products/socs) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+The example uses shared typed ADS1299 APIs for internal test, input short, 250-SPS data rate, gain 24, normal electrode input, RDATAC/START and STOP/SDATAC. No register-byte setup is duplicated in this folder.
+
+## Sustained acquisition architecture
+
+ESP32-P4 uses a fixed **32-frame bounded queue** between acquisition and transport work:
+
+```text
+DRDY -> complete SPI frame -> timestamp/sequence -> bounded queue -> lower-priority transport
+```
+
+The queue reports current depth, high-watermark and dropped-frame count. Slow UART/USB/network work belongs on the consumer side, not in the DRDY/SPI path. The current bring-up HAL intentionally uses deterministic polling SPI; future DMA optimization must preserve the same shared-core and board-config contracts.
+
+## Host regression
+
+Queue logic can be exercised independently of hardware:
+
+```bash
+cd firmware/mcu/02_Espressif/ESP32-P4/tests
+make -f Makefile.host clean
+make -f Makefile.host test
+```
+
+The regression covers FIFO order, wraparound, explicit overflow accounting, invalid arguments and a 16,384-frame producer/consumer interleaving run.
+
+## Validation status
+
+- Reference board/config: **PRESENT**
+- ESP-IDF HAL source: **PRESENT**
+- Shared-core build integration: **PRESENT**
+- Probe/internal-test/input-short/250-SPS source flow: **PRESENT**
+- Bounded sustained-acquisition source: **PRESENT**
+- Host regression source: **PRESENT**
+- HOST TEST PASS: **not yet recorded**
+- ESP-IDF BUILD-VERIFIED: **not yet established**
+- BOARD-VERIFIED: **not yet established**
+
+Do not interpret source presence as bench validation, production readiness, electrical safety, EMC, regulatory validation or long-run hardware testing.
+
+See `integration.md` for the full integration path and `validation.md` for evidence boundaries.
