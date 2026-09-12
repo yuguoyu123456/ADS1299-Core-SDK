@@ -1,0 +1,21 @@
+CC ?= cc
+CFLAGS ?= -std=c11 -Wall -Wextra -Werror -pedantic -O2
+
+CORE_DIR := ../../../../core_driver/ads1299
+EXAMPLE_DIR := ../examples
+
+TARGET := esp32c3_frame_queue_tests
+SRCS := test_main.c test_frame_queue.c $(EXAMPLE_DIR)/esp32c3_frame_queue.c
+
+.PHONY: all test clean
+
+all: $(TARGET)
+
+$(TARGET): $(SRCS)
+	$(CC) $(CFLAGS) -I$(CORE_DIR) -I$(EXAMPLE_DIR) $(SRCS) -o $@
+
+test: $(TARGET)
+	./$(TARGET)
+
+clean:
+	rm -f $(TARGET)
