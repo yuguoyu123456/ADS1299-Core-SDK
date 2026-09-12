@@ -93,9 +93,17 @@ and `beginner flow complete: probe -> internal-test -> input-short -> EEG250 str
 Queue overflow is explicit through dropped/high-watermark diagnostics rather
 than silently overwriting unread EEG frames.
 
+For sustained EEG250 streaming, the reference path now uses the ADS1299 DRDY
+falling edge to wake the high-priority acquisition task with a FreeRTOS task
+notification. The ISR performs no SPI, logging or transport work. The
+lower-priority transport task drains the bounded queue, so Wi-Fi/BLE/UART work
+remains outside the DRDY timing path. A one-second missing-edge timeout is
+reported separately from an SPI/frame-read error.
+
 ### Validation status
 
 - **TEMPLATE / IMPLEMENTED:** ESP-IDF SPI/GPIO HAL, reference-board config,
-  progressive example, bounded acquisition queue and shared-core build wiring are present.
+  progressive example, bounded acquisition queue, DRDY interrupt/task-notification
+  path and shared-core build wiring are present.
 - **BUILD-VERIFIED:** not yet established for the documented ESP-IDF toolchain/reference configuration.
 - **BOARD-VERIFIED:** not established; no physical ESP32-C3-DevKitM-1 + ADS1299 run is claimed.
