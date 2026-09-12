@@ -1,46 +1,111 @@
 # ESP32-C2 ADS1299 Port
 
-Global ecosystem rank: **122**. Status: **Planned**. Tier C. Hardware validation is not implied.
+Status: **TEMPLATE / PLANNED** for validation purposes. Source integration is substantially present, but the current revision is not yet recorded as BUILD-VERIFIED or BOARD-VERIFIED.
 
-## Platform
+## Reference platform
 
-- Vendor: Espressif
-- Family / MCU: ESP32-C2 / ESP32-C2
-- Architecture: Confirm exact CPU/core variant in official device documentation
-- Reference board: Select an official ESP32-C2 evaluation board
-- Official environment: ESP-IDF
-- Compiler: vendor-supported compiler
+- MCU family: ESP32-C2 / ESP8684
+- Reference board: **Espressif ESP8684-DevKitM-1 v1.1**
+- Toolchain / SDK: ESP-IDF
+- Beginner board file: `board/esp8684_devkitm1_ads1299.h`
+- Standalone project: `examples/esp_idf_reference/`
 
-## ADS1299 connection
+Espressif's current development-board documentation maps the ESP32-C2 series to ESP8684 and lists ESP8684-DevKitM-1 as an official development board.
 
-Use SPI Mode 1 (CPOL=0, CPHA=1), MSB first. Keep CS software-controlled and
-route DRDY, RESET, PWDN and START as independent GPIOs. Start at 4 MHz or less
-until ID read, configuration readback and the internal test signal pass. The
-reference pin assignment is documented in `board/pinmap.md`; confirm it against
-the exact board revision before wiring.
+## ADS1299 wiring used by the reference project
+
+| ADS1299 | ESP8684-DevKitM-1 |
+|---|---:|
+| SCLK | GPIO6 |
+| DIN / MOSI | GPIO7 |
+| DOUT / MISO | GPIO2 |
+| CS | GPIO10 |
+| DRDY | GPIO3 |
+| RESET | GPIO4 |
+| PWDN | GPIO5 |
+| START | GPIO18 |
+
+SPI is configured as Mode 1 (CPOL=0, CPHA=1), MSB first, 4 MHz, with software-controlled CS. Confirm the exact board revision before wiring.
+
+## What a beginner edits
+
+For the documented reference board, do not edit `ads1299.c`, `ads1299_regs.h`, `ads1299_model.c` or other shared-core files. Hardware-dependent pins and the SPI clock are centralized in:
+
+```text
+board/esp8684_devkitm1_ads1299.h
+```
+
+When moving to another ESP32-C2 board, start by changing only that board layer. If the alternate board needs a different peripheral topology, adapt the ESP-IDF HAL rather than copying ADS1299 register logic.
+
+## Build / flash / run
+
+With ESP-IDF activated:
+
+```sh
+cd firmware/mcu/02_Espressif/ESP32-C2/examples/esp_idf_reference
+idf.py set-target esp32c2
+idf.py build
+idf.py -p <serial-port> flash monitor
+```
+
+The project links the shared ADS1299 core directly and runs this progressive flow:
+
+```text
+probe / ID
+  -> internal test (8 frames)
+  -> input short (8 frames)
+  -> 250-SPS EEG configuration
+  -> DRDY falling-edge wakeup
+  -> high-priority acquisition task
+  -> fixed 16-frame queue
+  -> lower-priority transport task
+```
+
+Expected healthy output includes messages similar to:
+
+```text
+probe OK: ADS1299-family ID=0x.. channels=8
+internal-test: capturing 8 frames
+input-short: capturing 8 frames
+250-SPS EEG profile ready: channels=8 gain=24 normal-input SRB1=off SRB2=off
+DRDY falling-edge notification enabled on GPIO3
+250-SPS EEG streaming started: event-driven DRDY, bounded queue=16 frames
+beginner flow complete: probe -> internal-test -> input-short -> EEG250 stream
+```
+
+A one-second DRDY timeout is reported separately from an SPI/frame-read failure. Queue overflow increments a `dropped` counter and preserves `high_watermark`; unread frames are not silently overwritten.
 
 ## Repository layers
 
-- ADS1299 behavior: `../../../core_driver/ads1299/`
-- This platform's hardware-only adapter: `ads1299_port/`
-- Minimal call flow: `examples/main_ads1299.c`
-- Vendor-project procedure: `integration.md`
+- Shared ADS1299 behavior: `../../../core_driver/ads1299/`
+- ESP32-C2 SPI/GPIO/DRDY and ESP-IDF binding: `ads1299_port/`
+- One board/config layer: `board/esp8684_devkitm1_ads1299.h`
+- Bounded queue: `examples/esp32c2_frame_queue.[ch]`
+- Runnable ESP-IDF project: `examples/esp_idf_reference/`
+- Host queue regression: `tests/`
+- Detailed integration notes: `integration.md`
+- Validation boundary: `validation.md`
 
-The port accepts SDK callbacks for SPI, GPIO and microsecond delay. It also
-provides a millisecond helper without changing the stable Core port contract.
-It never defines ADS1299 registers. UART, USB, BLE or Ethernet transport stays
-in `firmware/transport/` and must not block a DRDY handler.
+The sustained-acquisition ISR only wakes the acquisition task. SPI, logging, Wi-Fi/BLE work and packet transport do not execute in the ISR. Slow transport belongs on the lower-priority consumer side.
 
-## 第 122 项：后续开发入口
+## Host regression
 
-当前是 **Planned** 目录和通用回调模板，尚未实现 ESP32-C2 的官方 SDK 绑定。
-编号是项目维护顺序，不是全球销量排名，也不表示未来供货保证。
+```sh
+cd firmware/mcu/02_Espressif/ESP32-C2/tests
+make -f Makefile.host clean
+make -f Makefile.host test
+```
 
-选型理由：补充联网采集和本地处理选型；各型号无线能力不同，不能默认全部带 Wi-Fi。
+The test sources cover FIFO ordering, wraparound, overflow/drop accounting, invalid arguments and 8192-frame producer/consumer interleaving. These tests are source-present; this README does not claim they passed unless a run is recorded.
 
-先确定完整料号、封装、板卡和官方 SDK，再补充真实 SPI/GPIO/DRDY 适配。
-CPU/RAM/Flash/SPI 上限、DMA、USB/BLE 与多 ADS1299 能力均以具体器件为准。
-通用 examples/main_ads1299.c 需要板级 board_ads1299_hal，当前不能独立链接运行。
-tests/ 是待运行的 Core/接口测试入口，不是该 MCU 编译或硬件测试记录。
+## Validation status
 
-[官方资料入口](https://www.espressif.com/en/products/socs) · [101–200 总清单](../../ECOSYSTEM_101_200.md)
+- Source/reference-board integration: **PRESENT**
+- ESP-IDF HAL: **PRESENT**
+- Probe/internal-test/input-short/250-SPS flow: **PRESENT**
+- Event-driven bounded sustained acquisition: **PRESENT**
+- Host regression source/build recipe: **PRESENT**
+- Current revision BUILD-VERIFIED: **NOT YET RECORDED**
+- BOARD-VERIFIED: **NOT YET RECORDED**
+
+Do not infer bench testing, RF coexistence validation, long-run loss rate, electrical safety, EMC or production readiness from source completeness alone.
