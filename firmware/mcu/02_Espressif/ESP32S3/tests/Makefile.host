@@ -1,0 +1,19 @@
+CC ?= cc
+CFLAGS ?= -std=c11 -Wall -Wextra -Werror -O2
+
+CORE_DIR := ../../../core_driver/ads1299
+MAIN_DIR := ../main
+TARGET := test_stream_queue_host
+
+.PHONY: all test clean
+
+all: $(TARGET)
+
+$(TARGET): test_stream_queue.c $(MAIN_DIR)/ads1299_stream_queue.c
+	$(CC) $(CFLAGS) -I$(CORE_DIR) -I$(MAIN_DIR) $^ -o $@
+
+test: $(TARGET)
+	./$(TARGET)
+
+clean:
+	rm -f $(TARGET)
