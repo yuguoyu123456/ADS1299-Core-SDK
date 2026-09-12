@@ -1,7 +1,7 @@
 CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror -O2
 
-CORE_DIR := ../../../core_driver/ads1299
+CORE_DIR := ../../../../core_driver/ads1299
 MAIN_DIR := ../main
 TARGET := test_stream_queue_host
 
