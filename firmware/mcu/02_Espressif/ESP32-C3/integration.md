@@ -21,3 +21,39 @@ Vendor startup, linker scripts, CMSIS/HAL, generated configuration and middlewar
 stay in the user's official SDK project. This repository owns only the thin
 callback adapter and ADS1299-independent tests. Pin `pin in the consuming official SDK project` in the
 consumer project and record any API change in `version.md`.
+
+## Current concrete ESP-IDF reference path
+
+The generic integration notes above are retained for compatibility with custom
+ESP32-C3 projects. New users should start from the repository's standalone
+reference project instead:
+
+```sh
+cd examples/esp_idf_reference
+idf.py set-target esp32c3
+idf.py build
+idf.py -p <serial-port> flash monitor
+```
+
+The documented reference board is **ESP32-C3-DevKitM-1**. Hardware-dependent
+pins and SPI settings live in one board file:
+
+```text
+board/esp32c3_devkitm1_ads1299.h
+```
+
+The ESP-IDF adapter in `ads1299_port/ads1299_espidf_hal.c` owns only vendor SPI,
+GPIO, delay and DRDY interrupt binding. ADS1299 register semantics remain in the
+shared core.
+
+For sustained EEG acquisition, DRDY is configured as a falling-edge GPIO
+interrupt. The ISR performs no SPI, logging, packet formatting or radio work; it
+only gives a FreeRTOS task notification. The higher-priority acquisition task
+consumes one notification per pending DRDY edge, reads one ADS1299 frame, and
+pushes it into the fixed 16-frame queue. A lower-priority transport task drains
+the queue. This keeps Wi-Fi/BLE/UART work outside the DRDY timing path while
+retaining explicit `dropped` and `high_watermark` diagnostics.
+
+Diagnostic internal-test and input-short captures continue to use the shared
+portable `ads1299_wait_drdy()` polling helper before the ISR is installed. The
+interrupt-driven path is installed only for sustained EEG250 streaming.
