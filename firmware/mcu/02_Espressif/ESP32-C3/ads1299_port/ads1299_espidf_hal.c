@@ -94,6 +94,21 @@ static int init_control_gpio(void)
     return 0;
 }
 
+int ads1299_espidf_hal_install_drdy_isr(void (*handler)(void *), void *arg)
+{
+    esp_err_t err;
+
+    if (!handler) return -1;
+
+    err = gpio_install_isr_service(0);
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
+        return -2;
+    }
+
+    err = gpio_isr_handler_add((gpio_num_t)ADS1299_ESP32C3_PIN_DRDY, handler, arg);
+    return err == ESP_OK ? 0 : -3;
+}
+
 int ads1299_espidf_hal_init(ads1299_espidf_hal_ctx_t *ctx,
                             ads1299_platform_hal_t *hal)
 {
