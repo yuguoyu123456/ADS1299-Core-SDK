@@ -21,7 +21,7 @@ volatile uint32_t ads1299_frame_sequence;
 static const char *TAG = "ads1299_esp32";
 static ads1299_mcu_port_t s_mcu;
 static ads1299_t s_device;
-static ads1299_frame_queue_t s_queue;
+static esp32_ads1299_frame_queue_t s_queue;
 static portMUX_TYPE s_queue_lock = portMUX_INITIALIZER_UNLOCKED;
 static uint32_t s_stream_sequence;
 
@@ -29,7 +29,7 @@ static int wait_drdy(uint32_t timeout_ms)
 {
     const int64_t deadline = esp_timer_get_time() + (int64_t)timeout_ms * 1000LL;
     for (;;) {
-        const int ready = s_mcu.hal.drdy_read(s_mcu.hal.user);
+        const int ready = s_mcu.hal.pin_read(s_mcu.hal.user, ADS1299_PIN_DRDY);
         if (ready < 0) return -1;
         if (ready == 0) return 1;
         if (esp_timer_get_time() >= deadline) return 0;
