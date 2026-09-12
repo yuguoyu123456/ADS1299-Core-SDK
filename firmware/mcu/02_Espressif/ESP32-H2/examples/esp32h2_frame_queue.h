@@ -32,6 +32,7 @@ bool esp32h2_ads1299_frame_queue_push(esp32h2_ads1299_frame_queue_t *q,
                                        uint32_t sequence);
 bool esp32h2_ads1299_frame_queue_pop(esp32h2_ads1299_frame_queue_t *q,
                                       esp32h2_ads1299_frame_record_t *out);
+size_t esp32h2_ads1299_frame_queue_count(const esp32h2_ads1299_frame_queue_t *q);
 size_t esp32h2_ads1299_frame_queue_high_watermark(const esp32h2_ads1299_frame_queue_t *q);
 uint32_t esp32h2_ads1299_frame_queue_dropped(const esp32h2_ads1299_frame_queue_t *q);
 
