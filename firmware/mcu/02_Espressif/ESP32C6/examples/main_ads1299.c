@@ -18,6 +18,7 @@
 #include "freertos/task.h"
 
 extern int board_ads1299_hal(ads1299_platform_hal_t *hal);
+extern int board_ads1299_wait_drdy(uint32_t timeout_ms);
 
 /* Backward-compatible debugger snapshot. Odd sequence means writing. */
 volatile ads1299_frame_t ads1299_latest_frame;
@@ -34,6 +35,7 @@ static uint32_t g_stream_sequence;
 #define DIAG_FRAMES 8u
 #define DRDY_TIMEOUT_US 500000u
 #define DRDY_POLL_US 100u
+#define STREAM_DRDY_TIMEOUT_MS 100u
 
 static bool start_continuous(const char *phase)
 {
@@ -152,14 +154,9 @@ static void acquisition_task(void *arg)
     ads1299_frame_t frame;
 
     for (;;) {
-        int ready = g_port.drdy_read(g_port.user);
-        if (ready < 0) {
-            ESP_LOGE(TAG, "DRDY read failed in acquisition task");
+        if (board_ads1299_wait_drdy(STREAM_DRDY_TIMEOUT_MS) != 0) {
+            ESP_LOGE(TAG, "DRDY timeout in acquisition task");
             break;
-        }
-        if (ready != 0) {
-            taskYIELD();
-            continue;
         }
 
         ads1299_status_t rc = ads1299_read_frame_continuous(&g_device, &frame);
