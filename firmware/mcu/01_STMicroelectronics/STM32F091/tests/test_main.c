@@ -6,6 +6,9 @@ void test_port_reset_line(void);
 void test_port_spi(void);
 void test_port_drdy_active_low(void);
 void test_canonical_packet_round_trip(void);
+void test_frame_queue_fifo_wraparound_and_overflow(void);
+void test_frame_queue_argument_validation(void);
+void test_frame_queue_long_running_interleaving(void);
 
 static int run_test(const char *name, void (*fn)(void)) {
     printf("[ RUN      ] %s\n", name);
@@ -23,6 +26,9 @@ int main(void) {
     failures += run_test("port_reset_line", test_port_reset_line);
     failures += run_test("port_drdy_active_low", test_port_drdy_active_low);
     failures += run_test("canonical_packet_round_trip", test_canonical_packet_round_trip);
+    failures += run_test("frame_queue_fifo_wraparound_and_overflow", test_frame_queue_fifo_wraparound_and_overflow);
+    failures += run_test("frame_queue_argument_validation", test_frame_queue_argument_validation);
+    failures += run_test("frame_queue_long_running_interleaving", test_frame_queue_long_running_interleaving);
 
     if (failures != 0) {
         printf("FAIL STM32F091 integration smoke tests (%d failures)\n", failures);
