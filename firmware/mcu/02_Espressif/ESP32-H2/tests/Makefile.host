@@ -1,0 +1,18 @@
+CC ?= cc
+CFLAGS ?= -std=c11 -Wall -Wextra -Werror
+ROOT := ../../../..
+CORE := $(ROOT)/core_driver/ads1299
+EXAMPLES := ../examples
+
+all: test
+
+test: test_frame_queue
+	./test_frame_queue
+
+test_frame_queue: test_main.c test_frame_queue.c $(EXAMPLES)/esp32h2_frame_queue.c
+	$(CC) $(CFLAGS) -I$(CORE) -I$(EXAMPLES) $^ -o $@
+
+clean:
+	rm -f test_frame_queue
+
+.PHONY: all test clean
