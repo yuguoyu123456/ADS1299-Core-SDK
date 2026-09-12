@@ -66,3 +66,24 @@ ESP32-C3-DevKitM-1 + ADS1299 hardware and recording evidence for at least:
 
 No bench, long-run, electrical-safety, EMC, production-readiness, or regulatory
 claim is made.
+
+## Event-driven sustained-acquisition source status
+
+The current reference source additionally includes a DRDY falling-edge ISR
+binding through the ESP-IDF GPIO ISR service. The ISR only gives a FreeRTOS task
+notification; SPI and transport remain in task context. The acquisition task
+uses a one-second notification timeout so a missing DRDY edge is reported
+separately from an SPI/frame-read failure.
+
+This is a **SOURCE PRESENT** statement only. The current revision has not yet
+established:
+
+- ESP-IDF compile success for the new ISR/task-notification path;
+- physical verification that every 250-SPS DRDY edge is serviced on the stated
+  board under Wi-Fi/BLE activity;
+- long-duration queue-loss or latency bounds.
+
+A future BOARD-VERIFIED run should deliberately load the lower-priority
+transport path and confirm that acquisition remains event-driven, queue drops
+are explicitly counted, and no radio/logging work is executed inside the DRDY
+ISR.
