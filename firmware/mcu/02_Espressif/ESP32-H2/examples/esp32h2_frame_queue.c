@@ -35,6 +35,11 @@ bool esp32h2_ads1299_frame_queue_pop(esp32h2_ads1299_frame_queue_t *q,
     return true;
 }
 
+size_t esp32h2_ads1299_frame_queue_count(const esp32h2_ads1299_frame_queue_t *q)
+{
+    return q ? q->count : 0u;
+}
+
 size_t esp32h2_ads1299_frame_queue_high_watermark(const esp32h2_ads1299_frame_queue_t *q)
 {
     return q ? q->high_watermark : 0u;
