@@ -1,0 +1,61 @@
+#include "stm32g4_frame_queue.h"
+
+#include <string.h>
+
+void stm32g4_ads1299_frame_queue_init(stm32g4_ads1299_frame_queue_t *queue)
+{
+    if (queue != NULL) {
+        memset(queue, 0, sizeof(*queue));
+    }
+}
+
+int stm32g4_ads1299_frame_queue_push(stm32g4_ads1299_frame_queue_t *queue,
+                                     const ads1299_frame_t *frame,
+                                     uint32_t timestamp_us,
+                                     uint32_t sequence)
+{
+    stm32g4_ads1299_frame_record_t *slot;
+
+    if (queue == NULL || frame == NULL) return -1;
+    if (queue->count >= STM32G4_ADS1299_FRAME_QUEUE_CAPACITY) {
+        ++queue->dropped;
+        return -1;
+    }
+
+    slot = &queue->slots[queue->head];
+    slot->frame = *frame;
+    slot->timestamp_us = timestamp_us;
+    slot->sequence = sequence;
+    queue->head = (queue->head + 1u) % STM32G4_ADS1299_FRAME_QUEUE_CAPACITY;
+    ++queue->count;
+    if (queue->count > queue->high_watermark) {
+        queue->high_watermark = (uint32_t)queue->count;
+    }
+    return 0;
+}
+
+int stm32g4_ads1299_frame_queue_pop(stm32g4_ads1299_frame_queue_t *queue,
+                                    stm32g4_ads1299_frame_record_t *record)
+{
+    if (queue == NULL || record == NULL || queue->count == 0u) return -1;
+
+    *record = queue->slots[queue->tail];
+    queue->tail = (queue->tail + 1u) % STM32G4_ADS1299_FRAME_QUEUE_CAPACITY;
+    --queue->count;
+    return 0;
+}
+
+size_t stm32g4_ads1299_frame_queue_count(const stm32g4_ads1299_frame_queue_t *queue)
+{
+    return queue == NULL ? 0u : queue->count;
+}
+
+uint32_t stm32g4_ads1299_frame_queue_dropped(const stm32g4_ads1299_frame_queue_t *queue)
+{
+    return queue == NULL ? 0u : queue->dropped;
+}
+
+uint32_t stm32g4_ads1299_frame_queue_high_watermark(const stm32g4_ads1299_frame_queue_t *queue)
+{
+    return queue == NULL ? 0u : queue->high_watermark;
+}
