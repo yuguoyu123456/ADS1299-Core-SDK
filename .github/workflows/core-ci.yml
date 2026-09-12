@@ -14,7 +14,7 @@ jobs:
         run: |
           core_sources="firmware/core_driver/ads1299/ads1299.c firmware/core_driver/ads1299/ads1299_frame.c firmware/core_driver/ads1299/ads1299_model.c firmware/core_driver/ads1299/ads1299_multi.c"
           for test_source in tests/c/test_ads1299*.c; do
-            if [ "$test_source" = "tests/c/test_ads1299_packet.c" ]; then continue; fi
+            if [ "$test_source" = "tests/c/test_ads1299_packet.c" ] || [ "$test_source" = "tests/c/test_ads1299_transport.c" ]; then continue; fi
             test_name="$(basename "$test_source" .c)"
             gcc -std=c11 -Wall -Wextra -Werror -Ifirmware/core_driver/ads1299 \
               $core_sources "$test_source" -o "/tmp/$test_name"
@@ -39,6 +39,32 @@ jobs:
             tests/c/test_ads1299_transport.c \
             -o /tmp/test_ads1299_transport
           /tmp/test_ads1299_transport
+      - name: Fetch official Renesas FSP v6.5.0 API headers
+        run: |
+          mkdir -p /tmp/renesas-fsp
+          git init /tmp/renesas-fsp
+          git -C /tmp/renesas-fsp remote add origin https://github.com/renesas/fsp.git
+          git -C /tmp/renesas-fsp config core.sparseCheckout true
+          printf 'ra/fsp/inc/api/\n' > /tmp/renesas-fsp/.git/info/sparse-checkout
+          git -C /tmp/renesas-fsp fetch --depth 1 --filter=blob:none origin d3795123de40a9906e75ef03fb6fbf7aef430162
+          git -C /tmp/renesas-fsp checkout --detach FETCH_HEAD
+          test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_spi_api.h
+          test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_ioport_api.h
+          test -f /tmp/renesas-fsp/ra/fsp/inc/api/r_transfer_api.h
+      - name: Prepare SAME54 official reference toolchain and headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
+          python -m pip install --disable-pip-version-check unicorn pyelftools
+          mkdir -p /tmp/microchip-same54-reference
+          git init /tmp/microchip-same54-reference
+          git -C /tmp/microchip-same54-reference remote add origin https://github.com/Microchip-MPLAB-Harmony/csp_apps_sam_d5x_e5x.git
+          git -C /tmp/microchip-same54-reference config core.sparseCheckout true
+          printf 'apps/sercom/spi/master/spi_self_loopback_interrupt/\n' > /tmp/microchip-same54-reference/.git/info/sparse-checkout
+          git -C /tmp/microchip-same54-reference fetch --depth 1 --filter=blob:none origin 4a38194d468e94d4710c31bbfd67fbfe9f5d2096
+          git -C /tmp/microchip-same54-reference checkout --detach FETCH_HEAD
+          test -f /tmp/microchip-same54-reference/apps/sercom/spi/master/spi_self_loopback_interrupt/firmware/src/packs/ATSAME54P20A_DFP/same54p20a.h
+          test -f /tmp/microchip-same54-reference/apps/sercom/spi/master/spi_self_loopback_interrupt/firmware/src/packs/CMSIS/CMSIS/Core/Include/core_cm4.h
       - name: Compile every standardized MCU port package
         run: |
           python tests/validate_mcu_catalog.py
@@ -51,12 +77,40 @@ jobs:
           python tests/validate_ecosystem_100.py
           find firmware/mcu -type d -name ads1299_port -print0 | while IFS= read -r -d '' port_dir; do
             target_dir="$(dirname "$port_dir")"
-            for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
+            # The standardized port itself is host-portable by contract.
+            for source in "$port_dir"/*.c; do
               gcc -std=c11 -Wall -Wextra -Werror \
                 -Ifirmware/core_driver/ads1299 -I"$port_dir" \
                 -c "$source" -o /tmp/ads1299_port_check.o
             done
+            # These four smoke tests exercise only the shared Core/Port boundary.
+            # Adapter/MMIO/vendor-driver tests stay in platform-owned reference
+            # scripts where the genuine SDK headers and target compiler are used.
+            for test_name in test_frame.c test_register.c test_reset.c test_spi.c; do
+              source="$target_dir/tests/$test_name"
+              [ -f "$source" ] || continue
+              gcc -std=c11 -Wall -Wextra -Werror \
+                -Ifirmware/core_driver/ads1299 -I"$port_dir" \
+                -c "$source" -o /tmp/ads1299_port_test_check.o
+            done
           done
+          ra_target="firmware/mcu/05_Renesas/RA6M5"
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Ifirmware/core_driver/ads1299 -I"$ra_target/ads1299_port" \
+            -I"$ra_target/fsp_adapter" -I/tmp/renesas-fsp/ra/fsp/inc/api \
+            -include "$ra_target/tests/fixtures/bsp_fixture.h" \
+            -c "$ra_target/fsp_adapter/ads1299_fsp_hal.c" \
+            -o /tmp/ads1299_fsp_hal_check.o
+      - name: Compile SAME54 adapter against pinned official Harmony reference
+        run: |
+          python firmware/mcu/06_Microchip/SAME54/tests/compile_adapter.py \
+            --reference /tmp/microchip-same54-reference \
+            --cc "$(command -v arm-none-eabi-gcc)"
+      - name: Run SAME54 modeled-MMIO polling fault tests
+        run: |
+          python firmware/mcu/06_Microchip/SAME54/tests/run_polling_tests.py \
+            --reference /tmp/microchip-same54-reference \
+            --cc "$(command -v arm-none-eabi-gcc)"
 
   python-smoke:
     runs-on: ubuntu-latest
