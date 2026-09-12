@@ -34,3 +34,17 @@ in `firmware/transport/` and must not block a DRDY handler.
 ## Maintained ESP-IDF reference
 
 Use the local platformio.ini / CMake entry, esp_idf_adapter/ and board/esp_idf_board.c. GPIO18/19 replace boot-strap GPIO4/5. See board/reference_image.md, sources.md and build.md. Single-task dedicated SPI2 with persistent timeout buffers; latest-frame debugger output only.
+
+## Bounded acquisition building block
+
+`examples/esp32c6_frame_queue.[ch]` adds a fixed 16-frame, zero-heap queue for decoupling future DRDY/SPI acquisition work from slower UART/Wi-Fi/BLE/Thread consumers. Each record carries the decoded `ads1299_frame_t`, a timestamp and a sequence number. Queue depth, high-watermark and dropped-frame counters are explicit so transport back-pressure is observable rather than silent. The queue source is compiled by the maintained ESP-IDF reference build; integration into a dedicated acquisition/transport task split remains the next platform step.
+
+Host regression source is available under `tests/` and can be run with:
+
+```sh
+cd firmware/mcu/02_Espressif/ESP32C6/tests
+make -f Makefile.host clean
+make -f Makefile.host test
+```
+
+The regression covers FIFO ordering, wraparound, explicit overflow/drop accounting, invalid arguments and an 8192-frame producer/consumer interleave. Presence of these sources does **not** imply the command has been executed in CI or on hardware. Current validation remains source/integration present; ESP-IDF BUILD-VERIFIED and BOARD-VERIFIED are not claimed.
