@@ -1,4 +1,5 @@
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "ads1299.h"
 #include "ads1299_espidf_hal.h"
