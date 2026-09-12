@@ -19,6 +19,132 @@ static esp32c2_ads1299_frame_queue_t g_queue;
 static portMUX_TYPE g_queue_lock = portMUX_INITIALIZER_UNLOCKED;
 static uint32_t g_sequence;
 
+#define ADS1299_DIAGNOSTIC_FRAMES 8u
+#define ADS1299_DRDY_TIMEOUT_US 500000u
+#define ADS1299_DRDY_POLL_US 100u
+
+static bool stop_continuous(const char *phase)
+{
+    ads1299_status_t rc_stop = ads1299_stop(&g_device);
+    ads1299_status_t rc_sdatac = ads1299_sdatac(&g_device);
+    if (rc_stop != ADS1299_OK || rc_sdatac != ADS1299_OK) {
+        ESP_LOGE(TAG, "%s stop/SDATAC failed: stop=%d sdatac=%d",
+                 phase, (int)rc_stop, (int)rc_sdatac);
+        return false;
+    }
+    return true;
+}
+
+static bool start_continuous(const char *phase)
+{
+    ads1299_status_t rc_rdatac = ads1299_rdatac(&g_device);
+    ads1299_status_t rc_start = ads1299_start(&g_device);
+    if (rc_rdatac != ADS1299_OK || rc_start != ADS1299_OK) {
+        ESP_LOGE(TAG, "%s RDATAC/START failed: rdatac=%d start=%d",
+                 phase, (int)rc_rdatac, (int)rc_start);
+        return false;
+    }
+    return true;
+}
+
+static bool capture_diagnostic_frames(const char *phase, uint32_t frame_count)
+{
+    ads1299_frame_t frame;
+
+    for (uint32_t i = 0; i < frame_count; ++i) {
+        ads1299_status_t rc = ads1299_wait_drdy(
+            &g_device, ADS1299_DRDY_TIMEOUT_US, ADS1299_DRDY_POLL_US);
+        if (rc != ADS1299_OK) {
+            ESP_LOGE(TAG, "%s DRDY timeout/failure at frame %" PRIu32 ": %d",
+                     phase, i, (int)rc);
+            return false;
+        }
+
+        rc = ads1299_read_frame_continuous(&g_device, &frame);
+        if (rc != ADS1299_OK) {
+            ESP_LOGE(TAG, "%s frame read failed at frame %" PRIu32 ": %d",
+                     phase, i, (int)rc);
+            return false;
+        }
+
+        ESP_LOGI(TAG,
+                 "%s frame=%" PRIu32 " status=%02x%02x%02x ch1=%" PRId32,
+                 phase,
+                 i,
+                 frame.status[0],
+                 frame.status[1],
+                 frame.status[2],
+                 frame.channel[0]);
+    }
+
+    return true;
+}
+
+static bool run_internal_test(void)
+{
+    if (ads1299_configure_internal_test(&g_device,
+                                        ADS1299_GAIN_24,
+                                        0,
+                                        ADS1299_TEST_FREQ_FCLK_DIV_2_21) != ADS1299_OK) {
+        ESP_LOGE(TAG, "internal-test configuration failed");
+        return false;
+    }
+    if (!start_continuous("internal-test")) {
+        return false;
+    }
+
+    ESP_LOGI(TAG, "internal-test: capturing %u frames",
+             (unsigned)ADS1299_DIAGNOSTIC_FRAMES);
+    bool ok = capture_diagnostic_frames("internal-test", ADS1299_DIAGNOSTIC_FRAMES);
+    return stop_continuous("internal-test") && ok;
+}
+
+static bool run_input_short_test(void)
+{
+    if (ads1299_configure_input_short_test(&g_device, ADS1299_GAIN_24) != ADS1299_OK) {
+        ESP_LOGE(TAG, "input-short configuration failed");
+        return false;
+    }
+    if (!start_continuous("input-short")) {
+        return false;
+    }
+
+    ESP_LOGI(TAG, "input-short: capturing %u frames",
+             (unsigned)ADS1299_DIAGNOSTIC_FRAMES);
+    bool ok = capture_diagnostic_frames("input-short", ADS1299_DIAGNOSTIC_FRAMES);
+    return stop_continuous("input-short") && ok;
+}
+
+static bool configure_eeg_250(uint8_t channel_count)
+{
+    if (ads1299_set_data_rate(&g_device, ADS1299_DR_250SPS) != ADS1299_OK) {
+        ESP_LOGE(TAG, "250-SPS data-rate configuration failed");
+        return false;
+    }
+
+    if (ads1299_set_srb1(&g_device, 0) != ADS1299_OK) {
+        ESP_LOGE(TAG, "EEG SRB1 disable failed");
+        return false;
+    }
+
+    for (uint8_t channel = 1u; channel <= channel_count; ++channel) {
+        if (ads1299_set_channel(&g_device,
+                                channel,
+                                ADS1299_GAIN_24,
+                                ADS1299_MUX_NORMAL,
+                                0,
+                                0) != ADS1299_OK) {
+            ESP_LOGE(TAG, "EEG CH%u configuration failed", (unsigned)channel);
+            return false;
+        }
+    }
+
+    ESP_LOGI(TAG,
+             "250-SPS EEG profile ready: channels=%u gain=24 normal-input SRB1=off SRB2=off",
+             (unsigned)channel_count);
+    return true;
+}
+
 static void acquisition_task(void *arg)
 {
     (void)arg;
@@ -85,7 +211,7 @@ static void transport_task(void *arg)
          */
         if (record.sequence < 8u || (record.sequence % 250u) == 0u) {
             ESP_LOGI(TAG,
-                     "frame seq=%" PRIu32 " t=%" PRIu32
+                     "EEG250 frame seq=%" PRIu32 " t=%" PRIu32
                      "us status=%02x%02x%02x ch1=%" PRId32,
                      record.sequence,
                      record.timestamp_us,
@@ -130,18 +256,22 @@ void app_main(void)
         ESP_LOGE(TAG, "unexpected ID 0x%02x: ADS1299 family not detected", identity.raw);
         return;
     }
-    ESP_LOGI(TAG, "probe OK: ADS1299-family ID=0x%02x", identity.raw);
+    ESP_LOGI(TAG,
+             "probe OK: ADS1299-family ID=0x%02x channels=%u",
+             identity.raw,
+             (unsigned)identity.channel_count);
 
-    if (ads1299_configure_internal_test(&g_device,
-                                        ADS1299_GAIN_24,
-                                        0,
-                                        ADS1299_TEST_FREQ_FCLK_DIV_2_21) != ADS1299_OK) {
-        ESP_LOGE(TAG, "internal-test configuration failed");
+    /* Progressive beginner diagnostics before electrode-input streaming. */
+    if (!run_internal_test()) {
         return;
     }
-    if (ads1299_rdatac(&g_device) != ADS1299_OK ||
-        ads1299_start(&g_device) != ADS1299_OK) {
-        ESP_LOGE(TAG, "continuous start failed");
+    if (!run_input_short_test()) {
+        return;
+    }
+    if (!configure_eeg_250(identity.channel_count)) {
+        return;
+    }
+    if (!start_continuous("EEG250")) {
         return;
     }
 
@@ -149,7 +279,7 @@ void app_main(void)
     g_sequence = 0u;
 
     ESP_LOGI(TAG,
-             "internal-test streaming started: bounded queue=%u frames",
+             "250-SPS EEG streaming started: bounded queue=%u frames",
              (unsigned)ESP32C2_ADS1299_FRAME_QUEUE_CAPACITY);
 
     if (xTaskCreate(transport_task, "ads1299_tx", 3072, NULL, 3, NULL) != pdPASS) {
@@ -165,6 +295,8 @@ void app_main(void)
         return;
     }
 
+    ESP_LOGI(TAG,
+             "beginner flow complete: probe -> internal-test -> input-short -> EEG250 stream");
     ESP_LOGI(TAG,
              "acquisition runs above transport priority; slow UART/Wi-Fi/BLE work must stay in transport task");
 }
