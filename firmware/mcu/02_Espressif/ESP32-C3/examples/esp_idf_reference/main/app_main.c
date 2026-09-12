@@ -4,6 +4,7 @@
 #include "ads1299.h"
 #include "ads1299_espidf_hal.h"
 #include "esp32c3_frame_queue.h"
+#include "esp_attr.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
@@ -18,10 +19,13 @@ static ads1299_t g_device;
 static esp32c3_ads1299_frame_queue_t g_queue;
 static portMUX_TYPE g_queue_lock = portMUX_INITIALIZER_UNLOCKED;
 static uint32_t g_sequence;
+static TaskHandle_t g_acquisition_task;
+static TaskHandle_t g_transport_task;
 
 #define DIAG_FRAMES 8u
 #define DRDY_TIMEOUT_US 500000u
 #define DRDY_POLL_US 100u
+#define STREAM_DRDY_TIMEOUT_MS 1000u
 
 static bool start_continuous(const char *phase)
 {
@@ -96,24 +100,44 @@ static bool configure_eeg250(uint8_t channels)
     return true;
 }
 
+static void IRAM_ATTR drdy_isr(void *arg)
+{
+    BaseType_t higher_woken = pdFALSE;
+    (void)arg;
+    if (g_acquisition_task != NULL) {
+        vTaskNotifyGiveFromISR(g_acquisition_task, &higher_woken);
+        if (higher_woken == pdTRUE) {
+            portYIELD_FROM_ISR();
+        }
+    }
+}
+
 static void acquisition_task(void *arg)
 {
     (void)arg;
     ads1299_frame_t frame;
     for (;;) {
-        if (g_port.drdy_read(g_port.user) == 0) {
-            if (ads1299_read_frame_continuous(&g_device, &frame) != ADS1299_OK) break;
-            uint32_t ts = (uint32_t)esp_timer_get_time();
-            uint32_t seq = g_sequence++;
-            portENTER_CRITICAL(&g_queue_lock);
-            (void)esp32c3_ads1299_frame_queue_push(&g_queue, &frame, ts, seq);
-            portEXIT_CRITICAL(&g_queue_lock);
-        } else {
-            vTaskDelay(pdMS_TO_TICKS(1));
+        if (ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(STREAM_DRDY_TIMEOUT_MS)) == 0u) {
+            ESP_LOGE(TAG, "EEG250 DRDY timeout: no falling edge for %u ms",
+                     (unsigned)STREAM_DRDY_TIMEOUT_MS);
+            break;
         }
+
+        if (ads1299_read_frame_continuous(&g_device, &frame) != ADS1299_OK) {
+            ESP_LOGE(TAG, "EEG250 frame read failed");
+            break;
+        }
+
+        uint32_t ts = (uint32_t)esp_timer_get_time();
+        uint32_t seq = g_sequence++;
+        portENTER_CRITICAL(&g_queue_lock);
+        (void)esp32c3_ads1299_frame_queue_push(&g_queue, &frame, ts, seq);
+        portEXIT_CRITICAL(&g_queue_lock);
     }
+
     (void)ads1299_stop(&g_device);
     (void)ads1299_sdatac(&g_device);
+    g_acquisition_task = NULL;
     vTaskDelete(NULL);
 }
 
@@ -149,6 +173,18 @@ static void transport_task(void *arg)
     }
 }
 
+static void stop_created_tasks(void)
+{
+    if (g_acquisition_task != NULL) {
+        vTaskDelete(g_acquisition_task);
+        g_acquisition_task = NULL;
+    }
+    if (g_transport_task != NULL) {
+        vTaskDelete(g_transport_task);
+        g_transport_task = NULL;
+    }
+}
+
 void app_main(void)
 {
     ads1299_device_id_t id;
@@ -168,16 +204,32 @@ void app_main(void)
     if (!run_internal_test()) { ESP_LOGE(TAG, "internal-test failed"); return; }
     if (!run_input_short()) { ESP_LOGE(TAG, "input-short failed"); return; }
     if (!configure_eeg250(id.channel_count)) { ESP_LOGE(TAG, "EEG250 configuration failed"); return; }
-    if (!start_continuous("EEG250")) return;
 
     esp32c3_ads1299_frame_queue_init(&g_queue);
     g_sequence = 0u;
-    if (xTaskCreate(transport_task, "ads1299_tx", 3072, NULL, 3, NULL) != pdPASS ||
-        xTaskCreate(acquisition_task, "ads1299_acq", 3072, NULL, 5, NULL) != pdPASS) {
+    g_acquisition_task = NULL;
+    g_transport_task = NULL;
+
+    if (xTaskCreate(acquisition_task, "ads1299_acq", 3072, NULL, 5,
+                    &g_acquisition_task) != pdPASS ||
+        xTaskCreate(transport_task, "ads1299_tx", 3072, NULL, 3,
+                    &g_transport_task) != pdPASS) {
         ESP_LOGE(TAG, "task creation failed");
-        (void)ads1299_stop(&g_device);
-        (void)ads1299_sdatac(&g_device);
+        stop_created_tasks();
         return;
     }
-    ESP_LOGI(TAG, "beginner flow complete: probe -> internal-test -> input-short -> EEG250 stream");
+
+    rc = ads1299_espidf_hal_install_drdy_isr(drdy_isr, NULL);
+    if (rc != 0) {
+        ESP_LOGE(TAG, "DRDY ISR install failed: %d", rc);
+        stop_created_tasks();
+        return;
+    }
+
+    if (!start_continuous("EEG250")) {
+        stop_created_tasks();
+        return;
+    }
+
+    ESP_LOGI(TAG, "beginner flow complete: probe -> internal-test -> input-short -> EEG250 event-driven stream");
 }
