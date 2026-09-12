@@ -7,6 +7,8 @@
 #include "esp_rom_sys.h"
 #include "esp8684_devkitm1_ads1299.h"
 
+#define ADS1299_ESP32C2_MAX_TRANSFER 64u
+
 static int gpio_for_pin(ads1299_platform_pin_t pin)
 {
     switch (pin) {
@@ -22,14 +24,18 @@ static int gpio_for_pin(ads1299_platform_pin_t pin)
 static int idf_spi_transfer(void *user, const uint8_t *tx, uint8_t *rx, size_t len)
 {
     ads1299_espidf_hal_ctx_t *ctx = (ads1299_espidf_hal_ctx_t *)user;
-    if (!ctx || !ctx->spi || len == 0u || (!tx && !rx)) {
+    uint8_t zero_tx[ADS1299_ESP32C2_MAX_TRANSFER] = {0};
+
+    if (!ctx || !ctx->spi || len == 0u || len > ADS1299_ESP32C2_MAX_TRANSFER ||
+        (!tx && !rx)) {
         return -1;
     }
 
     spi_transaction_t t;
     memset(&t, 0, sizeof(t));
     t.length = len * 8u;
-    t.tx_buffer = tx;
+    /* The portable HAL contract requires NULL TX to clock zero bytes. */
+    t.tx_buffer = tx ? tx : zero_tx;
     t.rx_buffer = rx;
 
     return spi_device_polling_transmit(ctx->spi, &t) == ESP_OK ? 0 : -1;
@@ -117,7 +123,7 @@ int ads1299_espidf_hal_init(ads1299_espidf_hal_ctx_t *ctx,
         .sclk_io_num = ADS1299_ESP32C2_PIN_SCLK,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
-        .max_transfer_sz = 64,
+        .max_transfer_sz = ADS1299_ESP32C2_MAX_TRANSFER,
     };
 
     esp_err_t err = spi_bus_initialize(ADS1299_ESP32C2_SPI_HOST,
