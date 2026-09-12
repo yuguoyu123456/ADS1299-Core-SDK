@@ -4,6 +4,10 @@
 #include "ads1299.h"
 #include "ads1299_espidf_hal.h"
 #include "esp32c2_frame_queue.h"
+#include "esp8684_devkitm1_ads1299.h"
+#include "driver/gpio.h"
+#include "esp_attr.h"
+#include "esp_err.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
@@ -18,11 +22,13 @@ static ads1299_port_t g_port;
 static ads1299_t g_device;
 static esp32c2_ads1299_frame_queue_t g_queue;
 static portMUX_TYPE g_queue_lock = portMUX_INITIALIZER_UNLOCKED;
+static TaskHandle_t g_acquisition_task;
 static uint32_t g_sequence;
 
 #define ADS1299_DIAGNOSTIC_FRAMES 8u
 #define ADS1299_DRDY_TIMEOUT_US 500000u
 #define ADS1299_DRDY_POLL_US 100u
+#define ADS1299_STREAM_DRDY_TIMEOUT_MS 1000u
 
 static bool stop_continuous(const char *phase)
 {
@@ -146,31 +152,84 @@ static bool configure_eeg_250(uint8_t channel_count)
     return true;
 }
 
+static void IRAM_ATTR ads1299_drdy_isr(void *arg)
+{
+    (void)arg;
+    BaseType_t higher_priority_task_woken = pdFALSE;
+
+    if (g_acquisition_task != NULL) {
+        vTaskNotifyGiveFromISR(g_acquisition_task, &higher_priority_task_woken);
+        if (higher_priority_task_woken == pdTRUE) {
+            portYIELD_FROM_ISR();
+        }
+    }
+}
+
+static bool install_drdy_interrupt(void)
+{
+    esp_err_t rc = gpio_set_intr_type((gpio_num_t)ADS1299_ESP32C2_PIN_DRDY,
+                                      GPIO_INTR_NEGEDGE);
+    if (rc != ESP_OK) {
+        ESP_LOGE(TAG, "DRDY interrupt type setup failed: %s", esp_err_to_name(rc));
+        return false;
+    }
+
+    rc = gpio_install_isr_service(0);
+    if (rc != ESP_OK && rc != ESP_ERR_INVALID_STATE) {
+        ESP_LOGE(TAG, "GPIO ISR service install failed: %s", esp_err_to_name(rc));
+        return false;
+    }
+
+    rc = gpio_isr_handler_add((gpio_num_t)ADS1299_ESP32C2_PIN_DRDY,
+                              ads1299_drdy_isr,
+                              NULL);
+    if (rc != ESP_OK) {
+        ESP_LOGE(TAG, "DRDY ISR handler install failed: %s", esp_err_to_name(rc));
+        return false;
+    }
+
+    rc = gpio_intr_enable((gpio_num_t)ADS1299_ESP32C2_PIN_DRDY);
+    if (rc != ESP_OK) {
+        ESP_LOGE(TAG, "DRDY interrupt enable failed: %s", esp_err_to_name(rc));
+        return false;
+    }
+
+    ESP_LOGI(TAG, "DRDY falling-edge notification enabled on GPIO%d",
+             ADS1299_ESP32C2_PIN_DRDY);
+    return true;
+}
+
 static void acquisition_task(void *arg)
 {
     (void)arg;
     ads1299_frame_t frame;
 
     for (;;) {
-        if (g_port.drdy_read(g_port.user) == 0) {
-            if (ads1299_read_frame_continuous(&g_device, &frame) != ADS1299_OK) {
-                ESP_LOGE(TAG, "frame read failed; acquisition task stopping");
-                break;
-            }
-
-            const uint32_t timestamp_us = (uint32_t)esp_timer_get_time();
-            const uint32_t sequence = g_sequence++;
-            portENTER_CRITICAL(&g_queue_lock);
-            (void)esp32c2_ads1299_frame_queue_push(
-                &g_queue, &frame, timestamp_us, sequence);
-            portEXIT_CRITICAL(&g_queue_lock);
-        } else {
-            vTaskDelay(pdMS_TO_TICKS(1));
+        uint32_t pending = ulTaskNotifyTake(pdFALSE,
+                                           pdMS_TO_TICKS(ADS1299_STREAM_DRDY_TIMEOUT_MS));
+        if (pending == 0u) {
+            ESP_LOGW(TAG, "EEG250 DRDY timeout: no falling edge for %u ms",
+                     (unsigned)ADS1299_STREAM_DRDY_TIMEOUT_MS);
+            continue;
         }
+
+        if (ads1299_read_frame_continuous(&g_device, &frame) != ADS1299_OK) {
+            ESP_LOGE(TAG, "frame read failed; acquisition task stopping");
+            break;
+        }
+
+        const uint32_t timestamp_us = (uint32_t)esp_timer_get_time();
+        const uint32_t sequence = g_sequence++;
+        portENTER_CRITICAL(&g_queue_lock);
+        (void)esp32c2_ads1299_frame_queue_push(
+            &g_queue, &frame, timestamp_us, sequence);
+        portEXIT_CRITICAL(&g_queue_lock);
     }
 
+    (void)gpio_intr_disable((gpio_num_t)ADS1299_ESP32C2_PIN_DRDY);
     (void)ads1299_stop(&g_device);
     (void)ads1299_sdatac(&g_device);
+    g_acquisition_task = NULL;
     vTaskDelete(NULL);
 }
 
@@ -272,30 +331,38 @@ void app_main(void)
     if (!configure_eeg_250(identity.channel_count)) {
         return;
     }
-    if (!start_continuous("EEG250")) {
-        return;
-    }
 
     esp32c2_ads1299_frame_queue_init(&g_queue);
     g_sequence = 0u;
 
-    ESP_LOGI(TAG,
-             "250-SPS EEG streaming started: bounded queue=%u frames",
-             (unsigned)ESP32C2_ADS1299_FRAME_QUEUE_CAPACITY);
-
     if (xTaskCreate(transport_task, "ads1299_tx", 3072, NULL, 3, NULL) != pdPASS) {
         ESP_LOGE(TAG, "transport task creation failed");
-        (void)ads1299_stop(&g_device);
-        (void)ads1299_sdatac(&g_device);
         return;
     }
-    if (xTaskCreate(acquisition_task, "ads1299_acq", 3072, NULL, 5, NULL) != pdPASS) {
+    if (xTaskCreate(acquisition_task,
+                    "ads1299_acq",
+                    3072,
+                    NULL,
+                    5,
+                    &g_acquisition_task) != pdPASS) {
         ESP_LOGE(TAG, "acquisition task creation failed");
-        (void)ads1299_stop(&g_device);
-        (void)ads1299_sdatac(&g_device);
+        return;
+    }
+    if (!install_drdy_interrupt()) {
+        vTaskDelete(g_acquisition_task);
+        g_acquisition_task = NULL;
+        return;
+    }
+    if (!start_continuous("EEG250")) {
+        (void)gpio_intr_disable((gpio_num_t)ADS1299_ESP32C2_PIN_DRDY);
+        vTaskDelete(g_acquisition_task);
+        g_acquisition_task = NULL;
         return;
     }
 
+    ESP_LOGI(TAG,
+             "250-SPS EEG streaming started: event-driven DRDY, bounded queue=%u frames",
+             (unsigned)ESP32C2_ADS1299_FRAME_QUEUE_CAPACITY);
     ESP_LOGI(TAG,
              "beginner flow complete: probe -> internal-test -> input-short -> EEG250 stream");
     ESP_LOGI(TAG,
