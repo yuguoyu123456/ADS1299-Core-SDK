@@ -1,6 +1,6 @@
 CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror
-ROOT := ../../../../..
+ROOT := ../../../..
 CORE := $(ROOT)/core_driver/ads1299
 EXAMPLES := ../examples
 
