@@ -5,6 +5,7 @@ FIRMWARE := ../../../..
 CORE := $(FIRMWARE)/core_driver/ads1299
 PACKET := $(FIRMWARE)/common/data_packet
 PORT := ../ads1299_port
+EXAMPLES := ../examples
 
 TARGET := stm32f103_integration_tests
 
@@ -15,12 +16,16 @@ TEST_SRCS := \
 	test_reset.c \
 	test_spi.c \
 	test_drdy.c \
-	test_packet.c
+	test_packet.c \
+	test_frame_queue.c
 
 PORT_SRCS := \
 	$(PORT)/ads1299_spi.c \
 	$(PORT)/ads1299_gpio.c \
 	$(PORT)/ads1299_drdy.c
+
+EXAMPLE_SRCS := \
+	$(EXAMPLES)/stm32f103_frame_queue.c
 
 CORE_SRCS := \
 	$(CORE)/ads1299.c \
@@ -31,13 +36,13 @@ CORE_SRCS := \
 PACKET_SRCS := \
 	$(PACKET)/ads1299_packet.c
 
-INCLUDES := -I$(CORE) -I$(PACKET) -I$(PORT)
+INCLUDES := -I$(CORE) -I$(PACKET) -I$(PORT) -I$(EXAMPLES)
 
 .PHONY: all test clean
 
 all: $(TARGET)
 
-$(TARGET): $(TEST_SRCS) $(PORT_SRCS) $(CORE_SRCS) $(PACKET_SRCS)
+$(TARGET): $(TEST_SRCS) $(PORT_SRCS) $(EXAMPLE_SRCS) $(CORE_SRCS) $(PACKET_SRCS)
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ -lm
 
 test: $(TARGET)
