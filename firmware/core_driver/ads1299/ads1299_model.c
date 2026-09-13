@@ -427,7 +427,7 @@ ads1299_semantic_status_t ads1299_semantic_leadoff_frequency_hz(
         return ADS1299_SEMANTIC_CONTEXT_REQUIRED;
     }
     if (fdr_hz <= 0.0) return ADS1299_SEMANTIC_EINVAL;
-    *frequency_hz = fdr_hz / 450.0;
+    *frequency_hz = fdr_hz / 4.0;
     return ADS1299_SEMANTIC_OK;
 }
 
@@ -484,7 +484,7 @@ static const char *leadoff_frequency_name(uint8_t code) {
         case 0u: return "DC";
         case 1u: return "fCLK/2^18";
         case 2u: return "fCLK/2^16";
-        case 3u: return "fDR/450";
+        case 3u: return "fDR/4";
         default: return NULL;
     }
 }
