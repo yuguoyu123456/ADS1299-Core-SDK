@@ -1,6 +1,6 @@
 # Validation
 
-Current status: **BUILD-VERIFIED for the recorded PlatformIO reference build; BOARD-VERIFIED is not claimed.**
+Current status: **Compiles** — software evidence is **BUILD-VERIFIED for the recorded PlatformIO reference build; BOARD-VERIFIED is not claimed.**
 
 Legacy lifecycle labels retained by this folder are `Planned`, `Reference`,
 `Example`, `Compatible`, `Compiles`, `Bench-tested`, `24h-tested`. For current
