@@ -131,7 +131,7 @@ static void test_context_aware_descriptors(void) {
     assert(ads1299_describe_field_code(ADS1299_FIELD_LOFF_FREQ, 3u,
                                        ADS1299_VARIANT_8CH, &ctx, &d) ==
            ADS1299_SEMANTIC_OK);
-    assert(d.primary_valid && near(d.primary, 250.0 / 450.0, 1e-12));
+    assert(d.primary_valid && near(d.primary, 250.0 / 4.0, 1e-12));
 
     assert(ads1299_describe_field_code(ADS1299_FIELD_CH_GAIN, 6u,
                                        ADS1299_VARIANT_8CH, &ctx, &d) ==
