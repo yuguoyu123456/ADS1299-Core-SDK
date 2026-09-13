@@ -55,6 +55,17 @@ jobs:
             target_dir="$(dirname "$port_dir")"
             for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
               case "$source" in
+                */01_STMicroelectronics/STM32F407/tests/test_frame_queue.c)
+                  # The queue test is a linked host integration test: it depends on
+                  # examples/stm32f407_frame_queue.c and the example include path.
+                  # Execute the leaf's existing host suite rather than compiling this
+                  # translation unit alone and thereby dropping its real dependency.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32f407_frame_queue.c"
+                  test -f "$target_dir/examples/stm32f407_frame_queue.h"
+                  (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                  continue
+                  ;;
                 */03_NXP/LPC55S69/tests/test_adapter.c|*/03_NXP/LPC55S69/tests/test_vendor_spi.c)
                   # These tests intentionally consume genuine NXP MCUXpresso SDK
                   # headers and, for test_vendor_spi.c, the real fsl_spi.c driver.
