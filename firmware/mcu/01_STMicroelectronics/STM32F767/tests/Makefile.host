@@ -7,6 +7,13 @@ EXAMPLES := $(MODEL)/examples
 CORE := ../../../core_driver/ads1299
 PACKET := ../../../common/data_packet
 
+# This Makefile is executed from firmware/mcu/01_STMicroelectronics/STM32F767/tests.
+# Keep the historical assignments above for compatibility/readability, then bind
+# the linked host suite to the repository-wide shared ADS1299 core and packet
+# modules at their actual paths. Platform tests must never duplicate core logic.
+CORE := ../../../../core_driver/ads1299
+PACKET := ../../../../common/data_packet
+
 INCLUDES := -I$(PORT) -I$(EXAMPLES) -I$(CORE) -I$(PACKET)
 
 TEST_SRCS := \
