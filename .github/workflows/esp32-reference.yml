@@ -6,6 +6,29 @@ on:
   pull_request:
 
 jobs:
+  esp32-host-queues:
+    name: host-queue-${{ matrix.model }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - model: esp32-c2
+            test_dir: firmware/mcu/02_Espressif/ESP32-C2/tests
+          - model: esp32-c3
+            test_dir: firmware/mcu/02_Espressif/ESP32-C3/tests
+          - model: esp32-c5
+            test_dir: firmware/mcu/02_Espressif/ESP32-C5/tests
+          - model: esp32-h2
+            test_dir: firmware/mcu/02_Espressif/ESP32-H2/tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run bounded-queue regression
+        working-directory: ${{ matrix.test_dir }}
+        run: |
+          make -f Makefile.host clean
+          make -f Makefile.host test
+
   esp32s3-idf:
     runs-on: ubuntu-latest
     steps:
