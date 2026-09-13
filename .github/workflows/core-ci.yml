@@ -177,6 +177,21 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32H743/tests/*.c)
+                  # STM32H743 owns a linked host integration suite. Its beginner demo,
+                  # bounded frame queue and canonical packet tests depend on example
+                  # and shared sources, so preserve the complete suite atomically.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32h743_beginner_demo.c"
+                  test -f "$target_dir/examples/stm32h743_beginner_demo.h"
+                  test -f "$target_dir/examples/stm32h743_frame_queue.c"
+                  test -f "$target_dir/examples/stm32h743_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32h743_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32h743_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32G071/tests/*.c)
                   # STM32G071 also owns a linked host integration suite. Its frame
                   # queue test depends on the example queue implementation and its
