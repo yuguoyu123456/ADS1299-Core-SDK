@@ -8,9 +8,9 @@ Current status: **Compiles** — the catalog lifecycle label reflects recorded s
 - Current board-config + progressive diagnostic + bounded streaming changes: **TEMPLATE / PLANNED until re-build-verified**.
 - Physical hardware status: **not BOARD-VERIFIED**.
 
-The earlier clean build used ESP-IDF 5.4.0 and Xtensa GCC 14.2.0 with:
+The earlier clean build used ESP-IDF 5.4.0 and Xtensa GCC 14.2.0.
 
-`platformio run -d firmware/mcu/02_Espressif/ESP32S3`
+Build entrypoint: `platformio run -d firmware/mcu/02_Espressif/ESP32S3`.
 
 See `build.md` for the recorded command and memory result. That evidence proves
 compilation/linking of the earlier baseline only; it does not automatically
