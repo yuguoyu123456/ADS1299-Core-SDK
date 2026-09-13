@@ -54,6 +54,17 @@ jobs:
           find firmware/mcu -type d -name ads1299_port -print0 | while IFS= read -r -d '' port_dir; do
             target_dir="$(dirname "$port_dir")"
             for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
+              case "$source" in
+                */05_Renesas/RA6M5/tests/test_fsp_adapter.c)
+                  # This test intentionally consumes official Renesas FSP API headers.
+                  # Preserve it under its dedicated ARM/Unicorn runner instead of
+                  # pretending it is a dependency-free portable-host translation unit.
+                  test -f "$target_dir/tests/run_adapter_tests.py"
+                  test -f "$target_dir/fsp_adapter/ads1299_fsp_hal.c"
+                  test -f "$target_dir/fsp_adapter/ads1299_fsp_hal.h"
+                  continue
+                  ;;
+              esac
               gcc -std=c11 -Wall -Wextra -Werror \
                 -Ifirmware/core_driver/ads1299 -I"$port_dir" \
                 -c "$source" -o /tmp/ads1299_port_check.o
