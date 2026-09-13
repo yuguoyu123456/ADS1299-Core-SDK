@@ -97,6 +97,19 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32F429/tests/*.c)
+                  # STM32F429 owns a linked host integration suite. Its bounded frame
+                  # queue and canonical packet tests require leaf/shared sources, so
+                  # preserve the complete suite as one host-validation boundary.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32f429_frame_queue.c"
+                  test -f "$target_dir/examples/stm32f429_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32f429_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32f429_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32F446/tests/*.c)
                   # STM32F446 owns a linked host integration suite. Its frame queue
                   # and packet tests require the leaf example/common packet sources,
