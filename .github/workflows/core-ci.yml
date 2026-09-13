@@ -55,26 +55,32 @@ jobs:
             target_dir="$(dirname "$port_dir")"
             for source in "$port_dir"/*.c "$target_dir"/tests/*.c; do
               case "$source" in
-                */01_STMicroelectronics/STM32C031/tests/test_frame_queue.c)
-                  # The queue test is a linked host integration test: it depends on
-                  # examples/stm32c031_frame_queue.c and the example include path.
-                  # Execute the leaf's existing host suite rather than compiling this
-                  # translation unit alone and thereby dropping its real dependency.
+                */01_STMicroelectronics/STM32C031/tests/*.c)
+                  # STM32C031 owns a linked host integration suite. Its tests share
+                  # example queue and common packet dependencies, so keep the suite
+                  # atomic instead of recompiling individual test translation units
+                  # with the generic dependency-free include set.
                   test -f "$target_dir/tests/Makefile.host"
                   test -f "$target_dir/examples/stm32c031_frame_queue.c"
                   test -f "$target_dir/examples/stm32c031_frame_queue.h"
-                  (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                  if [ ! -e /tmp/ads1299_stm32c031_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32c031_host_suite_done
+                  fi
                   continue
                   ;;
-                */01_STMicroelectronics/STM32F407/tests/test_frame_queue.c)
-                  # The queue test is a linked host integration test: it depends on
-                  # examples/stm32f407_frame_queue.c and the example include path.
-                  # Execute the leaf's existing host suite rather than compiling this
-                  # translation unit alone and thereby dropping its real dependency.
+                */01_STMicroelectronics/STM32F407/tests/*.c)
+                  # STM32F407 owns a linked host integration suite. It supplies the
+                  # example queue plus common data-packet include/link dependencies;
+                  # run that complete suite once and do not reclassify its members as
+                  # standalone dependency-free host translation units afterwards.
                   test -f "$target_dir/tests/Makefile.host"
                   test -f "$target_dir/examples/stm32f407_frame_queue.c"
                   test -f "$target_dir/examples/stm32f407_frame_queue.h"
-                  (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                  if [ ! -e /tmp/ads1299_stm32f407_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32f407_host_suite_done
+                  fi
                   continue
                   ;;
                 */03_NXP/LPC55S69/tests/test_adapter.c|*/03_NXP/LPC55S69/tests/test_vendor_spi.c)
