@@ -69,6 +69,20 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32F091/tests/*.c)
+                  # STM32F091 owns a linked host integration suite. Its small-MCU
+                  # frame queue and canonical packet tests depend on leaf/shared
+                  # sources, so keep the whole suite atomic rather than compiling
+                  # individual members with the generic dependency-free include set.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32f091_frame_queue.c"
+                  test -f "$target_dir/examples/stm32f091_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32f091_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32f091_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32F407/tests/*.c)
                   # STM32F407 owns a linked host integration suite. It supplies the
                   # example queue plus common data-packet include/link dependencies;
