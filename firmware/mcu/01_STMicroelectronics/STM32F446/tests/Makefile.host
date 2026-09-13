@@ -4,8 +4,8 @@ CFLAGS ?= -std=c99 -Wall -Wextra -Werror -pedantic -O0 -g
 MODEL := ..
 PORT := $(MODEL)/ads1299_port
 EXAMPLES := $(MODEL)/examples
-CORE := ../../../core_driver/ads1299
-PACKET := ../../../common/data_packet
+CORE := ../../../../core_driver/ads1299
+PACKET := ../../../../common/data_packet
 
 INCLUDES := -I$(PORT) -I$(EXAMPLES) -I$(CORE) -I$(PACKET)
 
