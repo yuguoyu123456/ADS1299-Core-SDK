@@ -12,7 +12,7 @@ static esp32_ads1299_frame_item_t make_item(uint32_t sequence)
     item.timestamp_us = 1000u + sequence;
     item.frame.status[0] = (uint8_t)(sequence & 0xFFu);
     for (unsigned ch = 0; ch < 8u; ++ch) {
-        item.frame.channels[ch] = (int32_t)(sequence * 100u + ch);
+        item.frame.channel[ch] = (int32_t)(sequence * 100u + ch);
     }
     return item;
 }
@@ -72,7 +72,7 @@ static void test_overflow_and_long_interleave(void)
             assert(out.sequence == consumed++);
             assert(out.timestamp_us == 1000u + out.sequence);
             for (unsigned ch = 0; ch < 8u; ++ch) {
-                assert(out.frame.channels[ch] == (int32_t)(out.sequence * 100u + ch));
+                assert(out.frame.channel[ch] == (int32_t)(out.sequence * 100u + ch));
             }
         }
         if (esp32_ads1299_frame_queue_count(&q) >= ESP32_ADS1299_FRAME_QUEUE_CAPACITY - 1u) {
