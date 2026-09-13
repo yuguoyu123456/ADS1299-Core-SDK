@@ -125,6 +125,20 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32G4/tests/*.c)
+                  # STM32G4 owns a linked host integration suite. Its bounded frame
+                  # queue and canonical packet tests depend on leaf/shared sources,
+                  # so execute the full suite once instead of misclassifying members
+                  # as standalone dependency-free translation units.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32g4_frame_queue.c"
+                  test -f "$target_dir/examples/stm32g4_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32g4_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32g4_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */03_NXP/LPC55S69/tests/test_adapter.c|*/03_NXP/LPC55S69/tests/test_vendor_spi.c)
                   # These tests intentionally consume genuine NXP MCUXpresso SDK
                   # headers and, for test_vendor_spi.c, the real fsl_spi.c driver.
@@ -202,4 +216,3 @@ jobs:
               "$package/rtl/frame_parser.v" \
               "$package/tb/simulation_tb.v"
             vvp "/tmp/$name"
-          done
