@@ -13,14 +13,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - model: esp32
+            test_dir: firmware/mcu/02_Espressif/ESP32/tests
           - model: esp32-c2
             test_dir: firmware/mcu/02_Espressif/ESP32-C2/tests
           - model: esp32-c3
             test_dir: firmware/mcu/02_Espressif/ESP32-C3/tests
           - model: esp32-c5
             test_dir: firmware/mcu/02_Espressif/ESP32-C5/tests
+          - model: esp32-c6
+            test_dir: firmware/mcu/02_Espressif/ESP32C6/tests
           - model: esp32-h2
             test_dir: firmware/mcu/02_Espressif/ESP32-H2/tests
+          - model: esp32-p4
+            test_dir: firmware/mcu/02_Espressif/ESP32-P4/tests
+          - model: esp32-s3
+            test_dir: firmware/mcu/02_Espressif/ESP32S3/tests
     steps:
       - uses: actions/checkout@v4
       - name: Build and run bounded-queue regression
