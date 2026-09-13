@@ -164,6 +164,19 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32H723/tests/*.c)
+                  # STM32H723 owns a linked host integration suite. Its bounded queue
+                  # and canonical packet tests require the leaf example plus shared
+                  # packet/core sources, so preserve that complete validation unit.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32h723_frame_queue.c"
+                  test -f "$target_dir/examples/stm32h723_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32h723_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32h723_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32G071/tests/*.c)
                   # STM32G071 also owns a linked host integration suite. Its frame
                   # queue test depends on the example queue implementation and its
