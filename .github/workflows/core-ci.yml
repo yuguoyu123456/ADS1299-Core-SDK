@@ -64,6 +64,16 @@ jobs:
                   test -f "$target_dir/fsp_adapter/ads1299_fsp_hal.h"
                   continue
                   ;;
+                */06_Microchip/SAME54/tests/test_polling.c)
+                  # This MMIO polling test intentionally consumes official Harmony/DFP
+                  # register definitions. Keep it under the dedicated ARM/Unicorn
+                  # runner and require both real-header compile paths to remain present.
+                  test -f "$target_dir/tests/run_polling_tests.py"
+                  test -f "$target_dir/tests/compile_adapter.py"
+                  test -f "$target_dir/harmony_adapter/ads1299_same54_hal.c"
+                  test -f "$target_dir/harmony_adapter/ads1299_same54_hal.h"
+                  continue
+                  ;;
               esac
               gcc -std=c11 -Wall -Wextra -Werror \
                 -Ifirmware/core_driver/ads1299 -I"$port_dir" \
