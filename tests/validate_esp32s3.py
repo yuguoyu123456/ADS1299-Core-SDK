@@ -17,6 +17,7 @@ for relative in (
     "components/ads1299_esp_idf_hal/CMakeLists.txt",
     "components/ads1299_esp_idf_hal/ads1299_esp_idf_hal.h",
     "components/ads1299_esp_idf_hal/ads1299_esp_idf_hal.c",
+    "board/esp32s3_devkitc1_ads1299.h",
     "main/main.c",
 ):
     path = TARGET / relative
@@ -36,9 +37,31 @@ assert "ads1299_port_t" not in hal_text, "HAL must not bypass the generic MCU Po
 assert "ads1299_esp_idf_make_hal" in hal_text
 assert "spi_device_polling_transmit" in hal_text
 
+board = (TARGET / "board" / "esp32s3_devkitc1_ads1299.h").read_text(encoding="utf-8")
+for expected in (
+    "ADS1299_BOARD_SPI_HOST   SPI2_HOST",
+    "ADS1299_BOARD_PIN_SCLK   GPIO_NUM_12",
+    "ADS1299_BOARD_PIN_MOSI   GPIO_NUM_11",
+    "ADS1299_BOARD_PIN_MISO   GPIO_NUM_13",
+    "ADS1299_BOARD_PIN_CS     GPIO_NUM_10",
+    "ADS1299_BOARD_PIN_DRDY   GPIO_NUM_9",
+    "ADS1299_BOARD_PIN_RESET  GPIO_NUM_8",
+    "ADS1299_BOARD_PIN_START  GPIO_NUM_7",
+    "ADS1299_BOARD_PIN_PWDN   GPIO_NUM_6",
+):
+    assert expected in board, f"missing board config item: {expected}"
+
 main = (TARGET / "main" / "main.c").read_text(encoding="utf-8")
-for expected in ("SPI2_HOST", "GPIO_NUM_12", "GPIO_NUM_6",
-                 "ads1299_mcu_port_init", "ads1299_read_frame_continuous"):
+for expected in (
+    '"esp32s3_devkitc1_ads1299.h"',
+    "ADS1299_BOARD_SPI_HOST",
+    "ADS1299_BOARD_PIN_DRDY",
+    "ads1299_mcu_port_init",
+    "ads1299_read_frame_continuous",
+    "ads1299_configure_internal_test",
+    "ads1299_configure_input_short_test",
+    "ADS1299_DR_250SPS",
+):
     assert expected in main, f"missing reference flow item: {expected}"
 for forbidden in ("ads1299_packet_encode", "uart_write_bytes", "UART_NUM_0"):
     assert forbidden not in main, f"transport leaked into MCU example: {forbidden}"
@@ -57,4 +80,4 @@ assert "src_dir = main" in platformio
 legacy = TARGET / "components" / "ads1299_port"
 assert not legacy.exists() or not any(legacy.rglob("*")), "duplicate legacy Port remains"
 
-print("ESP32-S3 rank-3 package OK: layered IDF HAL, official headers and build entrypoint")
+print("ESP32-S3 rank-3 package OK: layered IDF HAL, board config and build entrypoint")
