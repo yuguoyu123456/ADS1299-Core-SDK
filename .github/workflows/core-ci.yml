@@ -150,6 +150,20 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32F767/tests/*.c)
+                  # STM32F767 owns a linked host integration suite. Its high-throughput
+                  # bounded queue and canonical packet tests depend on leaf/shared
+                  # sources, so validate the complete suite atomically rather than
+                  # recompiling its members as dependency-free translation units.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32f767_frame_queue.c"
+                  test -f "$target_dir/examples/stm32f767_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32f767_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32f767_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32G071/tests/*.c)
                   # STM32G071 also owns a linked host integration suite. Its frame
                   # queue test depends on the example queue implementation and its
