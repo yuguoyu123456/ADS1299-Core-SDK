@@ -83,6 +83,20 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32F446/tests/*.c)
+                  # STM32F446 owns a linked host integration suite. Its frame queue
+                  # and packet tests require the leaf example/common packet sources,
+                  # so run the complete suite once rather than compiling members with
+                  # the generic dependency-free include set.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32f446_frame_queue.c"
+                  test -f "$target_dir/examples/stm32f446_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32f446_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32f446_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32G071/tests/*.c)
                   # STM32G071 also owns a linked host integration suite. Its frame
                   # queue test depends on the example queue implementation and its
