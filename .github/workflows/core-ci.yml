@@ -192,6 +192,17 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32U5/tests/test_polling.c)
+                  # This STM32U575 MMIO polling test intentionally compiles against
+                  # official STM32U5 device/CMSIS headers and runs under its dedicated
+                  # Cortex-M33 Unicorn model. Do not misclassify it as a portable-host
+                  # translation unit with only the generic ADS1299 include paths.
+                  test -f "$target_dir/tests/run_polling_tests.py"
+                  test -f "$target_dir/tests/compile_adapter.py"
+                  test -f "$target_dir/cmsis_adapter/ads1299_u5_hal.c"
+                  test -f "$target_dir/cmsis_adapter/ads1299_u5_hal.h"
+                  continue
+                  ;;
                 */03_NXP/LPC55S69/tests/test_adapter.c|*/03_NXP/LPC55S69/tests/test_vendor_spi.c)
                   # These tests intentionally consume genuine NXP MCUXpresso SDK
                   # headers and, for test_vendor_spi.c, the real fsl_spi.c driver.
