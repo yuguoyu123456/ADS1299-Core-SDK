@@ -1,6 +1,8 @@
 # Validation
 
-## Current status
+Current status: **Compiles** — the catalog lifecycle label reflects recorded software build evidence; the newer board-config, progressive diagnostics and bounded-streaming revision still requires a fresh reference build before that newer revision is called BUILD-VERIFIED.
+
+## Current status detail
 
 - Historical platform baseline: **BUILD-VERIFIED** for the clean ESP-IDF/PlatformIO build recorded on 2026-09-04.
 - Current board-config + progressive diagnostic + bounded streaming changes: **TEMPLATE / PLANNED until re-build-verified**.
@@ -38,10 +40,9 @@ make -f Makefile.host clean
 make -f Makefile.host test
 ```
 
-During this maintenance pass the execution environment could not resolve
-`github.com`, so a fresh checkout and execution of that command could not be
-completed here. Therefore the presence of the regression source is **not**
-reported as HOST TEST PASS.
+The repository-wide Espressif host matrix now exercises this entrypoint. Treat
+that host regression independently from native ESP-IDF build verification and
+from physical BOARD-VERIFIED status.
 
 ## Evidence required for stronger claims
 
