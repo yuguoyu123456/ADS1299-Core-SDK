@@ -83,6 +83,20 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32G071/tests/*.c)
+                  # STM32G071 also owns a linked host integration suite. Its frame
+                  # queue test depends on the example queue implementation and its
+                  # packet test depends on the shared packet module, so preserve the
+                  # complete leaf suite as one atomic host-validation boundary.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32g071_frame_queue.c"
+                  test -f "$target_dir/examples/stm32g071_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32g071_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32g071_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */03_NXP/LPC55S69/tests/test_adapter.c|*/03_NXP/LPC55S69/tests/test_vendor_spi.c)
                   # These tests intentionally consume genuine NXP MCUXpresso SDK
                   # headers and, for test_vendor_spi.c, the real fsl_spi.c driver.
