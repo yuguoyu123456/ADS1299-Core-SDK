@@ -83,6 +83,19 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32F103/tests/*.c)
+                  # STM32F103 owns a linked host integration suite. Its bounded F1
+                  # frame queue and canonical packet tests require leaf/shared
+                  # sources, so preserve the complete suite as one validation unit.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32f103_frame_queue.c"
+                  test -f "$target_dir/examples/stm32f103_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32f103_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32f103_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32F303/tests/*.c)
                   # STM32F303 owns a linked host integration suite. Its bounded frame
                   # queue and canonical packet tests require leaf/shared sources, so
