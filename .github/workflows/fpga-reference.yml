@@ -1,0 +1,28 @@
+name: fpga-reference
+
+on:
+  push:
+    branches: [ main, production-sdk-v1, repo-architecture-v1 ]
+    paths:
+      - 'firmware/fpga/**'
+      - 'tests/validate_fpga_ecosystem.py'
+      - 'tests/run_fpga_reference_testbenches.py'
+      - '.github/workflows/fpga-reference.yml'
+  pull_request:
+    paths:
+      - 'firmware/fpga/**'
+      - 'tests/validate_fpga_ecosystem.py'
+      - 'tests/run_fpga_reference_testbenches.py'
+      - '.github/workflows/fpga-reference.yml'
+
+jobs:
+  reference-simulation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Validate FPGA package structure
+        run: python tests/validate_fpga_ecosystem.py
+      - name: Compile and run every FPGA reference testbench
+        run: python tests/run_fpga_reference_testbenches.py
