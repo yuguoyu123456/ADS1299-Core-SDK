@@ -447,6 +447,17 @@ jobs:
                   test -f "$target_dir/mcux_adapter/ads1299_lpc55_hal.h"
                   continue
                   ;;
+                */04_TexasInstruments/TM4C1294/tests/test_vendor_ssi.c)
+                  # This test intentionally consumes genuine TivaWare SSI/GPIO headers
+                  # and links the real driverlib sources in its dedicated ARM/Unicorn
+                  # runner. Keep that vendor boundary intact instead of pretending the
+                  # test is a dependency-free portable-host translation unit.
+                  test -f "$target_dir/tests/run_vendor_tests.py"
+                  test -f "$target_dir/tests/compile_adapter.py"
+                  test -f "$target_dir/tivaware_adapter/ads1299_tm4c_hal.c"
+                  test -f "$target_dir/tivaware_adapter/ads1299_tm4c_hal.h"
+                  continue
+                  ;;
                 */05_Renesas/RA6M5/tests/test_fsp_adapter.c)
                   # This test intentionally consumes official Renesas FSP API headers.
                   # Preserve it under its dedicated ARM/Unicorn runner instead of
