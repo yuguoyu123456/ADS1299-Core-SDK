@@ -298,6 +298,20 @@ jobs:
                   fi
                   continue
                   ;;
+                */02_Espressif/ESP32/tests/*.c)
+                  # ESP32 owns a bounded frame-queue host suite whose test translation
+                  # unit depends on the leaf example implementation/header. Preserve
+                  # that producer/consumer validation atomically instead of compiling
+                  # the test with only the generic dependency-free include set.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/esp32_frame_queue.c"
+                  test -f "$target_dir/examples/esp32_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_esp32_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_esp32_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */02_Espressif/ESP32S3/tests/*.c)
                   # ESP32-S3 stream-queue tests depend on the leaf's main component
                   # implementation/header. Keep that bounded producer/consumer suite
