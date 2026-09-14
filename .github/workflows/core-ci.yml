@@ -534,3 +534,4 @@ jobs:
               "$package/rtl/frame_parser.v" \
               "$package/tb/simulation_tb.v"
             vvp "/tmp/$name"
+          done
