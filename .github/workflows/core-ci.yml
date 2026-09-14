@@ -346,6 +346,30 @@ jobs:
                   fi
                   continue
                   ;;
+                */02_Espressif/ESP32-P4/ads1299_port/ads1299_espidf_hal.c)
+                  # ESP32-P4's vendor HAL intentionally consumes real ESP-IDF SPI/GPIO
+                  # headers. The dedicated esp32p4-native workflow build-verifies the
+                  # source with ESP-IDF, so preserve that real vendor build boundary.
+                  test -f "$target_dir/CMakeLists.txt"
+                  test -f "$target_dir/ads1299_port/CMakeLists.txt"
+                  test -f "$target_dir/main/CMakeLists.txt"
+                  test -f "$target_dir/main/main.c"
+                  test -f ".github/workflows/esp32p4-native.yml"
+                  continue
+                  ;;
+                */02_Espressif/ESP32-P4/tests/*.c)
+                  # ESP32-P4 also owns a bounded frame-queue host suite. Execute the
+                  # linked producer/consumer tests atomically instead of recompiling
+                  # each test with the generic dependency-free include set.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/esp32p4_frame_queue.c"
+                  test -f "$target_dir/examples/esp32p4_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_esp32p4_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_esp32p4_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */02_Espressif/ESP32/tests/*.c)
                   # ESP32 owns a bounded frame-queue host suite whose test translation
                   # unit depends on the leaf example implementation/header. Preserve
