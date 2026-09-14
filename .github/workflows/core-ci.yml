@@ -477,6 +477,17 @@ jobs:
                   test -f "$target_dir/harmony_adapter/ads1299_same54_hal.h"
                   continue
                   ;;
+                */08_Infineon/PSoC6/tests/test_polling.c)
+                  # This PSoC 6 polling test intentionally links the real Infineon PDL
+                  # SCB SPI sources and executes them under its dedicated Cortex-M4
+                  # Unicorn MMIO model. Keep that vendor boundary intact rather than
+                  # treating the test as dependency-free portable-host C.
+                  test -f "$target_dir/tests/run_polling_tests.py"
+                  test -f "$target_dir/tests/compile_adapter.py"
+                  test -f "$target_dir/pdl_adapter/ads1299_psoc6_hal.c"
+                  test -f "$target_dir/pdl_adapter/ads1299_psoc6_hal.h"
+                  continue
+                  ;;
               esac
               gcc -std=c11 -Wall -Wextra -Werror \
                 -Ifirmware/core_driver/ads1299 -I"$port_dir" \
