@@ -1,0 +1,37 @@
+name: stm32h533-host
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'firmware/mcu/01_STMicroelectronics/STM32H533/**'
+      - 'firmware/core_driver/ads1299/**'
+      - 'firmware/common/data_packet/**'
+      - '.github/workflows/stm32h533-host.yml'
+  pull_request:
+    paths:
+      - 'firmware/mcu/01_STMicroelectronics/STM32H533/**'
+      - 'firmware/core_driver/ads1299/**'
+      - 'firmware/common/data_packet/**'
+      - '.github/workflows/stm32h533-host.yml'
+
+jobs:
+  host-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Guard STM32H533 linked-suite inputs
+        run: |
+          model=firmware/mcu/01_STMicroelectronics/STM32H533
+          test -f "$model/tests/Makefile.host"
+          test -f "$model/examples/stm32h533_frame_queue.c"
+          test -f "$model/examples/stm32h533_frame_queue.h"
+          test -f firmware/core_driver/ads1299/ads1299.c
+          test -f firmware/core_driver/ads1299/ads1299_frame.c
+          test -f firmware/core_driver/ads1299/ads1299_model.c
+          test -f firmware/core_driver/ads1299/ads1299_multi.c
+          test -f firmware/common/data_packet/ads1299_packet.c
+      - name: Build and run STM32H533 host integration suite
+        run: |
+          cd firmware/mcu/01_STMicroelectronics/STM32H533/tests
+          make -f Makefile.host clean test clean
