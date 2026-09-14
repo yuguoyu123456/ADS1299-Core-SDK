@@ -178,6 +178,21 @@ jobs:
                   fi
                   continue
                   ;;
+                */01_STMicroelectronics/STM32H533/tests/*.c)
+                  # STM32H533 owns a linked host integration suite. Its beginner demo,
+                  # bounded frame queue and canonical packet tests depend on example
+                  # and shared sources, so preserve the complete suite atomically.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/stm32h533_beginner_demo.c"
+                  test -f "$target_dir/examples/stm32h533_beginner_demo.h"
+                  test -f "$target_dir/examples/stm32h533_frame_queue.c"
+                  test -f "$target_dir/examples/stm32h533_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_stm32h533_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_stm32h533_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */01_STMicroelectronics/STM32H723/tests/*.c)
                   # STM32H723 owns a linked host integration suite. Its bounded queue
                   # and canonical packet tests require the leaf example plus shared
