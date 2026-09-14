@@ -298,6 +298,19 @@ jobs:
                   fi
                   continue
                   ;;
+                */02_Espressif/ESP32S3/tests/*.c)
+                  # ESP32-S3 stream-queue tests depend on the leaf's main component
+                  # implementation/header. Keep that bounded producer/consumer suite
+                  # atomic instead of recompiling the test as dependency-free host C.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/main/ads1299_stream_queue.c"
+                  test -f "$target_dir/main/ads1299_stream_queue.h"
+                  if [ ! -e /tmp/ads1299_esp32s3_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_esp32s3_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */03_NXP/LPC55S69/tests/test_adapter.c|*/03_NXP/LPC55S69/tests/test_vendor_spi.c)
                   # These tests intentionally consume genuine NXP MCUXpresso SDK
                   # headers and, for test_vendor_spi.c, the real fsl_spi.c driver.
