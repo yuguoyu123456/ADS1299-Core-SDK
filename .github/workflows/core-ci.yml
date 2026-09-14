@@ -370,6 +370,20 @@ jobs:
                   fi
                   continue
                   ;;
+                */02_Espressif/ESP32C6/tests/*.c)
+                  # ESP32-C6 owns a linked bounded frame-queue host suite. Its test
+                  # translation units require the leaf example implementation/header,
+                  # so preserve that producer/consumer validation atomically instead
+                  # of recompiling individual tests as dependency-free host C.
+                  test -f "$target_dir/tests/Makefile.host"
+                  test -f "$target_dir/examples/esp32c6_frame_queue.c"
+                  test -f "$target_dir/examples/esp32c6_frame_queue.h"
+                  if [ ! -e /tmp/ads1299_esp32c6_host_suite_done ]; then
+                    (cd "$target_dir/tests" && make -f Makefile.host clean test clean)
+                    touch /tmp/ads1299_esp32c6_host_suite_done
+                  fi
+                  continue
+                  ;;
                 */02_Espressif/ESP32/tests/*.c)
                   # ESP32 owns a bounded frame-queue host suite whose test translation
                   # unit depends on the leaf example implementation/header. Preserve
