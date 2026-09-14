@@ -1,0 +1,18 @@
+name: esp32c5-native
+
+on:
+  push:
+    branches: [ main, production-sdk-v1, repo-architecture-v1 ]
+  pull_request:
+
+jobs:
+  esp32c5-idf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build ESP32-C5 native ESP-IDF project
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.2
+          target: esp32c5
+          path: firmware/mcu/02_Espressif/ESP32-C5
