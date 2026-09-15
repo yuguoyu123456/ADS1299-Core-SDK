@@ -1,0 +1,23 @@
+name: rk3588-linux
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'firmware/linux_compute/Rockchip/RK3588/**'
+      - 'firmware/core_driver/ads1299/**'
+      - '.github/workflows/rk3588-linux.yml'
+  pull_request:
+    paths:
+      - 'firmware/linux_compute/Rockchip/RK3588/**'
+      - 'firmware/core_driver/ads1299/**'
+      - '.github/workflows/rk3588-linux.yml'
+
+jobs:
+  host-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile RK3588 Linux userspace probe against shared core
+        run: |
+          make -C firmware/linux_compute/Rockchip/RK3588 clean check
