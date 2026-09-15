@@ -21,3 +21,9 @@ jobs:
       - name: Compile RK3588 Linux userspace probe against shared core
         run: |
           make -C firmware/linux_compute/Rockchip/RK3588 clean check
+      - name: Verify fail-safe RK3588 board configuration contract
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror \
+            firmware/linux_compute/Rockchip/RK3588/tests/test_board_config.c \
+            -o /tmp/rk3588-board-config-test
+          /tmp/rk3588-board-config-test
