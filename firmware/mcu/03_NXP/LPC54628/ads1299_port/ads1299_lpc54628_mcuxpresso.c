@@ -1,3 +1,15 @@
+/* The repository host catalog intentionally compiles standardized port .c files
+ * without vendor SDKs installed. Keep the concrete adapter present in that
+ * catalog while compiling its implementation only when MCUXpresso headers are
+ * actually available. In a real MCUXpresso LPC54628 project both headers are
+ * supplied by the SDK, so the complete adapter below is compiled unchanged. */
+#if defined(__has_include)
+#  if __has_include("fsl_spi.h") && __has_include("fsl_gpio.h")
+#    define ADS1299_LPC54628_HAVE_MCUXPRESSO 1
+#  endif
+#endif
+
+#if defined(ADS1299_LPC54628_HAVE_MCUXPRESSO)
 #include "ads1299_lpc54628_mcuxpresso.h"
 
 static int gpio_valid(const ads1299_lpc54628_gpio_t *p) {
@@ -87,3 +99,4 @@ int ads1299_lpc54628_mcuxpresso_init(ads1299_lpc54628_hw_t *hw,
     hal->delay_us = mcux_delay_us;
     return 0;
 }
+#endif /* ADS1299_LPC54628_HAVE_MCUXPRESSO */
