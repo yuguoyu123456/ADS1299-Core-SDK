@@ -3,40 +3,13 @@
  *
  * TEMPLATE / NOT BUILD-VERIFIED / NOT BOARD-VERIFIED.
  *
- * Add this file to an MCUXpresso evkmimxrt1040 application and replace only
- * the BOARD_ADS1299_* macros below with symbols from that application's
- * generated pin/clock configuration. Do not edit the shared ADS1299 core for
- * board bring-up.
+ * Add this file to an MCUXpresso evkmimxrt1040 application. Hardware-dependent
+ * choices live in board_ads1299_config.h (or equivalent build definitions),
+ * keeping the shared ADS1299 core and this adapter glue unchanged when moving
+ * to another MIMXRT1042 board.
  */
+#include "board_ads1299_config.h"
 #include "../mcux_adapter/ads1299_mimxrt1042_hal.h"
-
-#ifndef BOARD_ADS1299_LPSPI
-#error "Define BOARD_ADS1299_LPSPI to the MCUXpresso LPSPI instance"
-#endif
-#ifndef BOARD_ADS1299_LPSPI_CLOCK_HZ
-#error "Define BOARD_ADS1299_LPSPI_CLOCK_HZ to the actual LPSPI source clock"
-#endif
-#ifndef BOARD_ADS1299_SPI_BAUD_HZ
-#define BOARD_ADS1299_SPI_BAUD_HZ 1000000u
-#endif
-#ifndef BOARD_ADS1299_GPIO
-#error "Define BOARD_ADS1299_GPIO to the GPIO peripheral used by ADS1299 control pins"
-#endif
-#ifndef BOARD_ADS1299_CS_PIN
-#error "Define BOARD_ADS1299_CS_PIN"
-#endif
-#ifndef BOARD_ADS1299_RESET_PIN
-#error "Define BOARD_ADS1299_RESET_PIN"
-#endif
-#ifndef BOARD_ADS1299_PWDN_PIN
-#error "Define BOARD_ADS1299_PWDN_PIN"
-#endif
-#ifndef BOARD_ADS1299_START_PIN
-#error "Define BOARD_ADS1299_START_PIN"
-#endif
-#ifndef BOARD_ADS1299_DRDY_PIN
-#error "Define BOARD_ADS1299_DRDY_PIN"
-#endif
 
 /* Provide this from the application timebase; it must be safe during bring-up. */
 extern void board_ads1299_delay_us(uint32_t us);
