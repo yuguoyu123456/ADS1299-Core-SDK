@@ -18,6 +18,14 @@ target_include_directories(ads1299_official_sdk SYSTEM INTERFACE
 target_compile_definitions(ads1299_official_sdk INTERFACE CPU_MIMXRT1062DVL6B)
 target_compile_options(ads1299_official_sdk INTERFACE
     -mcpu=cortex-m7 -mthumb -Wall -Wextra -Werror)
+
+# Exercise the same optional integration surfaces that a real EVKB parent
+# project is expected to enable.  Keeping these ON in the official-SDK check
+# prevents board/config, adapter-smoke and progressive-example targets from
+# silently drifting while the base library continues to compile.
+set(ADS1299_RT1062_ENABLE_EVKB ON CACHE BOOL "" FORCE)
+set(ADS1299_RT1062_COMPILE_SMOKE ON CACHE BOOL "" FORCE)
+set(ADS1299_RT1062_EXAMPLE_SMOKE ON CACHE BOOL "" FORCE)
 add_subdirectory(../.. rt1062)
 # Object compilation only: no fabricated board binding to hide missing symbols.
 add_library(ads1299_example_check OBJECT ../../examples/main_ads1299.c)
