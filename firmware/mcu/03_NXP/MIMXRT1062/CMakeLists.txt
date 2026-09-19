@@ -45,3 +45,26 @@ if(ADS1299_RT1062_COMPILE_SMOKE)
     target_link_libraries(ads1299_rt1062_compile_smoke PRIVATE
         ads1299_rt1062 ads1299_official_sdk)
 endif()
+
+# Optional beginner-example build contract. This compiles the progressive
+# probe -> internal-test -> input-short -> 250-SPS EEG -> bounded-stream flows
+# against the same shared core and real MCUXpresso usage requirements. It is
+# intentionally separate from board validation and provides no startup/main.
+option(ADS1299_RT1062_EXAMPLE_SMOKE "Compile MIMXRT1062 progressive ADS1299 examples" OFF)
+if(ADS1299_RT1062_EXAMPLE_SMOKE)
+    if(NOT ADS1299_RT1062_ENABLE_EVKB)
+        message(FATAL_ERROR "ADS1299_RT1062_EXAMPLE_SMOKE requires ADS1299_RT1062_ENABLE_EVKB=ON")
+    endif()
+    add_library(ads1299_rt1062_example_smoke STATIC
+        examples/probe_id.c
+        examples/internal_test.c
+        examples/input_short.c
+        examples/eeg_250sps.c
+        examples/bounded_stream.c
+        examples/example_contract_smoke.c)
+    target_compile_features(ads1299_rt1062_example_smoke PRIVATE c_std_11)
+    target_include_directories(ads1299_rt1062_example_smoke PRIVATE
+        ../../../core_driver/ads1299 ads1299_port mcuxpresso_adapter board examples)
+    target_link_libraries(ads1299_rt1062_example_smoke PRIVATE
+        ads1299_rt1062 ads1299_official_sdk)
+endif()
