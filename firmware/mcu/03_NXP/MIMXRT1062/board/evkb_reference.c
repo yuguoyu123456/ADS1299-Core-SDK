@@ -1,14 +1,18 @@
 /* Thin original EVKB binding; vendor clocks remain in the external SDK.
  * Confirm board/pinmap.md and actual routing before hardware use. */
 #include "ads1299_mcuxpresso_init.h"
+#include "board_ads1299_config.h"
 #include "clock_config.h"
 #include "fsl_iomuxc.h"
 
 int board_ads1299_hal(ads1299_platform_hal_t *hal) {
     static ads1299_rt1062_ctx_t ctx = {
-        .lpspi = LPSPI1,
-        .cs = {GPIO3, 13u}, .reset = {GPIO1, 24u},
-        .pwdn = {GPIO1, 9u}, .start = {GPIO1, 10u}, .drdy = {GPIO1, 11u},
+        .lpspi = BOARD_ADS1299_LPSPI,
+        .cs = {BOARD_ADS1299_CS_GPIO, BOARD_ADS1299_CS_PIN},
+        .reset = {BOARD_ADS1299_RESET_GPIO, BOARD_ADS1299_RESET_PIN},
+        .pwdn = {BOARD_ADS1299_PWDN_GPIO, BOARD_ADS1299_PWDN_PIN},
+        .start = {BOARD_ADS1299_START_GPIO, BOARD_ADS1299_START_PIN},
+        .drdy = {BOARD_ADS1299_DRDY_GPIO, BOARD_ADS1299_DRDY_PIN},
     };
     if (!hal) return -1;
     BOARD_BootClockRUN();
@@ -19,7 +23,8 @@ int board_ads1299_hal(ads1299_platform_hal_t *hal) {
     CLOCK_EnableClock(kCLOCK_Gpio3);
     /* Safe GPIO levels before mux change. Core owns subsequent reset pulses. */
     if (ads1299_rt1062_init(hal, &ctx,
-            CLOCK_GetClockRootFreq(kCLOCK_LpspiClkRoot), 1000000u) != 0) return -1;
+            CLOCK_GetClockRootFreq(kCLOCK_LpspiClkRoot),
+            BOARD_ADS1299_SPI_BAUD_HZ) != 0) return -1;
     IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_01_GPIO3_IO13, 0u);
     IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B1_08_GPIO1_IO24, 0u);
     IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_09_GPIO1_IO09, 0u);
