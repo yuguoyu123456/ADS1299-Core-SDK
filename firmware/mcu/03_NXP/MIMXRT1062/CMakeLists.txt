@@ -19,3 +19,29 @@ if(NOT TARGET ads1299_official_sdk)
     message(FATAL_ERROR "Define an ads1299_official_sdk INTERFACE target with official SDK includes, CPU and compiler options before add_subdirectory")
 endif()
 target_link_libraries(ads1299_rt1062 PUBLIC ads1299_official_sdk)
+
+# Optional reference-board integration. Keep vendor startup/linker/generated
+# sources in the parent official MCUXpresso SDK application; this target only
+# adds the ADS1299 EVKB binding to the shared driver library.
+option(ADS1299_RT1062_ENABLE_EVKB "Build the MIMXRT1062 EVKB ADS1299 board binding" OFF)
+if(ADS1299_RT1062_ENABLE_EVKB)
+    target_sources(ads1299_rt1062 PRIVATE board/evkb_reference.c)
+    target_include_directories(ads1299_rt1062 PUBLIC board)
+endif()
+
+# Compile-only contract checks are deliberately opt-in. They catch board and
+# adapter API drift while still requiring the real official SDK target above.
+option(ADS1299_RT1062_COMPILE_SMOKE "Compile MIMXRT1062 ADS1299 integration contract checks" OFF)
+if(ADS1299_RT1062_COMPILE_SMOKE)
+    if(NOT ADS1299_RT1062_ENABLE_EVKB)
+        message(FATAL_ERROR "ADS1299_RT1062_COMPILE_SMOKE requires ADS1299_RT1062_ENABLE_EVKB=ON")
+    endif()
+    add_library(ads1299_rt1062_compile_smoke OBJECT
+        board/board_ads1299_config_check.c
+        mcuxpresso_adapter/compile_smoke.c)
+    target_compile_features(ads1299_rt1062_compile_smoke PRIVATE c_std_11)
+    target_include_directories(ads1299_rt1062_compile_smoke PRIVATE
+        ../../../core_driver/ads1299 ads1299_port mcuxpresso_adapter board)
+    target_link_libraries(ads1299_rt1062_compile_smoke PRIVATE
+        ads1299_rt1062 ads1299_official_sdk)
+endif()
