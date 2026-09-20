@@ -30,6 +30,32 @@ if(ADS1299_RT1170_ENABLE_EVK_REFERENCE)
     target_include_directories(ads1299_rt1170 PUBLIC board)
 endif()
 
+# Small integration contract: compile and link the selected board binding with
+# the real MCUXpresso-backed library. This deliberately does not provide
+# startup/linker files and therefore remains a parent-SDK integration check,
+# not a standalone firmware image or hardware-validation claim.
+option(ADS1299_RT1170_COMPILE_SMOKE "Compile the MIMXRT1170 ADS1299 board integration contract" OFF)
+if(ADS1299_RT1170_COMPILE_SMOKE)
+    if(NOT ADS1299_RT1170_ENABLE_EVK_REFERENCE)
+        message(FATAL_ERROR "ADS1299_RT1170_COMPILE_SMOKE requires ADS1299_RT1170_ENABLE_EVK_REFERENCE=ON; custom boards should compile board/board_ads1299_binding_check.c in their parent target together with their own board_ads1299_hal()")
+    endif()
+
+    add_library(ads1299_rt1170_board_contract OBJECT
+        board/board_ads1299_binding_check.c)
+    target_compile_features(ads1299_rt1170_board_contract PRIVATE c_std_11)
+    target_include_directories(ads1299_rt1170_board_contract PRIVATE
+        ../../../core_driver/ads1299
+        ads1299_port
+        mcuxpresso_adapter
+        board)
+    target_link_libraries(ads1299_rt1170_board_contract PRIVATE
+        ads1299_rt1170
+        ads1299_official_sdk)
+
+    add_custom_target(ads1299_rt1170_compile_smoke ALL
+        DEPENDS ads1299_rt1170 ads1299_rt1170_board_contract)
+endif()
+
 # Compile every progressive/runnable example against the same shared core and
 # official-SDK contract. Each example is an independent OBJECT target because
 # it intentionally owns main(). This catches API/include regressions without
