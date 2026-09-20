@@ -32,24 +32,45 @@ if(ADS1299_RT1166_ENABLE_BOARD_BINDING)
     target_include_directories(ads1299_rt1166 PUBLIC board)
 endif()
 
-# Compile the existing runnable integration example against exactly the same
-# shared core and official-SDK usage requirements. This is a compile contract,
-# not a BOARD-VERIFIED claim and it does not supply vendor startup/linker code.
-option(ADS1299_RT1166_EXAMPLE_SMOKE "Compile the MIMXRT1166 ADS1299 integration example" OFF)
+# Compile every runnable/progressive example against exactly the same shared
+# core, board binding and official-SDK contract. Each source is an independent
+# OBJECT target because examples intentionally define their own main(). This
+# catches API/include regressions without pretending to provide vendor startup,
+# linker scripts, a flashable image, or BOARD-VERIFIED hardware evidence.
+option(ADS1299_RT1166_EXAMPLE_SMOKE "Compile all MIMXRT1166 ADS1299 examples" OFF)
 if(ADS1299_RT1166_EXAMPLE_SMOKE)
     if(NOT ADS1299_RT1166_ENABLE_BOARD_BINDING)
         message(FATAL_ERROR "ADS1299_RT1166_EXAMPLE_SMOKE requires ADS1299_RT1166_ENABLE_BOARD_BINDING=ON")
     endif()
-    add_library(ads1299_rt1166_example_smoke OBJECT
-        examples/main_ads1299.c)
-    target_compile_features(ads1299_rt1166_example_smoke PRIVATE c_std_11)
-    target_include_directories(ads1299_rt1166_example_smoke PRIVATE
-        ../../../core_driver/ads1299
-        ads1299_port
-        mcuxpresso_adapter
-        board
-        examples)
-    target_link_libraries(ads1299_rt1166_example_smoke PRIVATE
-        ads1299_rt1166
-        ads1299_official_sdk)
+
+    set(ADS1299_RT1166_EXAMPLE_SOURCES
+        examples/main_ads1299.c
+        examples/probe_id.c
+        examples/internal_test.c
+        examples/input_short.c
+        examples/eeg_250sps.c
+        examples/stream_bounded.c)
+
+    set(ADS1299_RT1166_EXAMPLE_TARGETS "")
+    foreach(example_source IN LISTS ADS1299_RT1166_EXAMPLE_SOURCES)
+        get_filename_component(example_name "${example_source}" NAME_WE)
+        set(example_target "ads1299_rt1166_example_${example_name}")
+        add_library(${example_target} OBJECT "${example_source}")
+        target_compile_features(${example_target} PRIVATE c_std_11)
+        target_include_directories(${example_target} PRIVATE
+            ../../../core_driver/ads1299
+            ads1299_port
+            mcuxpresso_adapter
+            board
+            examples)
+        target_link_libraries(${example_target} PRIVATE
+            ads1299_rt1166
+            ads1299_official_sdk)
+        list(APPEND ADS1299_RT1166_EXAMPLE_TARGETS ${example_target})
+    endforeach()
+
+    # Stable aggregate target for CI/parent projects. Building this target
+    # compiles all six examples while keeping their main() functions isolated.
+    add_custom_target(ads1299_rt1166_examples_smoke ALL
+        DEPENDS ${ADS1299_RT1166_EXAMPLE_TARGETS})
 endif()
