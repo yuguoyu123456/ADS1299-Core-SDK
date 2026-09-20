@@ -32,6 +32,28 @@ if(ADS1299_RT1166_ENABLE_BOARD_BINDING)
     target_include_directories(ads1299_rt1166 PUBLIC board)
 endif()
 
+# Compile-only integration contract. This is deliberately separate from the
+# runnable examples: it gives parent MCUXpresso projects a small target that
+# verifies the board macro contract and adapter headers without claiming a
+# flashable image or hardware validation.
+option(ADS1299_RT1166_COMPILE_SMOKE "Compile MIMXRT1166 ADS1299 integration contract checks" OFF)
+if(ADS1299_RT1166_COMPILE_SMOKE)
+    if(NOT ADS1299_RT1166_ENABLE_BOARD_BINDING)
+        message(FATAL_ERROR "ADS1299_RT1166_COMPILE_SMOKE requires ADS1299_RT1166_ENABLE_BOARD_BINDING=ON")
+    endif()
+    add_library(ads1299_rt1166_compile_smoke OBJECT
+        board/board_ads1299_config_check.c)
+    target_compile_features(ads1299_rt1166_compile_smoke PRIVATE c_std_11)
+    target_include_directories(ads1299_rt1166_compile_smoke PRIVATE
+        ../../../core_driver/ads1299
+        ads1299_port
+        mcuxpresso_adapter
+        board)
+    target_link_libraries(ads1299_rt1166_compile_smoke PRIVATE
+        ads1299_rt1166
+        ads1299_official_sdk)
+endif()
+
 # Compile every runnable/progressive example against exactly the same shared
 # core, board binding and official-SDK contract. Each source is an independent
 # OBJECT target because examples intentionally define their own main(). This
