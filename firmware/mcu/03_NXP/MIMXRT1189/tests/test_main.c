@@ -7,6 +7,7 @@ void test_register_constants(void);
 void test_control_gpio_routing(void);
 void test_delay_routing(void);
 void test_port_init_validation(void);
+int test_spi_error_propagation(void);
 
 int main(void)
 {
@@ -17,6 +18,7 @@ int main(void)
     test_control_gpio_routing();
     test_delay_routing();
     test_port_init_validation();
+    (void)test_spi_error_propagation();
 
     puts("MIMXRT1189 ADS1299 platform smoke tests: PASS");
     return 0;
