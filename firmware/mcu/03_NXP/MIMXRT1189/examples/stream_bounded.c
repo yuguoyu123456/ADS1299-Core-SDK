@@ -9,15 +9,11 @@
  */
 #include "ads1299.h"
 #include "ads1299_spi.h"
+#include "stream_bounded.h"
 
 extern int board_ads1299_hal(ads1299_platform_hal_t *hal);
 
 #define ADS1299_STREAM_QUEUE_DEPTH 16u
-
-typedef struct {
-    ads1299_frame_t frame;
-    uint32_t sequence;
-} ads1299_stream_item_t;
 
 static ads1299_stream_item_t stream_queue[ADS1299_STREAM_QUEUE_DEPTH];
 static volatile uint32_t stream_head;
