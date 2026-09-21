@@ -72,6 +72,7 @@ if(ADS1299_RT1189_PLATFORM_TEST_SMOKE)
     add_library(ads1299_rt1189_tests_core OBJECT
         tests/test_main.c
         tests/test_spi.c
+        tests/test_spi_error.c
         tests/test_reset.c
         tests/test_frame.c
         tests/test_register.c
