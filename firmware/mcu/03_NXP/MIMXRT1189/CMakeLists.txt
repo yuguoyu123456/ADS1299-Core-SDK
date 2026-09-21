@@ -25,15 +25,26 @@ target_link_libraries(ads1299_rt1189 PUBLIC ads1299_official_sdk)
 option(ADS1299_RT1189_BOARD_CONTRACT_SMOKE
        "Compile the MIMXRT1189 ADS1299 board API contract" OFF)
 if(ADS1299_RT1189_BOARD_CONTRACT_SMOKE)
+    # Compile both the contract checker and the fail-closed implementation
+    # template. This catches drift between ads1299_platform_hal_t and the file a
+    # new board project is expected to copy/adapt, without claiming hardware
+    # validation or requiring invented EVK pin assignments.
     add_library(ads1299_rt1189_board_contract OBJECT
         board/board_ads1299_binding_check.c)
-    target_compile_features(ads1299_rt1189_board_contract PRIVATE c_std_11)
-    target_include_directories(ads1299_rt1189_board_contract PRIVATE
-        ../../../core_driver/ads1299 ads1299_port board)
-    target_link_libraries(ads1299_rt1189_board_contract PRIVATE
-        ads1299_rt1189 ads1299_official_sdk)
+    add_library(ads1299_rt1189_board_template OBJECT
+        board/board_ads1299_template.c)
+    foreach(board_target IN ITEMS
+            ads1299_rt1189_board_contract ads1299_rt1189_board_template)
+        target_compile_features(${board_target} PRIVATE c_std_11)
+        target_include_directories(${board_target} PRIVATE
+            ../../../core_driver/ads1299 ads1299_port board)
+        target_link_libraries(${board_target} PRIVATE
+            ads1299_rt1189 ads1299_official_sdk)
+    endforeach()
     add_custom_target(ads1299_rt1189_board_smoke ALL
-        DEPENDS ads1299_rt1189 ads1299_rt1189_board_contract)
+        DEPENDS ads1299_rt1189
+                ads1299_rt1189_board_contract
+                ads1299_rt1189_board_template)
 endif()
 
 option(ADS1299_RT1189_EXAMPLE_SMOKE
