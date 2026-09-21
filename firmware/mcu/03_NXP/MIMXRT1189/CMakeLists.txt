@@ -77,3 +77,44 @@ if(ADS1299_RT1189_EXAMPLE_SMOKE)
     add_custom_target(ads1299_rt1189_examples_smoke ALL
         DEPENDS ${ADS1299_RT1189_EXAMPLE_TARGETS})
 endif()
+
+# Compile the platform tests with the exact headers/options used by the official
+# SDK integration. These are OBJECT targets on purpose: this gate catches API,
+# include and warning regressions without claiming that an embedded executable
+# was linked, flashed or run on MIMXRT1180-EVK hardware.
+#
+# test_drdy.c currently owns its own main(), while test_main.c is the runner for
+# the SPI/reset/frame/register tests. Keeping them in separate OBJECT targets
+# preserves both existing test entry-point styles without deleting user work.
+option(ADS1299_RT1189_PLATFORM_TEST_SMOKE
+       "Compile MIMXRT1189 ADS1299 platform tests against the official SDK contract" OFF)
+if(ADS1299_RT1189_PLATFORM_TEST_SMOKE)
+    add_library(ads1299_rt1189_tests_core OBJECT
+        tests/test_main.c
+        tests/test_spi.c
+        tests/test_reset.c
+        tests/test_frame.c
+        tests/test_register.c)
+    add_library(ads1299_rt1189_test_drdy OBJECT
+        tests/test_drdy.c)
+
+    foreach(test_target IN ITEMS
+            ads1299_rt1189_tests_core
+            ads1299_rt1189_test_drdy)
+        target_compile_features(${test_target} PRIVATE c_std_11)
+        target_include_directories(${test_target} PRIVATE
+            ../../../core_driver/ads1299
+            ads1299_port
+            board
+            tests)
+        target_link_libraries(${test_target} PRIVATE
+            ads1299_rt1189
+            ads1299_official_sdk)
+    endforeach()
+
+    add_custom_target(ads1299_rt1189_platform_tests_smoke ALL
+        DEPENDS
+            ads1299_rt1189
+            ads1299_rt1189_tests_core
+            ads1299_rt1189_test_drdy)
+endif()
