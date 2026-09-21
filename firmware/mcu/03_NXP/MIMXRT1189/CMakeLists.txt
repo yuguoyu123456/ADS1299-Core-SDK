@@ -75,7 +75,8 @@ if(ADS1299_RT1189_PLATFORM_TEST_SMOKE)
         tests/test_reset.c
         tests/test_frame.c
         tests/test_register.c
-        tests/test_gpio_control.c)
+        tests/test_gpio_control.c
+        tests/test_delay.c)
     add_library(ads1299_rt1189_test_drdy OBJECT tests/test_drdy.c)
     foreach(test_target IN ITEMS ads1299_rt1189_tests_core ads1299_rt1189_test_drdy)
         target_compile_features(${test_target} PRIVATE c_std_11)
