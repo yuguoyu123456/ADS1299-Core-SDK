@@ -3,15 +3,11 @@
  * separate so radio/network/UART/USB work never blocks the acquisition path. */
 #include "ads1299.h"
 #include "ads1299_spi.h"
+#include "bounded_stream.h"
 
 extern int board_ads1299_hal(ads1299_platform_hal_t *hal);
 
 #define ADS1299_STREAM_QUEUE_DEPTH 16u
-
-typedef struct {
-    ads1299_frame_t frame;
-    uint32_t sequence;
-} ads1299_stream_item_t;
 
 static ads1299_stream_item_t queue[ADS1299_STREAM_QUEUE_DEPTH];
 static volatile uint32_t queue_head;
