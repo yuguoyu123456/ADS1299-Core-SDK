@@ -8,6 +8,7 @@
  */
 #include "ads1299.h"
 #include "ads1299_spi.h"
+#include "stream_bounded.h"
 
 extern int board_ads1299_hal(ads1299_platform_hal_t *hal);
 extern int board_ads1299_stream_write(const ads1299_frame_t *frame);
@@ -35,8 +36,10 @@ static int queue_push(const ads1299_frame_t *frame) {
     return 0;
 }
 
-static int queue_pop(ads1299_frame_t *frame) {
-    uint32_t tail = g_queue.tail;
+int ads1299_stream_try_pop(ads1299_frame_t *frame) {
+    uint32_t tail;
+    if (frame == 0) return -1;
+    tail = g_queue.tail;
     if (tail == g_queue.head) return 0;
     *frame = g_queue.frame[tail];
     g_queue.tail = (tail + 1u) % ADS1299_STREAM_QUEUE_DEPTH;
@@ -79,11 +82,15 @@ int main(void) {
         /* One bounded consumer attempt per loop. For DMA/RTOS integrations,
          * move this consumer to a lower-priority task while retaining the
          * fixed queue and overflow accounting contract. */
-        if (queue_pop(&frame) != 0) {
-            if (board_ads1299_stream_write(&frame) == 0) {
-                ++ads1299_stream_sent;
-            } else {
-                ++ads1299_stream_transport_errors;
+        {
+            int popped = ads1299_stream_try_pop(&frame);
+            if (popped < 0) return 13;
+            if (popped > 0) {
+                if (board_ads1299_stream_write(&frame) == 0) {
+                    ++ads1299_stream_sent;
+                } else {
+                    ++ads1299_stream_transport_errors;
+                }
             }
         }
     }
