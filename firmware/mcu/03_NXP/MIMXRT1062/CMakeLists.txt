@@ -42,7 +42,8 @@ if(ADS1299_RT1062_COMPILE_SMOKE)
     endif()
     add_library(ads1299_rt1062_compile_smoke OBJECT
         board/board_ads1299_config_check.c
-        mcuxpresso_adapter/compile_smoke.c)
+        mcuxpresso_adapter/compile_smoke.c
+        tests/test_board_binding_contract.c)
     target_compile_features(ads1299_rt1062_compile_smoke PRIVATE c_std_11)
     target_include_directories(ads1299_rt1062_compile_smoke PRIVATE
         ../../../core_driver/ads1299 ads1299_port mcuxpresso_adapter board)
@@ -71,4 +72,15 @@ if(ADS1299_RT1062_EXAMPLE_SMOKE)
         ../../../core_driver/ads1299 ads1299_port mcuxpresso_adapter board examples)
     target_link_libraries(ads1299_rt1062_example_smoke PRIVATE
         ads1299_rt1062 ads1299_official_sdk)
+
+    # Keep the public bounded-stream handoff contract in the same build graph as
+    # the examples. This catches API/frame-shape drift without executing target
+    # hardware or introducing a second ADS1299 frame representation.
+    add_library(ads1299_rt1062_stream_contract_smoke OBJECT
+        tests/test_bounded_stream_contract.c)
+    target_compile_features(ads1299_rt1062_stream_contract_smoke PRIVATE c_std_11)
+    target_include_directories(ads1299_rt1062_stream_contract_smoke PRIVATE
+        ../../../core_driver/ads1299 examples)
+    target_link_libraries(ads1299_rt1062_stream_contract_smoke PRIVATE
+        ads1299_rt1062_example_smoke ads1299_official_sdk)
 endif()
