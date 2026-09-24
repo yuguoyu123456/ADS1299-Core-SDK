@@ -34,9 +34,12 @@ sdk_includes = includes + [args.cmsis, args.sdk / 'boards/evkbmimxrt1060']
 includes = [core, target / 'ads1299_port']
 sources = sorted(core.glob('*.c')) + sorted((target / 'ads1299_port').glob('*.c'))
 sources += sorted((target / 'mcuxpresso_adapter').glob('*.c'))
-includes += [target / 'mcuxpresso_adapter', target / 'board']
-sources += [target / 'examples/main_ads1299.c', target / 'board/evkb_reference.c',
-            target / 'board/board_ads1299_binding.c']
+# Compile every progressive example, not only main_ads1299.c.  This keeps the
+# probe -> internal-test -> input-short -> 250-SPS EEG -> bounded-stream path
+# under the same real-SDK/-Werror contract as the platform adapter.
+includes += [target / 'mcuxpresso_adapter', target / 'board', target / 'examples']
+sources += sorted((target / 'examples').glob('*.c'))
+sources += [target / 'board/evkb_reference.c', target / 'board/board_ads1299_binding.c']
 version = subprocess.check_output([args.cc, '--version'], text=True).splitlines()[0]
 image_evidence = None
 with tempfile.TemporaryDirectory(prefix='.official-sdk-', dir=target / 'tests') as temporary:
@@ -72,5 +75,5 @@ print(json.dumps({'result': 'official-header object compilation passed',
     'evkb_reference_ram_link': 'passed' if args.link_reference_ram else 'not run',
     'image_evidence': image_evidence,
     'compiler': version, 'translation_units': len(sources),
-    'scope': 'EVKB reference only; no hardware execution or acquisition validation',
+    'scope': 'EVKB reference only; progressive examples compiled; no hardware execution or acquisition validation',
     'headers_sha256': {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in required}}, indent=2))
