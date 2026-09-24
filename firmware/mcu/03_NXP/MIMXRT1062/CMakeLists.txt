@@ -22,10 +22,14 @@ target_link_libraries(ads1299_rt1062 PUBLIC ads1299_official_sdk)
 
 # Optional reference-board integration. Keep vendor startup/linker/generated
 # sources in the parent official MCUXpresso SDK application; this target only
-# adds the ADS1299 EVKB binding to the shared driver library.
+# adds the ADS1299 EVKB binding to the shared driver library. The compatibility
+# evkb_reference.c entry point remains available while the explicit binding is
+# the preferred single-config path for new applications.
 option(ADS1299_RT1062_ENABLE_EVKB "Build the MIMXRT1062 EVKB ADS1299 board binding" OFF)
 if(ADS1299_RT1062_ENABLE_EVKB)
-    target_sources(ads1299_rt1062 PRIVATE board/evkb_reference.c)
+    target_sources(ads1299_rt1062 PRIVATE
+        board/evkb_reference.c
+        board/board_ads1299_binding.c)
     target_include_directories(ads1299_rt1062 PUBLIC board)
 endif()
 
