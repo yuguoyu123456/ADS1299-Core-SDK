@@ -52,9 +52,10 @@ if(ADS1299_RT1062_COMPILE_SMOKE)
 endif()
 
 # Optional beginner-example build contract. This compiles the progressive
-# probe -> internal-test -> input-short -> 250-SPS EEG -> bounded-stream flows
-# against the same shared core and real MCUXpresso usage requirements. It is
-# intentionally separate from board validation and provides no startup/main.
+# probe -> internal-test -> input-short -> 250-SPS EEG -> clean start/stop ->
+# bounded-stream flows against the same shared core and real MCUXpresso usage
+# requirements. It is intentionally separate from board validation and
+# provides no startup/linker implementation.
 option(ADS1299_RT1062_EXAMPLE_SMOKE "Compile MIMXRT1062 progressive ADS1299 examples" OFF)
 if(ADS1299_RT1062_EXAMPLE_SMOKE)
     if(NOT ADS1299_RT1062_ENABLE_EVKB)
@@ -65,6 +66,7 @@ if(ADS1299_RT1062_EXAMPLE_SMOKE)
         examples/internal_test.c
         examples/input_short.c
         examples/eeg_250sps.c
+        examples/start_stop.c
         examples/bounded_stream.c
         examples/example_contract_smoke.c)
     target_compile_features(ads1299_rt1062_example_smoke PRIVATE c_std_11)
