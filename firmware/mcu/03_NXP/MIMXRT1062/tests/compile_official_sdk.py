@@ -34,8 +34,9 @@ sdk_includes = includes + [args.cmsis, args.sdk / 'boards/evkbmimxrt1060']
 includes = [core, target / 'ads1299_port']
 sources = sorted(core.glob('*.c')) + sorted((target / 'ads1299_port').glob('*.c'))
 sources += sorted((target / 'mcuxpresso_adapter').glob('*.c'))
-includes += [target / 'mcuxpresso_adapter']
-sources += [target / 'examples/main_ads1299.c', target / 'board/evkb_reference.c']
+includes += [target / 'mcuxpresso_adapter', target / 'board']
+sources += [target / 'examples/main_ads1299.c', target / 'board/evkb_reference.c',
+            target / 'board/board_ads1299_binding.c']
 version = subprocess.check_output([args.cc, '--version'], text=True).splitlines()[0]
 image_evidence = None
 with tempfile.TemporaryDirectory(prefix='.official-sdk-', dir=target / 'tests') as temporary:
