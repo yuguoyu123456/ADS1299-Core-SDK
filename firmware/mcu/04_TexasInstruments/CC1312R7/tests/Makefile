@@ -14,6 +14,7 @@ SOURCES := \
 	$(PORT_DIR)/ads1299_drdy.c
 
 CPPFLAGS += -I$(PORT_DIR)
+CPPFLAGS += -I../../../../core_driver/ads1299
 
 .PHONY: all run clean
 
