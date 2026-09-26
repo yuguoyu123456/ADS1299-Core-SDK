@@ -13,10 +13,18 @@ SOURCES := \
 	$(PORT_DIR)/ads1299_gpio.c \
 	$(PORT_DIR)/ads1299_drdy.c
 
+
+VALIDATION_TARGET := cc1312r7_port_validation
+VALIDATION_SOURCES := \
+	test_port_validation.c \
+	$(PORT_DIR)/ads1299_spi.c \
+	$(PORT_DIR)/ads1299_gpio.c \
+	$(PORT_DIR)/ads1299_drdy.c
+
 CPPFLAGS += -I$(PORT_DIR)
 CPPFLAGS += -I../../../../core_driver/ads1299
 
-.PHONY: all run clean
+.PHONY: all run validation clean
 
 all: $(TARGET)
 
@@ -26,5 +34,11 @@ $(TARGET): $(SOURCES)
 run: $(TARGET)
 	./$(TARGET)
 
+$(VALIDATION_TARGET): $(VALIDATION_SOURCES)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(VALIDATION_SOURCES) -o $@
+
+validation: $(VALIDATION_TARGET)
+	./$(VALIDATION_TARGET)
+
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(VALIDATION_TARGET)
