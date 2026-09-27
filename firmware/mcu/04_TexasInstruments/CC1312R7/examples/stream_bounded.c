@@ -64,6 +64,20 @@ static int transport_try_send(const ads1299_frame_t *frame)
     return 0;
 }
 
+/* Keep the example aligned with the board binding contract: all hardware
+ * choices come from the single board configuration object.  This small local
+ * adapter preserves the streaming example's one-argument call site while
+ * delegating to the canonical two-argument board binding API. */
+static int make_default_board_hal(ads1299_platform_hal_t *out_hal)
+{
+    cc1312r7_ads1299_board_config_t cfg =
+        cc1312r7_ads1299_board_config_default();
+    return cc1312r7_ads1299_make_hal(&cfg, out_hal);
+}
+
+/* Local compatibility alias only; shared/core APIs are not changed. */
+#define cc1312r7_ads1299_make_hal(out_hal) make_default_board_hal(out_hal)
+
 int main(void)
 {
     ads1299_platform_hal_t hal;
