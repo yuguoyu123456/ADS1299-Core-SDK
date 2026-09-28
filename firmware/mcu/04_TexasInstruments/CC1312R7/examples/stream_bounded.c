@@ -72,8 +72,9 @@ int main(void)
     ads1299_device_id_t identity;
     ads1299_frame_t frame;
     frame_queue_t queue = {0};
+    cc1312r7_ads1299_board_config_t cfg = cc1312r7_ads1299_board_config_default();
 
-    if (cc1312r7_ads1299_make_hal(&hal) != CC1312R7_ADS1299_BIND_OK) return 1;
+    if (cc1312r7_ads1299_make_hal(&cfg, &hal) != CC1312R7_ADS1299_BIND_OK) return 1;
     if (ads1299_mcu_port_init(&mcu, &hal) != 0) return 2;
 
     ads1299_port_t port = ads1299_mcu_make_port(&mcu);
